@@ -1,0 +1,31 @@
+{
+  "command": "python -m g1_generator.cli --config configs/g1_smoke.json --out g1_output",
+  "seed": 42,
+  "config_path": "X:\\test\\configs\\g1_smoke.json",
+  "config_sha256": "2ae8e9ead7600ae67a8f76c7c44af02d154a656a2e4b91dd1306cf4b5c932192",
+  "chemistry": "NMC",
+  "n_cells": 12,
+  "n_rows": 12000,
+  "scenarios": [
+    "baseline",
+    "stress_highT",
+    "stress_highC",
+    "stress_highDOD"
+  ],
+  "csv": "X:\\test\\g1_output\\degradation_data.csv",
+  "csv_sha256": "9d2cc5b35c5a030ec38ce7d30f1b572c3e2ccbdedbc9fcd5b639d2c5df4de416",
+  "dictionary": "X:\\test\\g1_output\\data_dictionary.md",
+  "dictionary_sha256": "e6df30e2681cb2e47b7657cbf33197e3ad58a0752b0d95c1002e49234fe07779",
+  "figures": {
+    "capacity": "X:\\test\\g1_output\\fig_capacity_trajectories.svg",
+    "resistance": "X:\\test\\g1_output\\fig_resistance_trajectories.svg",
+    "knee": "X:\\test\\g1_output\\fig_knee_slope.svg",
+    "scenario": "X:\\test\\g1_output\\fig_scenario_comparison.svg"
+  },
+  "figure_sha256": {
+    "capacity": "1374be0066fb6f2a63c0c6792330f0285d88a18a38c6d0e3fa357ce6e5ceadac",
+    "resistance": "18aebc181106eaa4c2b2455f00acfec9248f6fd11cf1e5b2c27237ff53cd837d",
+    "knee": "9987ecfa7192d9377020342867828435ca05b086f896382c1b808be72f416525",
+    "scenario": "d863c7df4d4eed8039519c5fdc14d8e7cda7ef28b87916e7c1c5c0d294c47a7f"
+  }
+}
