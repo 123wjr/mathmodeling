@@ -13,6 +13,7 @@ G1 的唯一技术事实源是：
 - [参数台账](../evidence/parameter_ledger.txt)
 - [仿真协议](../docs/Simulation_Protocol.md)
 - [A0 任务契约](A0_Task_Contract.md)
+- [G1 材料包索引](G1_MATERIALS_INDEX.md)
 
 G1 必须使用 G0 冻结的 NMC 主线和分段平方根退化形式。所有自设系数继续标为 `ASSUMED`，不得在论文中写成 CALCE 实测估计。
 

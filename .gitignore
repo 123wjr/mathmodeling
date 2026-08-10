@@ -1,3 +1,6 @@
 docs/superpowers
 .codex
 .playwright-cli
+
+# Large public source data is tracked by URL and hash, not in Git.
+data/nasa_pcoe_battery_dataset/
