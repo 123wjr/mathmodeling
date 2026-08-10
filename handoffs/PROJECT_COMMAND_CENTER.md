@@ -6,7 +6,7 @@
 
 | 项目 | 当前事实 |
 |---|---|
-| 更新时间 | 2026-08-10 17:44 CST |
+| 更新时间 | 2026-08-10 18:17 CST |
 | 官方截止 | 2026-08-13 20:00 CST |
 | 首次上传 | 2026-08-13 18:30 CST |
 | 剩余时间 | 约 75 小时 |
@@ -57,7 +57,7 @@
 | 远端 `main @ G0-R clean line` | NMC + CALCE；TXT 台账；G1 材料索引；无伪造 A1 | **G0-R PASS** |
 | 历史 `53ab429` | LFP + Severson；`PENDING_APPROVAL`；空 A1 | 已从 `main` 移除，仅作审计历史 |
 | `handoffs/G0_OWNER_REVIEW.md` | `PASS_WITH_CHANGES`；冻结 NMC + CALCE；允许进入 G1 | 已签署决定 |
-| 当前本地工作区 | 仍以旧本地 HEAD 为基准但文件已回退 | 不作为队友事实源；先同步远端 |
+| 当前本地工作区 | 已同步远端 G0-R clean line；`main` 与 `origin/main` 一致 | 可继续执行 G1 |
 | `src/`、`tests/`、`configs/`、项目结果 | 均不存在 | G1 未开始 |
 
 远端已用受保护的 `force-with-lease` 更新；`data/` 内 NASA `.mat` 文件仍只作 `SECONDARY_ONLY`，不属于 G1 结果。队友开始工作前必须重新拉取远端 `main` 的 G0-R clean line。

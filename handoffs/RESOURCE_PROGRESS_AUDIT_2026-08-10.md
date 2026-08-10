@@ -7,7 +7,7 @@
 - 工作区已撤销 `53ab429` 对八个 G0/G1 文件的修改，恢复 NMC/CALCE 冻结方案。
 - 已恢复 `evidence/parameter_ledger.txt`、`evidence/source_ledger.txt`。
 - 已移除该提交新增的 LFP CSV 台账和空的 `A1_simulation_package.md`。
-- 远端 `main` 已于 17:44 通过 `--force-with-lease` 更新到 `5076b05`；旧提交仍可在 Git 对象审计中找到，但不再是主线。
+- 远端 `main` 已于 17:44 通过 `--force-with-lease` 更新到 NMC/CALCE 基线，随后以文档提交 `06ac801` 固化总控台；旧提交仍可在 Git 对象审计中找到，但不再是主线。
 
 ## 2. 当前资源
 
@@ -17,7 +17,7 @@
 | G0契约 | A0、数据策略、仿真协议、参数台账、来源台账、G0验收记录 | 已恢复；NMC/CALCE 主线有效 |
 | 论文 | `g0.docx`、3份论文模板、证据接口 | 可继续写方法段；52个证据标记待人工全文核验 |
 | G1管理 | G1任务书 MD/PDF、材料包索引 | 已发布；以16:17版本为准 |
-| 项目总控台 | `PROJECT_COMMAND_CENTER.md` | 已记录 G0-R PASS 与 G1 派工；随下一次文档 commit 固化 |
+| 项目总控台 | `PROJECT_COMMAND_CENTER.md` | 已记录 G0-R PASS 与 G1 派工，已在远端固化 |
 | 公开数据 | NASA PCoE：38个MAT文件、10个README，约201MB | 仅 `SECONDARY_ONLY`；化学体系未核验，不得用于主寿命拟合 |
 | 主校准数据 | CALCE NMC入口和来源记录 | 尚未下载/解析原始数据 |
 | 代码 | 无项目生成器、无项目测试、无配置 | G1核心缺失 |
@@ -30,7 +30,7 @@
 |---|---|---|
 | 选题与协作设计 | `DONE` | A题、GitHub/腾讯文档双轨和三人分工已确定 |
 | G0 | `PASS_WITH_CHANGES` | NMC/CALCE、参数边界、生成协议和证据接口已冻结 |
-| G0-R | `PASS` | 总负责人批准；远端 `main @ 5076b05` 已核对 |
+| G0-R | `PASS` | 总负责人批准；远端 G0-R clean line 已核对 |
 | G1资料准备 | `PARTIAL` | 任务、协议和NASA辅助数据已具备；CALCE原始数据未解析 |
 | G1代码实现 | `NOT_STARTED` | 没有生成器、测试或配置 |
 | G1结果与A1 | `NOT_STARTED` | 没有CSV、图表、数据字典、哈希或复跑记录 |
@@ -48,5 +48,5 @@
 
 - `data/` 约201MB且未跟踪；已用精确 `.gitignore` 规则排除 NASA 原始目录，规则仍待随修正 commit 固化。
 - 旧 LFP/Severson 提交仍可在 Git 对象审计中找到；其他成员必须从远端 `main` 重新拉取，不要继续使用旧本地分支。
-- 当前工作区本地分支仍指向旧 HEAD；本地后续操作前应同步到 `5076b05`。
-- 总控台与本清点已记录当前状态；总控台的正式版本随下一次文档 commit 固化。
+- 当前工作区 `main` 已同步远端，`git status` 干净；stash 与旧本地备份分支保留作回滚证据。
+- 总控台与本清点已记录当前状态并已推送。
