@@ -20,8 +20,12 @@ def _ticks(vmin, vmax, n=5):
     return [vmin + i * step for i in range(n + 1)]
 
 
-def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, ymax=None):
-    """通用 SVG 折线图。series: [{label,color,x:[],y:[]}]。"""
+def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, ymax=None, x_floor=None):
+    """通用 SVG 折线图。series: [{label,color,x:[],y:[]}]。
+
+    x_floor: 横轴下限（如 0）。当数据从非负计数（cycle/efc）起始时，
+    用于避免留白把首刻度推成负数（误导）。
+    """
     W, H = 860, 540
     ml, mr, mt, mb = 70, 170, 60, 60
     x0, x1 = ml, W - mr
@@ -39,6 +43,8 @@ def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, 
     # 留白
     dx = (xmax - xmin) * 0.02 or 1.0
     xmin, xmax = xmin - dx, xmax + dx
+    if x_floor is not None:
+        xmin = max(float(x_floor), xmin)
     dy = (ymax - ymin) * 0.05 or 0.01
     ymin, ymax = ymin - dy, ymax + dy
 

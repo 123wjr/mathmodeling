@@ -133,7 +133,7 @@ def generate_plots(cfg, rows, out_dir):
                    "x": [r["cycle"] for r in rr], "y": [r["capacity_true"] for r in rr]})
     figs["capacity"] = plots.line_chart(
         "容量轨迹（capacity_true，12 电芯）", "cycle", "Capacity (Ah)", s1,
-        os.path.join(out_dir, "fig_capacity_trajectories.svg"))
+        os.path.join(out_dir, "fig_capacity_trajectories.svg"), x_floor=0)
 
     # 2. 内阻轨迹
     s2 = []
@@ -143,7 +143,7 @@ def generate_plots(cfg, rows, out_dir):
                    "x": [r["cycle"] for r in rr], "y": [r["resistance_true"] for r in rr]})
     figs["resistance"] = plots.line_chart(
         "内阻轨迹（resistance_true，12 电芯）", "cycle", "Resistance (Ohm)", s2,
-        os.path.join(out_dir, "fig_resistance_trajectories.svg"))
+        os.path.join(out_dir, "fig_resistance_trajectories.svg"), x_floor=0)
 
     # 3. 膝点前后斜率
     base = sorted(bycell.get("baseline_0", []), key=lambda x: x["cycle"])
@@ -152,7 +152,7 @@ def generate_plots(cfg, rows, out_dir):
     vlines = [{"x": cfg.n_k_EFC, "label": f"knee n_k={cfg.n_k_EFC:.0f}"}]
     figs["knee"] = plots.line_chart(
         "膝点前后 SOH 斜率（baseline_0）", "EFC", "SOH (=Q/Q_nom)", s3,
-        os.path.join(out_dir, "fig_knee_slope.svg"), vlines=vlines)
+        os.path.join(out_dir, "fig_knee_slope.svg"), vlines=vlines, x_floor=0)
 
     # 4. 工况分组对比（各场景 SOH 均值）
     byscen = defaultdict(list)
@@ -171,7 +171,7 @@ def generate_plots(cfg, rows, out_dir):
                    "x": cycles, "y": means})
     figs["scenario"] = plots.line_chart(
         "工况分组对比（各场景 SOH 均值 vs cycle）", "cycle", "SOH mean", s4,
-        os.path.join(out_dir, "fig_scenario_comparison.svg"))
+        os.path.join(out_dir, "fig_scenario_comparison.svg"), x_floor=0)
 
     return figs
 
