@@ -1,0 +1,10 @@
+来源,URL/DOI,来源类型,化学体系,可支持内容,核验状态
+CALCE Battery Research Data,https://calce.umd.edu/data,公开数据集,NMC（LiNiMnCo/Graphite）及其他Li-ion体系,"问题1：容量、循环老化、内阻/阻抗测量；问题2：SOH/RUL研究数据基础；问题4：不同温度、储存SOC和电芯差异的工况分析",已核验
+NASA Randomized and Recommissioned Battery Dataset,https://data.nasa.gov/dataset/randomized-and-recommissioned-battery-dataset,公开数据集,Lithium-ion（具体化学体系需结合原始数据说明进一步核验）,"问题1：容量、循环、温度、电流、电压和退化数据；问题2：SOH/RUL建模；问题4：不同电池个体差异与退化轨迹分析",部分核验
+Lithium-ion battery degradation: how to model it,https://doi.org/10.1039/D2CP00417H,综述/模型论文,Lithium-ion,"问题1：锂离子电池退化机理及建模方法；问题4：退化模型参数化和不同工况影响建模的理论依据",已核验
+Application of state of health estimation and remaining useful life prediction for lithium-ion batteries based on AT-CNN-BiLSTM,https://doi.org/10.1038/s41598-024-80421-2,论文,Lithium-ion,"问题2：SOH定义、RUL定义、容量法SOH计算和80%失效阈值的常见定义",已核验
+Residual useful life prediction of lithium-ion battery based on accuracy SoH estimation,https://doi.org/10.1038/s41598-025-89727-1,论文,Lithium-ion,"问题2：SOH估计与RUL预测建模依据",已核验
+Stepwise procedure for efficient characterisation of retired batteries towards second-life applications,https://doi.org/10.1016/j.procir.2026.05.064,论文,Lithium-ion,"问题3：退役电池检测、筛选及第二生命周期应用的评价流程；问题4：不同筛选条件下方案验证的依据",已核验
+Diagnosis and remaining useful life prediction of end-of-life battery systems for second-life applications,https://doi.org/10.1016/j.procir.2024.08.271,论文,Lithium-ion,"问题2：退役电池SOH/RUL诊断；问题3：退役电池再利用前的状态评估",已核验
+State of health estimation of second-life lithium-ion batteries under real profile operation,https://doi.org/10.1016/j.apenergy.2022.119992,论文,Lithium-ion,"问题3：第二生命周期电池SOH评估；问题4：实际运行工况下模型验证",已核验
+Dataset for assessing the impact of first-life lithium-ion battery degradation on second-life performance,https://doi.org/10.1016/j.dib.2025.112208,公开数据集/数据论文,Lithium-ion,"问题2：容量保持率与SOH测量；问题3：一生命周期退化对梯次利用性能的影响；问题4：不同充放电倍率下的退化实验",已核验
