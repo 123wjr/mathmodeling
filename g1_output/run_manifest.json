@@ -23,9 +23,9 @@
     "scenario": "X:\\test\\g1_output\\fig_scenario_comparison.svg"
   },
   "figure_sha256": {
-    "capacity": "1374be0066fb6f2a63c0c6792330f0285d88a18a38c6d0e3fa357ce6e5ceadac",
-    "resistance": "18aebc181106eaa4c2b2455f00acfec9248f6fd11cf1e5b2c27237ff53cd837d",
-    "knee": "9987ecfa7192d9377020342867828435ca05b086f896382c1b808be72f416525",
-    "scenario": "d863c7df4d4eed8039519c5fdc14d8e7cda7ef28b87916e7c1c5c0d294c47a7f"
+    "capacity": "24e2209db980e594a6c033a1eb42b52ea18a2dd3ba25d9763da719ce2ccce090",
+    "resistance": "90a98ff495979917d64870c86111e8c68f1fad2bc597ba25af4d63676eee590f",
+    "knee": "a804a9ad0a9e4722fc7d0e66d2c4091abe9e661543c051495ec4baab9429db89",
+    "scenario": "c937fbab09bd6a5781c645af8872e029885fde5482f71cd2a00f824b1eafe698"
   }
 }
