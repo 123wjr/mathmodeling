@@ -4,3 +4,7 @@ docs/superpowers
 
 # Large public source data is tracked by URL and hash, not in Git.
 data/nasa_pcoe_battery_dataset/
+
+# Python runtime caches are not evidence artifacts.
+__pycache__/
+*.py[cod]

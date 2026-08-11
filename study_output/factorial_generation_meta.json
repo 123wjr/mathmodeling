@@ -1,0 +1,9 @@
+{
+  "chemistry": "NMC",
+  "n_cells": 108,
+  "n_rows": 108000,
+  "protocol": "CC-CV",
+  "raw_rows_persisted": false,
+  "reason": "108000 synthetic rows are deterministically regenerated from the manifest command",
+  "seed": 20260811
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "evidence": "27 conditions, 108 cells, 108000 rows",
+    "gate": "factorial_shape",
+    "status": "PASS"
+  },
+  {
+    "evidence": "three main-effect weights sum to 1",
+    "gate": "q1_weights_capacity_fade",
+    "status": "PASS"
+  },
+  {
+    "evidence": "three main-effect weights sum to 1",
+    "gate": "q1_weights_final_resistance_growth",
+    "status": "PASS"
+  },
+  {
+    "evidence": "one CC-CV level produces no fabricated protocol weight",
+    "gate": "q1_protocol_honesty",
+    "status": "PASS"
+  },
+  {
+    "evidence": "GroupKFold cell overlap = 0",
+    "gate": "q2_cell_group_split",
+    "status": "PASS"
+  },
+  {
+    "evidence": "43 events + 65 censored = 108",
+    "gate": "q2_censor_accounting",
+    "status": "PASS"
+  },
+  {
+    "evidence": "exact target groups; duplicate cells = 0; wrong group sizes = 0",
+    "gate": "q3_milp_constraints",
+    "status": "PASS"
+  },
+  {
+    "evidence": "four OOD cases have null numeric predictions",
+    "gate": "q4_ood_abstention",
+    "status": "PASS"
+  },
+  {
+    "evidence": "all scenarios include 5 seeds",
+    "gate": "q4_seed_completeness",
+    "status": "PASS"
+  }
+]

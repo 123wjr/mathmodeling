@@ -1,0 +1,5 @@
+case,temperature_C,c_rate_C,dod_pct,protocol,status,reason,numeric_prediction
+low_temperature,0.0,1.0,80.0,CC-CV,[OOD/ABSTAIN],temperature outside 25-50 degC,
+overcharge_protocol,25.0,1.0,80.0,CC-CV-overcharge,[OOD/ABSTAIN],protocol is not frozen CC-CV,
+overdischarge,25.0,1.0,110.0,CC-CV,[OOD/ABSTAIN],DOD outside 50-100%,
+rate_above_support,25.0,3.0,80.0,CC-CV,[OOD/ABSTAIN],c_rate outside 0.5-2C,

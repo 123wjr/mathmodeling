@@ -1,0 +1,404 @@
+{
+  "artifacts": [
+    {
+      "bytes": 845,
+      "path": "handoffs/A2_prediction_package.md",
+      "sha256": "af68e9f923bcbf6c9c7f0aba09f27d1c4c6a44df23c6d11fce523f80878f534b"
+    },
+    {
+      "bytes": 557,
+      "path": "handoffs/A3_optimization_package.md",
+      "sha256": "cbdb734f49bea2483c44d8c95bda3eb331af14d77b23dd52c4fdaff78d2e4983"
+    },
+    {
+      "bytes": 570,
+      "path": "handoffs/A4_robustness_package.md",
+      "sha256": "f34f1ae0313645fe00615bd5f00ebb52452af9bf24235ce49c4363adbe040eef"
+    },
+    {
+      "bytes": 27649,
+      "path": "study_output/factorial_cell_summary.csv",
+      "sha256": "4e81122beab47a5d9fc89970fb4087caa6470cf7a07083fcf351204c83c47938"
+    },
+    {
+      "bytes": 974,
+      "path": "study_output/factorial_design.csv",
+      "sha256": "b297df1f4a648c2f7777f61188d9c01dd101cb4fc5e32aaf58e579e76af7cca2"
+    },
+    {
+      "bytes": 234,
+      "path": "study_output/factorial_generation_meta.json",
+      "sha256": "cfe5cb9699e55d4bef043409f03d5207d78938953911ab6f29533a51c6448848"
+    },
+    {
+      "bytes": 3087,
+      "path": "study_output/fig_q1_factor_weights.svg",
+      "sha256": "0028e069d2de04e95b78f2a162d08418fc9971313401ee4deef78e73fd341d3f"
+    },
+    {
+      "bytes": 2781,
+      "path": "study_output/fig_q2_rul_rmse.svg",
+      "sha256": "ba9eb96db79c74f39e036890997e007177ab211afd49b15c06efbe269d8f55ea"
+    },
+    {
+      "bytes": 2423,
+      "path": "study_output/fig_q2_soh_rmse.svg",
+      "sha256": "3df99da57818b2fb694e66c1313bb0b6156537833da8b760df9310f09c2b671e"
+    },
+    {
+      "bytes": 3139,
+      "path": "study_output/fig_q3_tradeoff.svg",
+      "sha256": "b0dae8a21a026ad8892a69ee27b0cc456ca173044b1a822fe2eadeb56ecd4dcc"
+    },
+    {
+      "bytes": 3516,
+      "path": "study_output/fig_q4_final_soh.svg",
+      "sha256": "a8054f07bee6cdad5c1ba598faee4101570bd7331d8f515c579b17191076de40"
+    },
+    {
+      "bytes": 3165,
+      "path": "study_output/fig_q4_sensitivity.svg",
+      "sha256": "15a26fff741fbfb4176bb024737ce05fd1447ca8d78671392f626a57155993f1"
+    },
+    {
+      "bytes": 1157,
+      "path": "study_output/q1_factor_effects.csv",
+      "sha256": "2f74a8682f6db4cce08a441b64de587ff1903016b10e705cf249b8a565703a7a"
+    },
+    {
+      "bytes": 13670,
+      "path": "study_output/q1_knee_detection.csv",
+      "sha256": "6acd751e09d7d935ede8c23aee4da8be7dceca5a8d5043efec655385998bbda5"
+    },
+    {
+      "bytes": 677,
+      "path": "study_output/q1_stage_counts.csv",
+      "sha256": "141371ec92275f7649d00666b6de7bdd9a95edfbc600ae595631423c415d7fad"
+    },
+    {
+      "bytes": 3870,
+      "path": "study_output/q1_summary.json",
+      "sha256": "59c9e20017d93e22caebc6609c2f641eaea799b174cacdb6286f23027cbd4d61"
+    },
+    {
+      "bytes": 9464,
+      "path": "study_output/q2_leave_condition_out.csv",
+      "sha256": "0f98953cda3eb5e5d2ad6b57c3613d1bb4a8ed4761e01c24b762f1975cf44508"
+    },
+    {
+      "bytes": 1250,
+      "path": "study_output/q2_rul_metrics.csv",
+      "sha256": "7f5f8c759d4ba565177d1aa07c37a26e4db23077fb8ebf11eea532e63c526198"
+    },
+    {
+      "bytes": 63231,
+      "path": "study_output/q2_rul_predictions.csv",
+      "sha256": "937ed3eb71c73763ba1d191e282392876122403ab4b62b4cf91c341d7ada2238"
+    },
+    {
+      "bytes": 891,
+      "path": "study_output/q2_soh_metrics.csv",
+      "sha256": "f1667d7aed6bf57c03a10d7dcedcba8742b4a5e46d4b944f97b05355f42dc78e"
+    },
+    {
+      "bytes": 582696,
+      "path": "study_output/q2_soh_predictions.csv",
+      "sha256": "d8b314cd2d36d31ec080d05456c5b15be0e265c68cef8cd07c6b029a16e3c9a6"
+    },
+    {
+      "bytes": 733,
+      "path": "study_output/q2_split_audit.json",
+      "sha256": "03f3d4556a17ef1e5c7419285403dcb00b2f87b46946a51b57eb837cf3429971"
+    },
+    {
+      "bytes": 5861,
+      "path": "study_output/q2_summary.json",
+      "sha256": "3e28628d4575e7164255bfe9e3140a88c5244a1c42dd650163caf3d35f8e45a0"
+    },
+    {
+      "bytes": 3641,
+      "path": "study_output/q3_assignments.csv",
+      "sha256": "a2c0e245efcbbf287e84478af39ceb13cc1b0c90d4963fd6c9217df7a21c9775"
+    },
+    {
+      "bytes": 16127,
+      "path": "study_output/q3_candidate_screening.csv",
+      "sha256": "d5ca8d35e91b828720a642c30b598bdfbc4b9881483aa88fdd0569ad07b26dfa"
+    },
+    {
+      "bytes": 12158,
+      "path": "study_output/q3_selected_groups.csv",
+      "sha256": "4c21a91879e696ab6103ad2597366a7e1faeaa6ea3425adc2dcc2a7d039e98bb"
+    },
+    {
+      "bytes": 1082,
+      "path": "study_output/q3_solution_summary.csv",
+      "sha256": "4fac4b137b4656f4add57ce031cb3dba33402760a52c061555d44609fb167a51"
+    },
+    {
+      "bytes": 3318,
+      "path": "study_output/q3_summary.json",
+      "sha256": "a75d03242f4bf76687f73abac21fdfacd666dfef3e2ddbdaab9c4e567273e000"
+    },
+    {
+      "bytes": 10299,
+      "path": "study_output/q4_monte_carlo_raw.csv",
+      "sha256": "eba7b90c86166cc5a7ca78cea48b54ec20fa76fbe9f62cf836d70d71a65db723"
+    },
+    {
+      "bytes": 4368,
+      "path": "study_output/q4_monte_carlo_summary.csv",
+      "sha256": "4222c32aba03b970c3cd30c5eb83fb25d38f6e3bfce8dd719068902e0d86ede6"
+    },
+    {
+      "bytes": 400,
+      "path": "study_output/q4_ood_abstention.csv",
+      "sha256": "9754aa7c7674e520639e1aefdad1e6d240481ee245d90ddb8e2eae50a85c5254"
+    },
+    {
+      "bytes": 8540,
+      "path": "study_output/q4_sensitivity_oat.csv",
+      "sha256": "88f496681abfa7ea948fcfa12d0d6254f3d6b2b1a8665a283888c3f951b2a0ea"
+    },
+    {
+      "bytes": 1927,
+      "path": "study_output/q4_sensitivity_rank.csv",
+      "sha256": "bdbdd8cf004bca7ba1f3833e6ab39ae18416dcdafd04d3f3378411b8126e6df6"
+    },
+    {
+      "bytes": 16217,
+      "path": "study_output/q4_summary.json",
+      "sha256": "c7d8b0f9c6c83aef48808cb19188f88522fba101a6854e1c17145ec21c8b1033"
+    },
+    {
+      "bytes": 1135,
+      "path": "study_output/validation_gates.json",
+      "sha256": "d33e6592e0197da73e79b432891ea8db7cad3c315d4c4aef5a2d9e09bd516437"
+    },
+    {
+      "bytes": 2518,
+      "path": "technical/EXPERIMENT_PLAN.md",
+      "sha256": "fc616ec0a1177e28c30a83c0c6d0f0ccd6131363115bb9e029cc53a167b565f4"
+    },
+    {
+      "bytes": 1154,
+      "path": "technical/PAPER_WRITING_FACT_SHEET.md",
+      "sha256": "ff9457c722001c771a8578603d2570e22b7b2be145c065ecf8c91305878b87fc"
+    },
+    {
+      "bytes": 1876,
+      "path": "technical/SUPPORTING_MATERIALS_README.md",
+      "sha256": "1673e3ca38775fc93eabe56e402e5d5f7d1e08cb02e2edcd877fd00287f0f586"
+    },
+    {
+      "bytes": 4186,
+      "path": "technical/TECHNICAL_REPORT_MINIMAL.html",
+      "sha256": "488036e3f4020d1eeb0434fe02dc3abeedea94b49e106846f3f11571c45f862e"
+    },
+    {
+      "bytes": 8477,
+      "path": "technical/TECHNICAL_REPORT_MINIMAL.md",
+      "sha256": "d49d053b11c22b67dd8c65ddee01c97ae03846dbdf12f29235fbe2ab8727b6a8"
+    },
+    {
+      "bytes": 2567,
+      "path": "technical/VALIDATION_REPORT.md",
+      "sha256": "a126e5dd8f71e931ab751a88524020f1ba8fdd656c9e8077b6c235dce3ffdc3e"
+    }
+  ],
+  "command": "PYTHONPATH=code python -m battery_study.cli --config configs/study_pipeline.json --out study_output",
+  "dataset": {
+    "cells": 108,
+    "conditions": 27,
+    "rows_regenerated_not_persisted": 108000
+  },
+  "git_head_before_commit": "6d8dd478150fb2c170f8b287fe098cf3e8cee64c",
+  "input_configs": [
+    {
+      "path": "configs/study_pipeline.json",
+      "sha256": "f31e98db06efe2ab05771d4054fba87fb4a1a1d4d76b0a898fe39ac2659cbd8a"
+    },
+    {
+      "path": "configs/g1_smoke.json",
+      "sha256": "2ae8e9ead7600ae67a8f76c7c44af02d154a656a2e4b91dd1306cf4b5c932192"
+    }
+  ],
+  "manifest_version": 1,
+  "scope": "synthetic NMC study; no external calibration or validation",
+  "seeds": {
+    "factorial": 20260811,
+    "robustness": [
+      42,
+      123,
+      2026,
+      4096,
+      8110
+    ]
+  },
+  "source_files": [
+    {
+      "bytes": 154,
+      "path": "code/battery_study/__init__.py",
+      "sha256": "48b0436a99583e6f8214468e19a0d19730a0f8165b52c927b8e96fb04981c1ac"
+    },
+    {
+      "bytes": 1092,
+      "path": "code/battery_study/cli.py",
+      "sha256": "199391f14605d218661b2b91709021e5f053d8d686970cef8d5ab048fe3c786d"
+    },
+    {
+      "bytes": 3241,
+      "path": "code/battery_study/common.py",
+      "sha256": "74c55bcc607533adf5f1d2f35d38f844367632edd85b784538e4cb237e42f82a"
+    },
+    {
+      "bytes": 6974,
+      "path": "code/battery_study/config.py",
+      "sha256": "405dc1136b6b5de3d335e08514dc1d36f8081a516aaf4ef1f1e7ffbeecb7265b"
+    },
+    {
+      "bytes": 7868,
+      "path": "code/battery_study/data.py",
+      "sha256": "7fa9eaefa4aa6998641cee15289a3d851c597789b586bd4145e5ff8a8b2843ab"
+    },
+    {
+      "bytes": 11200,
+      "path": "code/battery_study/pipeline.py",
+      "sha256": "e68a47279c5b3ebcabea5f5a774a68fb5a470c6072913f954bedee6870d8fa8b"
+    },
+    {
+      "bytes": 7855,
+      "path": "code/battery_study/q1.py",
+      "sha256": "dda652e7e40e5c62d207f00078cc36f23c570290ca0dab4ddea9aef01001bb48"
+    },
+    {
+      "bytes": 20854,
+      "path": "code/battery_study/q2.py",
+      "sha256": "e365244913759b115f7b8f993f442026dfebc45cd7a9beb6c7ac9f4456c1aecb"
+    },
+    {
+      "bytes": 15899,
+      "path": "code/battery_study/q3.py",
+      "sha256": "f4800a79b1e792940b83bd40d77849914744516f1352025e75616165b66dd0f0"
+    },
+    {
+      "bytes": 13460,
+      "path": "code/battery_study/q4.py",
+      "sha256": "a48bc6c2618713083bdf0eaa75a19b76694011ad85aaf888b7ae1f632e031f65"
+    },
+    {
+      "bytes": 27687,
+      "path": "code/battery_study/reporting.py",
+      "sha256": "b54bc43b1b71dedac04a5a016f48c19b2d609886c437cabd8c1208c47cd831c5"
+    },
+    {
+      "bytes": 6141,
+      "path": "code/battery_study/visualization.py",
+      "sha256": "3991d7db578284e83d0da09633f6b749dfbe75fd97a8584b42504b6ee7aea375"
+    },
+    {
+      "bytes": 185,
+      "path": "code/g1_generator/__init__.py",
+      "sha256": "ac88c706365f530fec0ef7f8079626f35a51937ad51c749bba8334d252703664"
+    },
+    {
+      "bytes": 3675,
+      "path": "code/g1_generator/cli.py",
+      "sha256": "4718f22c2aa7730c508bb3f64026a5607ddbb022488fc9185946eee14a216dc5"
+    },
+    {
+      "bytes": 7958,
+      "path": "code/g1_generator/config.py",
+      "sha256": "de2926ccf8868dd1cb0b7004cfd8f5800c644833e06f9502c6778ae5fc715e03"
+    },
+    {
+      "bytes": 6231,
+      "path": "code/g1_generator/degradation.py",
+      "sha256": "e85577d208135275ec38644dbb557616bc5f2b742e87929323d1326d30cc7115"
+    },
+    {
+      "bytes": 4916,
+      "path": "code/g1_generator/plots.py",
+      "sha256": "87c8957221cca7a3221885472c8527fad3174d5e7cfff9ba84c9de34c16ed7a8"
+    },
+    {
+      "bytes": 10033,
+      "path": "code/g1_generator/simulate.py",
+      "sha256": "0789dda6ed8ebaf3a2a83b2640bf94a4e300727be2d1102a2e8654cd5015d266"
+    },
+    {
+      "bytes": 12506,
+      "path": "code/tests/test_generator.py",
+      "sha256": "b9320e13c6ba1cfbcf3c55eeffdd69e9b6534fc1c35479f98438b547ff516d19"
+    },
+    {
+      "bytes": 6191,
+      "path": "code/tests/test_study.py",
+      "sha256": "02b1ba4c2018c162f37dfa0cdb841c80e8cac9fcd3c2d4a4eb1ac54367e25ea7"
+    },
+    {
+      "bytes": 61,
+      "path": "requirements-study.txt",
+      "sha256": "1dca751265cee030a9772f630d779d9b63acd8d4a350586a136172667fd2b534"
+    }
+  ],
+  "study_id": "A_NMC_G2_G4_v1",
+  "uncertainty_status": {
+    "assumed_updateable": "degradation parameters, thresholds, batch proxies, objective weights",
+    "confirmed": "code paths, support bounds, split integrity, optimization constraints",
+    "ood_abstain": "low temperature, overcharge, overdischarge, >2C",
+    "uncertain": "real-world generalization, safety probability, monetary value"
+  },
+  "validation": [
+    {
+      "evidence": "27 conditions, 108 cells, 108000 rows",
+      "gate": "factorial_shape",
+      "status": "PASS"
+    },
+    {
+      "evidence": "three main-effect weights sum to 1",
+      "gate": "q1_weights_capacity_fade",
+      "status": "PASS"
+    },
+    {
+      "evidence": "three main-effect weights sum to 1",
+      "gate": "q1_weights_final_resistance_growth",
+      "status": "PASS"
+    },
+    {
+      "evidence": "one CC-CV level produces no fabricated protocol weight",
+      "gate": "q1_protocol_honesty",
+      "status": "PASS"
+    },
+    {
+      "evidence": "GroupKFold cell overlap = 0",
+      "gate": "q2_cell_group_split",
+      "status": "PASS"
+    },
+    {
+      "evidence": "43 events + 65 censored = 108",
+      "gate": "q2_censor_accounting",
+      "status": "PASS"
+    },
+    {
+      "evidence": "exact target groups; duplicate cells = 0; wrong group sizes = 0",
+      "gate": "q3_milp_constraints",
+      "status": "PASS"
+    },
+    {
+      "evidence": "four OOD cases have null numeric predictions",
+      "gate": "q4_ood_abstention",
+      "status": "PASS"
+    },
+    {
+      "evidence": "all scenarios include 5 seeds",
+      "gate": "q4_seed_completeness",
+      "status": "PASS"
+    }
+  ],
+  "versions": {
+    "numpy": "2.4.5",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.1"
+  }
+}

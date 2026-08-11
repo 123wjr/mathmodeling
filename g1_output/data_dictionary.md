@@ -1,30 +1,37 @@
 # G1 数据字典（Data Dictionary）
 
-> 由 `g1_generator` 自动生成。所有仿真系数为 `ASSUMED`，完整范围见 `evidence/parameter_ledger.txt`。
+> 由 `g1_generator` 自动生成。本文件描述的是合成仿真数据，不是 CALCE 或其他实验实测数据。
 
 - 化学体系: NMC（NMC / LiNiMnCo-graphite）
-- 主校准对象: CALCE INR18650-20R（仅作仿真边界，非拟合来源）
-- 随机种子 seed: 42（冒烟固定值）
+- 参考边界对象: CALCE INR18650-20R（未读取原始数据、未做参数拟合）
+- 随机种子 seed: 42
 - 电芯数: 12；总行数: 12000
 - 工况: baseline, stress_highT, stress_highC, stress_highDOD
+
+## 来源标签
+
+- `OBSERVED`: 外部真实测量。本 G1 CSV 不包含此类字段。
+- `LITERATURE_FIXED`: 文献或 G0 冻结的建模约定；本配置中的 80% SOH 仅为可调退役/RUL 阈值，不是普适安全阈值。
+- `ASSUMED/CONFIGURED`: 仿真者设定的参数或工况；不是实测。
+- `DERIVED_FROM_ASSUMED`: 由仿真设定和模型公式计算出的合成量。
 
 ## 字段说明
 
 | 字段 | 类型 | 单位 | 含义 | 来源标签 |
 |---|---|---|---|---|
-| cell_id | str | - | 电芯标识 = 场景id_序号 | LITERATURE_FIXED |
-| cycle | int | cycle | 循环次数（时间轴） | OBSERVED |
-| efc | float | EFC | 等效完整循环数 = Σ DOD/100 | OBSERVED |
-| temperature | float | degC | 环境温度 | OBSERVED |
-| c_rate | float | C | 充放电倍率 | OBSERVED |
-| dod | float | % | 放电深度 | OBSERVED |
-| protocol | str | - | 充电协议（仅 CC-CV） | OBSERVED |
-| capacity_true | float | Ah | 真实可用容量 = Q0·(1-α·u·L(e)) | ASSUMED |
-| capacity_obs | float | Ah | 观测容量 = true + N(0,σ_Q·Q_nom) | ASSUMED |
-| soh | float | - | 健康状态 = capacity_true / Q0_i = 1 - alpha_i·u·L(e)（起点=1） | ASSUMED/DERIVED |
-| resistance_true | float | Ohm | 真实内阻 = R0·(1+β·u·L(e)) | ASSUMED |
-| resistance_obs | float | Ohm | 观测内阻 = true + N(0,σ_R·R_true) | ASSUMED |
-| seed | int | - | 本运行主随机种子 | ASSUMED |
+| cell_id | str | - | 仿真电芯标识 = 场景 id + 序号 | DERIVED_FROM_ASSUMED |
+| cycle | int | cycle | 配置的循环序号（时间轴） | ASSUMED/CONFIGURED |
+| efc | float | EFC | 等效完整循环数 = Σ DOD/100 | DERIVED_FROM_ASSUMED |
+| temperature | float | degC | 仿真环境温度 | ASSUMED/CONFIGURED |
+| c_rate | float | C | 仿真充放电倍率 | ASSUMED/CONFIGURED |
+| dod | float | % | 仿真放电深度 | ASSUMED/CONFIGURED |
+| protocol | str | - | 仿真充电协议（仅 CC-CV） | LITERATURE_FIXED/CONFIGURED |
+| capacity_true | float | Ah | 模型内部无噪声容量 = Q0_i·(1-α_i·u·L(e)) | DERIVED_FROM_ASSUMED |
+| capacity_obs | float | Ah | 合成观测容量 = capacity_true + N(0,σ_Q·Q_nom) | DERIVED_FROM_ASSUMED |
+| soh | float | 1 | capacity_true / Q0_i = 1-alpha_i·u·L(e) | DERIVED_FROM_ASSUMED |
+| resistance_true | float | Ohm | 模型内部无噪声内阻 = R0_i·(1+β_i·u·L(e)) | DERIVED_FROM_ASSUMED |
+| resistance_obs | float | Ohm | 合成观测内阻 = resistance_true + N(0,σ_R·R_true) | DERIVED_FROM_ASSUMED |
+| seed | int | - | 本运行主随机种子 | ASSUMED/CONFIGURED |
 
 ## 公式与边界
 

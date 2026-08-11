@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+from html import escape
 import os
 
 
@@ -26,6 +27,14 @@ def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, 
     x_floor: 横轴下限（如 0）。当数据从非负计数（cycle/efc）起始时，
     用于避免留白把首刻度推成负数（误导）。
     """
+    if not series:
+        raise ValueError("SVG 图至少需要一个数据系列")
+    for item in series:
+        if not item.get("x") or not item.get("y"):
+            raise ValueError(f"SVG 数据系列 {item.get('label', '<unnamed>')!r} 为空")
+        if len(item["x"]) != len(item["y"]):
+            raise ValueError(f"SVG 数据系列 {item.get('label', '<unnamed>')!r} 的 x/y 长度不一致")
+
     W, H = 860, 540
     ml, mr, mt, mb = 70, 170, 60, 60
     x0, x1 = ml, W - mr
@@ -53,14 +62,14 @@ def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, 
                  f'font-family="Helvetica,Arial,sans-serif" font-size="12">')
     parts.append(f'<rect x="0" y="0" width="{W}" height="{H}" fill="#ffffff"/>')
     parts.append(f'<text x="{W/2}" y="26" text-anchor="middle" font-size="16" '
-                 f'font-weight="bold" fill="#222">{title}</text>')
+                 f'font-weight="bold" fill="#222">{escape(str(title))}</text>')
 
     # 坐标轴
     parts.append(f'<line x1="{x0}" y1="{y0}" x2="{x1}" y2="{y0}" stroke="#333"/>')
     parts.append(f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="#333"/>')
-    parts.append(f'<text x="{(x0+x1)/2}" y="{H-18}" text-anchor="middle" fill="#333">{xlabel}</text>')
+    parts.append(f'<text x="{(x0+x1)/2}" y="{H-18}" text-anchor="middle" fill="#333">{escape(str(xlabel))}</text>')
     parts.append(f'<text x="18" y="{(y0+y1)/2}" text-anchor="middle" fill="#333" '
-                 f'transform="rotate(-90 18 {(y0+y1)/2})">{ylabel}</text>')
+                 f'transform="rotate(-90 18 {(y0+y1)/2})">{escape(str(ylabel))}</text>')
 
     # 刻度
     for tx in _ticks(xmin, xmax, 5):
@@ -81,7 +90,8 @@ def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, 
             parts.append(f'<line x1="{px:.1f}" y1="{y1}" x2="{px:.1f}" y2="{y0}" '
                          f'stroke="{v.get("color","#c0392b")}" stroke-dasharray="5,4"/>')
             parts.append(f'<text x="{px:.1f}" y="{y1-6}" text-anchor="middle" '
-                         f'fill="{v.get("color","#c0392b")}" font-size="10">{v.get("label","")}</text>')
+                         f'fill="{v.get("color","#c0392b")}" font-size="10">'
+                         f'{escape(str(v.get("label", "")))}</text>')
 
     # 折线
     for s in series:
@@ -95,12 +105,15 @@ def line_chart(title, xlabel, ylabel, series, out_path, vlines=None, ymin=None, 
     ly = mt + 10
     for s in series:
         parts.append(f'<line x1="{lx}" y1="{ly}" x2="{lx+24}" y2="{ly}" stroke="{s["color"]}" stroke-width="2.4"/>')
-        parts.append(f'<text x="{lx+30}" y="{ly+4}" fill="#222" font-size="11">{s["label"]}</text>')
+        parts.append(f'<text x="{lx+30}" y="{ly+4}" fill="#222" font-size="11">'
+                     f'{escape(str(s["label"]))}</text>')
         ly += 20
 
     parts.append('</svg>')
 
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    with open(out_path, "w", encoding="utf-8") as f:
+    parent = os.path.dirname(out_path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(parts) + "\n")
     return out_path

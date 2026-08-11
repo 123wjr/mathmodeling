@@ -1,0 +1,42 @@
+[
+  {
+    "cell_overlap": [],
+    "fold": 1,
+    "n_test_cells": 22,
+    "n_test_rows": 396,
+    "n_train_cells": 86,
+    "n_train_rows": 1548
+  },
+  {
+    "cell_overlap": [],
+    "fold": 2,
+    "n_test_cells": 22,
+    "n_test_rows": 396,
+    "n_train_cells": 86,
+    "n_train_rows": 1548
+  },
+  {
+    "cell_overlap": [],
+    "fold": 3,
+    "n_test_cells": 22,
+    "n_test_rows": 396,
+    "n_train_cells": 86,
+    "n_train_rows": 1548
+  },
+  {
+    "cell_overlap": [],
+    "fold": 4,
+    "n_test_cells": 21,
+    "n_test_rows": 378,
+    "n_train_cells": 87,
+    "n_train_rows": 1566
+  },
+  {
+    "cell_overlap": [],
+    "fold": 5,
+    "n_test_cells": 21,
+    "n_test_rows": 378,
+    "n_train_cells": 87,
+    "n_train_rows": 1566
+  }
+]

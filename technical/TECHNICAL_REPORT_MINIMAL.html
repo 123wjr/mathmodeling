@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A题技术结果总览</title><link rel="icon" href="data:,">
+<style>
+:root{--ink:#202124;--muted:#5f6368;--line:#d9dee2;--teal:#176b87;--red:#b13b4b;--gold:#ad7418;--bg:#f7f8f8}
+*{box-sizing:border-box} body{margin:0;color:var(--ink);background:#fff;font-family:Arial,"Microsoft YaHei",sans-serif;line-height:1.6}
+header{border-bottom:4px solid var(--teal);background:var(--bg);padding:28px max(24px,calc((100vw - 1120px)/2)) 22px}
+h1{font-size:30px;margin:0 0 6px;letter-spacing:0} header p{margin:0;color:var(--muted)}
+main{max-width:1120px;margin:auto;padding:22px 24px 56px} section{padding:18px 0 28px;border-bottom:1px solid var(--line)}
+h2{font-size:20px;margin:0 0 14px;letter-spacing:0} .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.metric{background:#fff;padding:14px;min-height:92px} .metric strong{display:block;font-size:24px;color:var(--teal)} .metric span{font-size:12px;color:var(--muted)}
+.warning{border-left:4px solid var(--red);padding:10px 14px;background:#fff7f7} .assumption{border-left:4px solid var(--gold);padding:10px 14px;background:#fffaf0}
+table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px;overflow-wrap:anywhere} th,td{min-width:0;text-align:left;padding:8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere;word-break:break-word} th{background:var(--bg)}
+.figures{display:grid;grid-template-columns:1fr 1fr;gap:18px} figure{margin:0} figure img{display:block;width:100%;height:auto;border:1px solid var(--line)} figcaption{font-size:12px;color:var(--muted);margin-top:5px}
+@media(max-width:760px){.metrics,.figures{grid-template-columns:1fr} h1{font-size:25px} main{padding-inline:16px}}
+</style></head><body>
+<header><h1>A题技术结果总览</h1><p>NMC 合成仿真 · G2–G4 · 所有结论限于冻结支持域</p></header>
+<main>
+<section><h2>关键结果</h2><div class="metrics">
+<div class="metric"><strong>0.004206</strong><span>最佳通用 SOH RMSE · ridge</span></div>
+<div class="metric"><strong>38.39</strong><span>AFT RUL RMSE · 仅 43 个可观测事件</span></div>
+<div class="metric"><strong>85/108</strong><span>Q3 通过假设硬门槛</span></div>
+<div class="metric"><strong>0</strong><span>MILP 重复电芯分配</span></div>
+</div></section>
+<section><h2>证据边界</h2><p class="assumption"><b>[ASSUMED/UPDATEABLE]</b> 退化参数、80% SOH、筛选门槛、批次代理和经济权重均待真实数据更新。</p><p class="warning"><b>[OOD/ABSTAIN]</b> 低温、过充、过放和超过 2C 不输出数值。</p></section>
+<section><h2>多工况摘要</h2><table><thead><tr><th>场景</th><th>平均末期 SOH</th><th>临界比例</th><th>筛选率</th></tr></thead><tbody><tr><td>baseline</td><td>0.8541</td><td>0.0000</td><td>1.0000</td></tr><tr><td>batch_high_degradation_proxy</td><td>0.8391</td><td>0.0000</td><td>1.0000</td></tr><tr><td>batch_low_degradation_proxy</td><td>0.8687</td><td>0.0000</td><td>1.0000</td></tr><tr><td>batch_reference_proxy</td><td>0.8541</td><td>0.0000</td><td>1.0000</td></tr><tr><td>combined_stress</td><td>0.6857</td><td>1.0000</td><td>0.0000</td></tr><tr><td>high_c_rate</td><td>0.8409</td><td>0.0000</td><td>1.0000</td></tr><tr><td>high_dod</td><td>0.8069</td><td>0.1917</td><td>1.0000</td></tr><tr><td>high_temperature</td><td>0.7833</td><td>0.9667</td><td>0.9167</td></tr></tbody></table></section>
+<section><h2>论文图候选</h2><div class="figures">
+<figure><img src="../study_output/fig_q1_factor_weights.svg" alt="Q1 factor weights"><figcaption>Q1 主效应权重</figcaption></figure>
+<figure><img src="../study_output/fig_q2_soh_rmse.svg" alt="Q2 SOH RMSE"><figcaption>Q2 SOH 模型比较</figcaption></figure>
+<figure><img src="../study_output/fig_q3_tradeoff.svg" alt="Q3 tradeoff"><figcaption>Q3 权重方案权衡</figcaption></figure>
+<figure><img src="../study_output/fig_q4_final_soh.svg" alt="Q4 final SOH"><figcaption>Q4 多工况末期 SOH</figcaption></figure>
+</div></section>
+</main></body></html>

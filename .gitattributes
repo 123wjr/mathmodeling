@@ -1,0 +1,10 @@
+.gitattributes text eol=lf
+/code/g1_generator/*.py text eol=lf
+/code/tests/*.py text eol=lf
+/configs/*.json text eol=lf
+/g1_output/*.csv text eol=lf
+/g1_output/*.json text eol=lf
+/g1_output/*.md text eol=lf
+/g1_output/*.svg text eol=lf
+/handoffs/A1_simulation_package.md text eol=lf
+/handoffs/PROJECT_COMMAND_CENTER.md text eol=lf

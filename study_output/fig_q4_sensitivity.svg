@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="437" viewBox="0 0 940 437" font-family="Arial,Microsoft YaHei,sans-serif">
+<rect width="940" height="437" fill="#ffffff"/>
+<text x="470.0" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#202124">Q4 local OAT sensitivity</text>
+<line x1="245.0" y1="58" x2="245.0" y2="379" stroke="#e1e5e8"/>
+<text x="245.0" y="401" text-anchor="middle" font-size="11" fill="#5f6368">0.000</text>
+<line x1="368.0" y1="58" x2="368.0" y2="379" stroke="#e1e5e8"/>
+<text x="368.0" y="401" text-anchor="middle" font-size="11" fill="#5f6368">0.092</text>
+<line x1="491.0" y1="58" x2="491.0" y2="379" stroke="#e1e5e8"/>
+<text x="491.0" y="401" text-anchor="middle" font-size="11" fill="#5f6368">0.185</text>
+<line x1="614.0" y1="58" x2="614.0" y2="379" stroke="#e1e5e8"/>
+<text x="614.0" y="401" text-anchor="middle" font-size="11" fill="#5f6368">0.277</text>
+<line x1="737.0" y1="58" x2="737.0" y2="379" stroke="#e1e5e8"/>
+<text x="737.0" y="401" text-anchor="middle" font-size="11" fill="#5f6368">0.370</text>
+<line x1="860.0" y1="58" x2="860.0" y2="379" stroke="#e1e5e8"/>
+<text x="860.0" y="401" text-anchor="middle" font-size="11" fill="#5f6368">0.462</text>
+<line x1="245.0" y1="58" x2="245.0" y2="379" stroke="#59636b"/>
+<text x="233" y="84.9" text-anchor="end" font-size="12" fill="#30363b">alpha</text>
+<rect x="245.0" y="68.4" width="615.0" height="25.0" rx="2" fill="#176B87"/>
+<text x="867.0" y="84.9" text-anchor="start" font-size="11" fill="#202124">0.462</text>
+<text x="233" y="130.8" text-anchor="end" font-size="12" fill="#30363b">beta</text>
+<rect x="245.0" y="114.3" width="1.0" height="25.0" rx="2" fill="#D1495B"/>
+<text x="252.0" y="130.8" text-anchor="start" font-size="11" fill="#202124">0.000</text>
+<text x="233" y="176.6" text-anchor="end" font-size="12" fill="#30363b">k_C</text>
+<rect x="245.0" y="160.1" width="80.2" height="25.0" rx="2" fill="#2A9D8F"/>
+<text x="332.2" y="176.6" text-anchor="start" font-size="11" fill="#202124">0.060</text>
+<text x="233" y="222.5" text-anchor="end" font-size="12" fill="#30363b">k_D</text>
+<rect x="245.0" y="206.0" width="123.0" height="25.0" rx="2" fill="#E9A23B"/>
+<text x="375.0" y="222.5" text-anchor="start" font-size="11" fill="#202124">0.092</text>
+<text x="233" y="268.4" text-anchor="end" font-size="12" fill="#30363b">k_T</text>
+<rect x="245.0" y="251.9" width="246.1" height="25.0" rx="2" fill="#5B5F97"/>
+<text x="498.1" y="268.4" text-anchor="start" font-size="11" fill="#202124">0.185</text>
+<text x="233" y="314.2" text-anchor="end" font-size="12" fill="#30363b">n_k_EFC</text>
+<rect x="245.0" y="297.7" width="221.4" height="25.0" rx="2" fill="#6C757D"/>
+<text x="473.4" y="314.2" text-anchor="start" font-size="11" fill="#202124">0.166</text>
+<text x="233" y="360.1" text-anchor="end" font-size="12" fill="#30363b">sigma_cell</text>
+<rect x="245.0" y="343.6" width="6.9" height="25.0" rx="2" fill="#8F5D5D"/>
+<text x="258.9" y="360.1" text-anchor="start" font-size="11" fill="#202124">0.005</text>
+<text x="552.5" y="425" text-anchor="middle" font-size="12" fill="#30363b">max absolute normalized SOH response</text>
+</svg>

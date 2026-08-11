@@ -1,31 +1,67 @@
 {
-  "command": "python -m g1_generator.cli --config configs/g1_smoke.json --out g1_output",
-  "seed": 42,
-  "config_path": "X:\\test\\configs\\g1_smoke.json",
-  "config_sha256": "2ae8e9ead7600ae67a8f76c7c44af02d154a656a2e4b91dd1306cf4b5c932192",
   "chemistry": "NMC",
+  "command": "PYTHONPATH=code python -m g1_generator.cli --config configs/g1_smoke.json --out g1_output",
+  "config_path": "configs/g1_smoke.json",
+  "config_sha256": "2ae8e9ead7600ae67a8f76c7c44af02d154a656a2e4b91dd1306cf4b5c932192",
+  "csv": "g1_output/degradation_data.csv",
+  "csv_sha256": "c1e2d05b5b51a9a1860a0d9a359b10e5b9f988df900a8e8954c55391c6940eb2",
+  "dictionary": "g1_output/data_dictionary.md",
+  "dictionary_sha256": "af9bd11b15603fb86d8b894dc294067c05174f7b7e621088c5dca6838a4e3eb0",
+  "figure_sha256": {
+    "capacity": "91ec63e561b14c32525b03453229b8a3a39a073210a0e95c9efd43be022d4628",
+    "knee": "639fd09f3b74e64f97a1aab2677a1ca34dec6df6fde3cc797b0f34a7c2f49f69",
+    "resistance": "9161d1df125ea2e64103296559034b60e894e9902a0e524298f9ca9b6b1f0815",
+    "scenario": "4e60b0db880533eb1becc52f0ae3414dbfaf7db17aea43e3a60cdfecadada0d9"
+  },
+  "figures": {
+    "capacity": "g1_output/fig_capacity_trajectories.svg",
+    "knee": "g1_output/fig_knee_slope.svg",
+    "resistance": "g1_output/fig_resistance_trajectories.svg",
+    "scenario": "g1_output/fig_scenario_comparison.svg"
+  },
+  "manifest_version": 1,
   "n_cells": 12,
   "n_rows": 12000,
+  "path_base": "command working directory",
+  "scenario_specs": [
+    {
+      "c_rate": 1.0,
+      "dod_pct": 80,
+      "id": "baseline",
+      "n_cells": 3,
+      "protocol": "CC-CV",
+      "temperature_C": 25
+    },
+    {
+      "c_rate": 1.0,
+      "dod_pct": 80,
+      "id": "stress_highT",
+      "n_cells": 3,
+      "protocol": "CC-CV",
+      "temperature_C": 45
+    },
+    {
+      "c_rate": 2.0,
+      "dod_pct": 80,
+      "id": "stress_highC",
+      "n_cells": 3,
+      "protocol": "CC-CV",
+      "temperature_C": 25
+    },
+    {
+      "c_rate": 1.0,
+      "dod_pct": 100,
+      "id": "stress_highDOD",
+      "n_cells": 3,
+      "protocol": "CC-CV",
+      "temperature_C": 25
+    }
+  ],
   "scenarios": [
     "baseline",
     "stress_highT",
     "stress_highC",
     "stress_highDOD"
   ],
-  "csv": "X:\\test\\g1_output\\degradation_data.csv",
-  "csv_sha256": "9d2cc5b35c5a030ec38ce7d30f1b572c3e2ccbdedbc9fcd5b639d2c5df4de416",
-  "dictionary": "X:\\test\\g1_output\\data_dictionary.md",
-  "dictionary_sha256": "e6df30e2681cb2e47b7657cbf33197e3ad58a0752b0d95c1002e49234fe07779",
-  "figures": {
-    "capacity": "X:\\test\\g1_output\\fig_capacity_trajectories.svg",
-    "resistance": "X:\\test\\g1_output\\fig_resistance_trajectories.svg",
-    "knee": "X:\\test\\g1_output\\fig_knee_slope.svg",
-    "scenario": "X:\\test\\g1_output\\fig_scenario_comparison.svg"
-  },
-  "figure_sha256": {
-    "capacity": "24e2209db980e594a6c033a1eb42b52ea18a2dd3ba25d9763da719ce2ccce090",
-    "resistance": "90a98ff495979917d64870c86111e8c68f1fad2bc597ba25af4d63676eee590f",
-    "knee": "a804a9ad0a9e4722fc7d0e66d2c4091abe9e661543c051495ec4baab9429db89",
-    "scenario": "c937fbab09bd6a5781c645af8872e029885fde5482f71cd2a00f824b1eafe698"
-  }
+  "seed": 42
 }

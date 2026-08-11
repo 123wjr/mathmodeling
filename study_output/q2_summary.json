@@ -1,0 +1,171 @@
+{
+  "current_soh_estimator": {
+    "method": "rolling median capacity / initial-window median capacity",
+    "metrics": {
+      "mae": 0.010891280203257513,
+      "r2": 0.9461106616389855,
+      "rmse": 0.011887439032729298
+    }
+  },
+  "forecast_horizon_cycles": 50,
+  "interpretation_limits": [
+    "RUL point errors use observed failures only; censored cells are lower bounds.",
+    "AFT interval uses a conservative training-event residual calibration; reported outer coverage is empirical, not guaranteed.",
+    "ridge/RF RUL comparators train on observed failures only and are censoring-naive.",
+    "structure-matched ceiling reuses the simulator functional form and is not evidence of real-world generalization.",
+    "leave-condition-out tests interpolation/extrapolation inside the frozen support domain only."
+  ],
+  "rul_endpoint": {
+    "observed_events": 43,
+    "right_censored": 65,
+    "status": "[ASSUMED][UPDATEABLE] modeling endpoint",
+    "threshold": 0.8
+  },
+  "rul_interval": {
+    "nominal_confidence": 0.9,
+    "outer_event_coverage_is_reported_not_assumed": true,
+    "training_event_calibration_confidence": 0.99
+  },
+  "rul_metrics": [
+    {
+      "censored_early_failure_contradiction_rate": 0.1076923076923077,
+      "event_interval_90pct_coverage": null,
+      "mae": 82.56799561249686,
+      "mae_ci_high": 96.19227194995013,
+      "mae_ci_low": 68.70730766554725,
+      "model": "local_linear",
+      "n_observed_events": 43,
+      "n_right_censored": 65,
+      "r2": 0.5028057769141686,
+      "r2_ci_high": 0.6571143746501513,
+      "r2_ci_low": 0.24503596463992733,
+      "rmse": 99.64798010390312,
+      "rmse_ci_high": 114.53504601820785,
+      "rmse_ci_low": 85.77463731733526
+    },
+    {
+      "censored_early_failure_contradiction_rate": 0.0,
+      "event_interval_90pct_coverage": 0.9069767441860465,
+      "mae": 31.800684576167363,
+      "mae_ci_high": 37.0876571005719,
+      "mae_ci_low": 25.745061403457644,
+      "model": "lognormal_aft_censored",
+      "n_observed_events": 43,
+      "n_right_censored": 65,
+      "r2": 0.9262008496609856,
+      "r2_ci_high": 0.9543279020497816,
+      "r2_ci_low": 0.8784953066804722,
+      "rmse": 38.39115196516346,
+      "rmse_ci_high": 43.652613866083016,
+      "rmse_ci_low": 32.32098563023554
+    },
+    {
+      "censored_early_failure_contradiction_rate": 1.0,
+      "event_interval_90pct_coverage": null,
+      "mae": 45.14163490256517,
+      "mae_ci_high": 52.811955414296705,
+      "mae_ci_low": 37.590961506698335,
+      "model": "random_forest_observed_only",
+      "n_observed_events": 43,
+      "n_right_censored": 65,
+      "r2": 0.849423202519961,
+      "r2_ci_high": 0.8919341138677489,
+      "r2_ci_low": 0.7719906827596765,
+      "rmse": 54.83836412885335,
+      "rmse_ci_high": 63.04113419000414,
+      "rmse_ci_low": 46.85791894600249
+    },
+    {
+      "censored_early_failure_contradiction_rate": 0.015384615384615385,
+      "event_interval_90pct_coverage": null,
+      "mae": 30.210992078195886,
+      "mae_ci_high": 35.35799311607006,
+      "mae_ci_low": 25.338121384438733,
+      "model": "ridge_observed_only",
+      "n_observed_events": 43,
+      "n_right_censored": 65,
+      "r2": 0.9318838796345139,
+      "r2_ci_high": 0.9540538104471997,
+      "r2_ci_low": 0.8957279343897772,
+      "rmse": 36.8833546886367,
+      "rmse_ci_high": 42.5844941125382,
+      "rmse_ci_low": 30.828402548801307
+    },
+    {
+      "censored_early_failure_contradiction_rate": 0.0,
+      "event_interval_90pct_coverage": null,
+      "mae": 9.678913995537307,
+      "mae_ci_high": 11.462884991657548,
+      "mae_ci_low": 8.05313184890966,
+      "model": "structure_matched_simulation_ceiling",
+      "n_observed_events": 43,
+      "n_right_censored": 65,
+      "r2": 0.9929218494933172,
+      "r2_ci_high": 0.9948608346977587,
+      "r2_ci_low": 0.9895455699365306,
+      "rmse": 11.8895484069074,
+      "rmse_ci_high": 13.6381432104896,
+      "rmse_ci_low": 10.134661500541222
+    }
+  ],
+  "scope": "SYNTHETIC_MODEL_COMPARISON_NOT_EXTERNAL_VALIDATION",
+  "soh_metrics": [
+    {
+      "mae": 0.009981784580527198,
+      "mae_ci_high": 0.010463161944389161,
+      "mae_ci_low": 0.00951401591508722,
+      "model": "local_linear",
+      "n_records": 1944,
+      "r2": 0.9541015743585031,
+      "r2_ci_high": 0.9587331935882406,
+      "r2_ci_low": 0.9489095452349251,
+      "rmse": 0.011243304065614556,
+      "rmse_ci_high": 0.011751530201115953,
+      "rmse_ci_low": 0.010731054610693022
+    },
+    {
+      "mae": 0.018056177513281254,
+      "mae_ci_high": 0.01893472708471825,
+      "mae_ci_low": 0.01716153453501504,
+      "model": "persistence",
+      "n_records": 1944,
+      "r2": 0.8639750621679044,
+      "r2_ci_high": 0.8757998250416936,
+      "r2_ci_low": 0.8497244191045962,
+      "rmse": 0.019355497092331524,
+      "rmse_ci_high": 0.020227445470400594,
+      "rmse_ci_low": 0.01846267702314847
+    },
+    {
+      "mae": 0.003583233005207651,
+      "mae_ci_high": 0.003754160572007783,
+      "mae_ci_low": 0.003419574964211293,
+      "model": "random_forest",
+      "n_records": 1944,
+      "r2": 0.9925450506971405,
+      "r2_ci_high": 0.993380781932276,
+      "r2_ci_low": 0.9914692174535427,
+      "rmse": 0.004531243580063458,
+      "rmse_ci_high": 0.004761239974798587,
+      "rmse_ci_low": 0.004303026772452311
+    },
+    {
+      "mae": 0.003345385328460225,
+      "mae_ci_high": 0.0035417737023899585,
+      "mae_ci_low": 0.0031493032415285836,
+      "model": "ridge",
+      "n_records": 1944,
+      "r2": 0.9935769005739102,
+      "r2_ci_high": 0.9943525844283355,
+      "r2_ci_low": 0.9926056477314954,
+      "rmse": 0.004205981748378949,
+      "rmse_ci_high": 0.004446577022460856,
+      "rmse_ci_low": 0.003961605335698836
+    }
+  ],
+  "split_integrity": {
+    "cell_overlap_all_folds": 0,
+    "folds": 5,
+    "method": "GroupKFold(cell_id)"
+  }
+}

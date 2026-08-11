@@ -4,27 +4,30 @@
 1. 相同配置 + 相同 seed 输出逐字节一致
 2. 不同 seed 产生合理电芯差异
 3. 容量总体下降，内阻总体上升；膝点后斜率高于膝点前
-4. 拒绝温度超出 25--50、DOD 不在 0--100%、非正倍率和不支持协议
+4. 拒绝超出 G0 冻结范围的温度、DOD、倍率、协议和模型参数
 5. 不随机拆分同一电芯循环记录；字段完整
+6. 输出标签、图标题、路径和换行可移植且不硬编码
 """
 import os
 import sys
 import csv
-import math
-import hashlib
+import json
+import random
 import tempfile
 from collections import defaultdict
 
 import pytest
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+CODE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO_ROOT = os.path.dirname(CODE_ROOT)
+sys.path.insert(0, CODE_ROOT)
 
 from g1_generator import config as cfgmod
 from g1_generator import degradation as deg
 from g1_generator import simulate
+from g1_generator import cli
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CFG_PATH = os.path.join(ROOT, "configs", "g1_smoke.json")
+CFG_PATH = os.path.join(REPO_ROOT, "configs", "g1_smoke.json")
 REQUIRED_COLUMNS = [
     "cell_id", "cycle", "efc", "temperature", "c_rate", "dod", "protocol",
     "capacity_true", "capacity_obs", "soh", "resistance_true", "resistance_obs", "seed",
@@ -50,6 +53,18 @@ def test_reproducibility_same_seed():
         h1 = simulate.sha256_file(p1)
         h2 = simulate.sha256_file(p2)
         assert h1 == h2
+
+
+def test_all_core_outputs_are_byte_identical_across_runs():
+    cfg = load_cfg()
+    with tempfile.TemporaryDirectory() as directory:
+        first = simulate.run(cfg, os.path.join(directory, "first"))
+        second = simulate.run(cfg, os.path.join(directory, "second"))
+        first_paths = [first["csv"], first["dictionary"], *first["figures"].values()]
+        second_paths = [second["csv"], second["dictionary"], *second["figures"].values()]
+        for first_path, second_path in zip(first_paths, second_paths):
+            with open(first_path, "rb") as first_file, open(second_path, "rb") as second_file:
+                assert first_file.read() == second_file.read()
 
 
 # ---- 2. 不同 seed 合理差异 ----
@@ -115,6 +130,23 @@ def test_knee_slope_after_gt_before():
     assert abs(slope_after) > abs(slope_before)
 
 
+def test_stress_scenarios_end_below_baseline_mean_soh():
+    rows = simulate.generate_dataset(load_cfg())["rows"]
+    final_soh = defaultdict(list)
+    max_cycle = max(row["cycle"] for row in rows)
+    for row in rows:
+        if row["cycle"] == max_cycle:
+            scenario_id = row["cell_id"].rsplit("_", 1)[0]
+            final_soh[scenario_id].append(row["soh"])
+    means = {
+        scenario_id: sum(values) / len(values)
+        for scenario_id, values in final_soh.items()
+    }
+    assert means["stress_highT"] < means["baseline"]
+    assert means["stress_highC"] < means["baseline"]
+    assert means["stress_highDOD"] < means["baseline"]
+
+
 # ---- 4. 输入边界拒绝 ----
 def test_reject_bad_temperature():
     cfg = load_cfg()
@@ -137,11 +169,83 @@ def test_reject_nonpositive_crate():
         simulate.generate_dataset(cfg)
 
 
+@pytest.mark.parametrize("value", [0.49, 2.01])
+def test_reject_crate_outside_frozen_range(value):
+    cfg = load_cfg()
+    cfg.scenarios[0].c_rate = value
+    with pytest.raises(ValueError, match="c_rate"):
+        simulate.generate_dataset(cfg)
+
+
+def test_reject_dod_below_frozen_range():
+    cfg = load_cfg()
+    cfg.scenarios[0].dod_pct = 49.9
+    with pytest.raises(ValueError, match="dod_pct"):
+        simulate.generate_dataset(cfg)
+
+
 def test_reject_unsupported_protocol():
     cfg = load_cfg()
     cfg.scenarios[0].protocol = "CV-only"
     with pytest.raises(ValueError):
         simulate.generate_dataset(cfg)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("chemistry", "LFP"),
+        ("Q_nom_Ah", 2.1),
+        ("R0_nom_Ohm", 0.101),
+        ("N_cycles", 1001),
+        ("n_k_EFC", 851.0),
+        ("knee_gain", 2.1),
+        ("SOH_EOL_pct", 79.0),
+        ("alpha", 0.0029),
+        ("beta", 0.0201),
+        ("k_T", 0.009),
+        ("k_C", 0.201),
+        ("k_D", 0.19),
+        ("sigma_Q_pct", 1.01),
+        ("sigma_R_pct", 3.01),
+        ("sigma_cell", 0.101),
+        ("protocol", "CC"),
+    ],
+)
+def test_reject_global_values_outside_frozen_ledger(field, value):
+    cfg = load_cfg()
+    setattr(cfg, field, value)
+    with pytest.raises(ValueError):
+        simulate.generate_dataset(cfg)
+
+
+def test_reject_duplicate_scenario_id():
+    cfg = load_cfg()
+    cfg.scenarios[1].id = cfg.scenarios[0].id
+    with pytest.raises(ValueError, match="重复"):
+        simulate.generate_dataset(cfg)
+
+
+def test_reject_nonpositive_cell_count():
+    cfg = load_cfg()
+    cfg.scenarios[0].n_cells = 0
+    with pytest.raises(ValueError, match="n_cells"):
+        simulate.generate_dataset(cfg)
+
+
+def test_cell_random_effects_stay_inside_ledger_ranges():
+    cfg = load_cfg()
+    cfg.R0_nom_Ohm = cfgmod.PARAMETER_BOUNDS["R0_nom_Ohm"][1]
+    cfg.alpha = cfgmod.PARAMETER_BOUNDS["alpha"][1]
+    cfg.beta = cfgmod.PARAMETER_BOUNDS["beta"][1]
+    cfg.sigma_cell = cfgmod.PARAMETER_BOUNDS["sigma_cell"][1]
+    cfgmod.validate_config(cfg)
+
+    for seed in range(100):
+        params = deg.make_cell_params(random.Random(seed), cfg)
+        assert cfgmod.PARAMETER_BOUNDS["R0_nom_Ohm"][0] <= params["R0"] <= cfgmod.PARAMETER_BOUNDS["R0_nom_Ohm"][1]
+        assert cfgmod.PARAMETER_BOUNDS["alpha"][0] <= params["alpha"] <= cfgmod.PARAMETER_BOUNDS["alpha"][1]
+        assert cfgmod.PARAMETER_BOUNDS["beta"][0] <= params["beta"] <= cfgmod.PARAMETER_BOUNDS["beta"][1]
 
 
 # ---- 5. 字段完整 / 电芯数 / 工况覆盖 / 不拆分循环 ----
@@ -181,3 +285,67 @@ def test_csv_roundtrip_header():
     text = simulate.csv_text(rows)
     reader = csv.DictReader(text.splitlines())
     assert reader.fieldnames == REQUIRED_COLUMNS
+
+
+# ---- 6. 可移植证据链 / 动态标签 ----
+def test_default_config_and_test_paths_point_to_repository_config():
+    assert os.path.samefile(cfgmod.DEFAULT_CONFIG_PATH, CFG_PATH)
+    assert os.path.isfile(CFG_PATH)
+
+
+def test_csv_uses_explicit_lf_line_endings():
+    rows = simulate.generate_dataset(load_cfg())["rows"][:2]
+    with tempfile.TemporaryDirectory() as directory:
+        path = os.path.join(directory, "sample.csv")
+        simulate.write_csv(rows, path)
+        with open(path, "rb") as handle:
+            content = handle.read()
+    assert b"\r\n" not in content
+    assert content.endswith(b"\n")
+
+
+def test_dictionary_does_not_label_synthetic_inputs_as_observed():
+    cfg = load_cfg()
+    dataset = simulate.generate_dataset(cfg)
+    with tempfile.TemporaryDirectory() as directory:
+        path = os.path.join(directory, "dictionary.md")
+        simulate.write_data_dictionary(path, cfg, dataset["meta"])
+        with open(path, "r", encoding="utf-8") as handle:
+            text = handle.read()
+    assert "本 G1 CSV 不包含此类字段" in text
+    assert "| cell_id | str | - | 仿真电芯标识" in text
+    assert "| cycle | int | cycle | 配置的循环序号（时间轴） | OBSERVED |" not in text
+
+
+def test_plot_titles_follow_configuration_and_soh_definition():
+    cfg = load_cfg()
+    cfg.N_cycles = 10
+    cfg.scenarios[0].n_cells = 2
+    for scenario in cfg.scenarios[1:]:
+        scenario.n_cells = 1
+    dataset = simulate.generate_dataset(cfg)
+    with tempfile.TemporaryDirectory() as directory:
+        figures = simulate.generate_plots(cfg, dataset["rows"], directory)
+        with open(figures["capacity"], "r", encoding="utf-8") as handle:
+            capacity_svg = handle.read()
+        with open(figures["knee"], "r", encoding="utf-8") as handle:
+            knee_svg = handle.read()
+    assert "5 电芯" in capacity_svg
+    assert "12 电芯" not in capacity_svg
+    assert "baseline SOH 均值" in knee_svg
+    assert "baseline_0" not in knee_svg
+    assert "SOH (=capacity_true / Q0_i)" in knee_svg
+
+
+def test_manifest_contains_only_portable_relative_paths(tmp_path, monkeypatch):
+    monkeypatch.chdir(REPO_ROOT)
+    out_dir = tmp_path / "g1"
+    assert cli.main(["--config", "configs/g1_smoke.json", "--out", str(out_dir)]) == 0
+    with open(out_dir / "run_manifest.json", "r", encoding="utf-8") as handle:
+        manifest = json.load(handle)
+
+    path_fields = [manifest["config_path"], manifest["csv"], manifest["dictionary"]]
+    path_fields.extend(manifest["figures"].values())
+    assert all(not os.path.isabs(path) for path in path_fields)
+    assert all("X:\\" not in path for path in path_fields)
+    assert manifest["command"].startswith("PYTHONPATH=code python -m g1_generator.cli")

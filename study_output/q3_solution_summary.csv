@@ -1,0 +1,5 @@
+alternative,method,n_groups,n_cells_used,duplicate_cell_assignments,wrong_group_sizes,objective,mean_benefit_index,mean_inconsistency_index,mean_risk_index,mean_cost_index,weights_benefit_consistency_risk_cost,solver_status,mip_gap,nondominated_in_weight_sweep
+performance,MILP,8,32,0,0,2.7418897156994064,0.6614486636269321,0.08210056500640481,0.036300942790596355,0.36372757544183254,0.6/0.15/0.15/0.1,Optimization terminated successfully. (HiGHS Status 7: Optimal),0.0,True
+balanced,MILP,8,32,0,0,1.2048332182603998,0.6316910042633392,0.06793100046549422,0.0449220790789505,0.28182952882338386,0.35/0.25/0.25/0.15,Optimization terminated successfully. (HiGHS Status 7: Optimal),0.0,True
+conservative,MILP,8,32,0,0,0.49293559233074835,0.6340333655691951,0.061777238410414465,0.044024271296632445,0.29934492386407274,0.2/0.25/0.45/0.1,Optimization terminated successfully. (HiGHS Status 7: Optimal),0.0,True
+balanced_greedy,greedy,8,32,0,0,1.0827940611932634,0.5949935204506313,0.0809344906318468,0.04892702407007099,0.2695539722205571,0.35/0.25/0.25/0.15,FEASIBLE_HEURISTIC,,True

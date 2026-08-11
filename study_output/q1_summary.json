@@ -1,0 +1,115 @@
+{
+  "cycle_efc_role": "aging axes analyzed through trajectories; not treated as independent randomized factors",
+  "factor_effects": [
+    {
+      "effect_range": 0.07192152777777774,
+      "factor": "temperature_C",
+      "interaction_and_cell_share": 0.0372669562791349,
+      "marginal_means": {
+        "25.0": 0.14762644444444445,
+        "35.0": 0.18010775,
+        "45.0": 0.2195479722222222
+      },
+      "normalized_main_effect_weight": 0.23779066216138925,
+      "response": "capacity_fade",
+      "share_total_variance": 0.22892892795103423,
+      "sum_squares": 0.09339926996905547
+    },
+    {
+      "effect_range": 0.028131138888888907,
+      "factor": "c_rate_C",
+      "interaction_and_cell_share": 0.0372669562791349,
+      "marginal_means": {
+        "0.5": 0.16971677777777777,
+        "1.0": 0.17971747222222223,
+        "2.0": 0.19784791666666668
+      },
+      "normalized_main_effect_weight": 0.03727551682793682,
+      "response": "capacity_fade",
+      "share_total_variance": 0.03588637177202794,
+      "sum_squares": 0.01464105456372224
+    },
+    {
+      "effect_range": 0.12576336111111103,
+      "factor": "dod_pct",
+      "interaction_and_cell_share": 0.0372669562791349,
+      "marginal_means": {
+        "50.0": 0.11909722222222224,
+        "80.0": 0.18332436111111108,
+        "100.0": 0.24486058333333327
+      },
+      "normalized_main_effect_weight": 0.7249338210106738,
+      "response": "capacity_fade",
+      "share_total_variance": 0.6979177439978029,
+      "sum_squares": 0.28473906015838857
+    },
+    {
+      "effect_range": 0.16802325746346253,
+      "factor": "temperature_C",
+      "interaction_and_cell_share": 0.035079772288853395,
+      "marginal_means": {
+        "25.0": 0.35140468386679896,
+        "35.0": 0.4305558892219604,
+        "45.0": 0.5194279413302615
+      },
+      "normalized_main_effect_weight": 0.23459153186797874,
+      "response": "final_resistance_growth",
+      "share_total_variance": 0.22636211434915673,
+      "sum_squares": 0.5087396400449824
+    },
+    {
+      "effect_range": 0.06193008891941093,
+      "factor": "c_rate_C",
+      "interaction_and_cell_share": 0.035079772288853395,
+      "marginal_means": {
+        "0.5": 0.40718254656047237,
+        "1.0": 0.4250933323786654,
+        "2.0": 0.4691126354798833
+      },
+      "normalized_main_effect_weight": 0.033720066268115426,
+      "response": "final_resistance_growth",
+      "share_total_variance": 0.03253717402186489,
+      "sum_squares": 0.07312597449249864
+    },
+    {
+      "effect_range": 0.29680681351157256,
+      "factor": "dod_pct",
+      "interaction_and_cell_share": 0.035079772288853395,
+      "marginal_means": {
+        "50.0": 0.2831814644696492,
+        "80.0": 0.43821877196814996,
+        "100.0": 0.5799882779812218
+      },
+      "normalized_main_effect_weight": 0.7316884018639058,
+      "response": "final_resistance_growth",
+      "share_total_variance": 0.706020939340125,
+      "sum_squares": 1.5867533291816223
+    }
+  ],
+  "knee_detection": {
+    "detected_cells": 72,
+    "interpretation": "generator recovery check, not external validation",
+    "median_absolute_error_efc": 13.399999999999977,
+    "right_censored_cells": 36
+  },
+  "n_cells": 108,
+  "n_conditions": 27,
+  "protocol_identifiability": {
+    "reason": "all scenarios use one frozen CC-CV level",
+    "status": "NOT_IDENTIFIABLE",
+    "weight": null
+  },
+  "scope": "SYNTHETIC_INTERNAL_ANALYSIS_ONLY",
+  "stage_counts": {
+    "critical": 8384,
+    "degradation": 9350,
+    "normal": 90266
+  },
+  "stage_definition": {
+    "critical": "simulator-internal SOH <= critical_soh",
+    "critical_soh": 0.8,
+    "degradation": "SOH > critical_soh and EFC at/after detected knee",
+    "normal": "SOH > critical_soh and EFC before detected knee",
+    "status": "[ASSUMED][UPDATEABLE] modeling convention; not a universal safety standard"
+  }
+}

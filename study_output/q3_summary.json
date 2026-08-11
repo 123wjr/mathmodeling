@@ -1,0 +1,95 @@
+{
+  "candidate_cells": 108,
+  "candidate_groups": 3167,
+  "constraint_audit": {
+    "all_milp_solutions_exact_group_count": true,
+    "duplicate_assignments": 0,
+    "wrong_group_sizes": 0
+  },
+  "economics_boundary": "cost and benefit are normalized dimensionless indices; no currency claim",
+  "eligible_cells": 85,
+  "gate_failure_counts": {
+    "RESISTANCE_GROWTH_ABOVE_MAX": 11,
+    "RUL_LOWER_BELOW_MIN": 23
+  },
+  "hard_gates": {
+    "max_lifetime_interval_width": 650,
+    "max_resistance_growth": 0.45,
+    "min_rul_lower_cycles": 40,
+    "min_soh": 0.76,
+    "status": "[ASSUMED][UPDATEABLE] scenario thresholds"
+  },
+  "scope": "DIMENSIONLESS_SIMULATION_DECISION_ANALYSIS",
+  "screening_rate": 0.7870370370370371,
+  "solutions": [
+    {
+      "alternative": "performance",
+      "duplicate_cell_assignments": 0,
+      "mean_benefit_index": 0.6614486636269321,
+      "mean_cost_index": 0.36372757544183254,
+      "mean_inconsistency_index": 0.08210056500640481,
+      "mean_risk_index": 0.036300942790596355,
+      "method": "MILP",
+      "mip_gap": 0.0,
+      "n_cells_used": 32,
+      "n_groups": 8,
+      "nondominated_in_weight_sweep": true,
+      "objective": 2.7418897156994064,
+      "solver_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "weights_benefit_consistency_risk_cost": "0.6/0.15/0.15/0.1",
+      "wrong_group_sizes": 0
+    },
+    {
+      "alternative": "balanced",
+      "duplicate_cell_assignments": 0,
+      "mean_benefit_index": 0.6316910042633392,
+      "mean_cost_index": 0.28182952882338386,
+      "mean_inconsistency_index": 0.06793100046549422,
+      "mean_risk_index": 0.0449220790789505,
+      "method": "MILP",
+      "mip_gap": 0.0,
+      "n_cells_used": 32,
+      "n_groups": 8,
+      "nondominated_in_weight_sweep": true,
+      "objective": 1.2048332182603998,
+      "solver_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "weights_benefit_consistency_risk_cost": "0.35/0.25/0.25/0.15",
+      "wrong_group_sizes": 0
+    },
+    {
+      "alternative": "conservative",
+      "duplicate_cell_assignments": 0,
+      "mean_benefit_index": 0.6340333655691951,
+      "mean_cost_index": 0.29934492386407274,
+      "mean_inconsistency_index": 0.061777238410414465,
+      "mean_risk_index": 0.044024271296632445,
+      "method": "MILP",
+      "mip_gap": 0.0,
+      "n_cells_used": 32,
+      "n_groups": 8,
+      "nondominated_in_weight_sweep": true,
+      "objective": 0.49293559233074835,
+      "solver_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+      "weights_benefit_consistency_risk_cost": "0.2/0.25/0.45/0.1",
+      "wrong_group_sizes": 0
+    },
+    {
+      "alternative": "balanced_greedy",
+      "duplicate_cell_assignments": 0,
+      "mean_benefit_index": 0.5949935204506313,
+      "mean_cost_index": 0.2695539722205571,
+      "mean_inconsistency_index": 0.0809344906318468,
+      "mean_risk_index": 0.04892702407007099,
+      "method": "greedy",
+      "mip_gap": null,
+      "n_cells_used": 32,
+      "n_groups": 8,
+      "nondominated_in_weight_sweep": true,
+      "objective": 1.0827940611932634,
+      "solver_status": "FEASIBLE_HEURISTIC",
+      "weights_benefit_consistency_risk_cost": "0.35/0.25/0.25/0.15",
+      "wrong_group_sizes": 0
+    }
+  ],
+  "target_groups": 8
+}

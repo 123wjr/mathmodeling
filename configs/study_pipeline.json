@@ -1,0 +1,47 @@
+{
+  "study_id": "A_NMC_G2_G4_v1",
+  "study_seed": 20260811,
+  "source_g1_config": "configs/g1_smoke.json",
+  "factorial": {
+    "temperatures_C": [25, 35, 45],
+    "c_rates_C": [0.5, 1.0, 2.0],
+    "dod_pct": [50, 80, 100],
+    "n_cells_per_condition": 4
+  },
+  "q1": {
+    "critical_soh": 0.8,
+    "knee_search_min_efc": 300,
+    "knee_min_points_each_side": 80
+  },
+  "q2": {
+    "history_window_cycles": 100,
+    "forecast_horizon_cycles": 50,
+    "snapshot_step_cycles": 50,
+    "landmark_cycle": 300,
+    "cv_splits": 5,
+    "bootstrap_repetitions": 300,
+    "confidence_level": 0.9,
+    "interval_calibration_confidence": 0.99,
+    "random_forest_trees": 160
+  },
+  "q3": {
+    "retirement_cycle": 750,
+    "group_size": 4,
+    "target_groups": 8,
+    "min_soh": 0.76,
+    "min_rul_lower_cycles": 40,
+    "max_resistance_growth": 0.45,
+    "max_lifetime_interval_width": 650,
+    "neighbor_pool": 9,
+    "weights": {
+      "performance": [0.6, 0.15, 0.15, 0.1],
+      "balanced": [0.35, 0.25, 0.25, 0.15],
+      "conservative": [0.2, 0.25, 0.45, 0.1]
+    }
+  },
+  "q4": {
+    "seeds": [42, 123, 2026, 4096, 8110],
+    "n_cells_per_scenario": 24,
+    "sensitivity_fraction": 0.1
+  }
+}

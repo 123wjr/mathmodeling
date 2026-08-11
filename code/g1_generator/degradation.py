@@ -12,13 +12,22 @@ from __future__ import annotations
 import math
 import random
 
+from . import config as cfgmod
+
 
 def truncated_normal(rng: random.Random, mu: float, sigma: float, low: float, high: float) -> float:
     """在 [low, high] 内拒绝采样截断正态。"""
-    while True:
+    if not all(math.isfinite(v) for v in (mu, sigma, low, high)):
+        raise ValueError("截断正态参数必须是有限数值")
+    if sigma <= 0.0:
+        raise ValueError("截断正态 sigma 必须为正")
+    if low > high:
+        raise ValueError(f"截断正态区间无效: [{low}, {high}]")
+    for _ in range(100000):
         x = rng.gauss(mu, sigma)
         if low <= x <= high:
             return x
+    raise RuntimeError("截断正态在 100000 次采样后仍未落入有效区间")
 
 
 def cell_seed(master_seed: int, scenario_idx: int, cell_index: int) -> int:
@@ -27,25 +36,39 @@ def cell_seed(master_seed: int, scenario_idx: int, cell_index: int) -> int:
     return s
 
 
+def _bounded_relative_effect(rng, base, sigma, lower, upper, name):
+    """Sample ``base * (1 + epsilon)`` without leaving a frozen ledger range."""
+    relative_low = max(-2.0 * sigma, lower / base - 1.0)
+    relative_high = min(2.0 * sigma, upper / base - 1.0)
+    if relative_low > relative_high:
+        raise ValueError(f"{name} 的随机效应与冻结范围无交集")
+    effect = truncated_normal(rng, 0.0, sigma, relative_low, relative_high)
+    value = base * (1.0 + effect)
+    if not (lower <= value <= upper):
+        raise RuntimeError(f"{name} 随机效应越过冻结范围")
+    return value
+
+
 def make_cell_params(rng: random.Random, cfg):
     """每颗电芯的独立参数：初始容量/内阻 + 退化速率，均带截断正态随机效应。"""
     sigma = cfg.sigma_cell
     low, high = -2.0 * sigma, 2.0 * sigma
     eps_Q = truncated_normal(rng, 0.0, sigma, low, high)
-    eps_R = truncated_normal(rng, 0.0, sigma, low, high)
-    eta_Q = truncated_normal(rng, 0.0, sigma, low, high)
-    eta_R = truncated_normal(rng, 0.0, sigma, low, high)
-
     Q0 = cfg.Q_nom_Ah * (1.0 + eps_Q)
-    R0 = cfg.R0_nom_Ohm * (1.0 + eps_R)
-    alpha_i = cfg.alpha * (1.0 + eta_Q)
-    beta_i = cfg.beta * (1.0 + eta_R)
+    if not math.isfinite(Q0) or Q0 <= 0.0:
+        raise ValueError("Q0 随机效应产生了非物理初始容量")
 
-    # 物理/台账范围兜底（协议要求截断后仍在可行域）
-    Q0 = max(0.01, Q0)
-    R0 = min(max(0.005, R0), 0.20)
-    alpha_i = min(max(0.001, alpha_i), 0.02)
-    beta_i = min(max(0.001, beta_i), 0.05)
+    # 不使用越出台账的兜底 clamp。随机效应本身在允许区间内采样，
+    # 因而每个电芯参数都能追溯到同一套冻结边界。
+    R0 = _bounded_relative_effect(
+        rng, cfg.R0_nom_Ohm, sigma, *cfgmod.PARAMETER_BOUNDS["R0_nom_Ohm"], "R0"
+    )
+    alpha_i = _bounded_relative_effect(
+        rng, cfg.alpha, sigma, *cfgmod.PARAMETER_BOUNDS["alpha"], "alpha_i"
+    )
+    beta_i = _bounded_relative_effect(
+        rng, cfg.beta, sigma, *cfgmod.PARAMETER_BOUNDS["beta"], "beta_i"
+    )
     return {"Q0": Q0, "R0": R0, "alpha": alpha_i, "beta": beta_i}
 
 
@@ -59,12 +82,14 @@ def u_factors(T: float, C: float, DOD: float, cfg):
 
 def L(e: float, cfg) -> float:
     """分段平方根累计退化量，膝点 n_k 处连续。"""
+    if not isinstance(e, (int, float)) or isinstance(e, bool) or not math.isfinite(float(e)) or e < 0.0:
+        raise ValueError("EFC 必须是非负有限数值")
     nk = cfg.n_k_EFC
     return math.sqrt(min(e, nk)) + cfg.knee_gain * max(0.0, math.sqrt(e) - math.sqrt(nk))
 
 
 def soh_factor(e: float, alpha_i: float, u_T: float, u_C: float, u_D: float, cfg) -> float:
-    """退化因子（相对额定容量）：SOH_factor = 1 - alpha_i*u*L(e)。"""
+    """Relative health against the cell-specific initial capacity Q0_i."""
     return 1.0 - alpha_i * u_T * u_C * u_D * L(e, cfg)
 
 
@@ -92,6 +117,10 @@ def generate_cell(cfg, scenario, scenario_idx: int, cell_index: int):
         e = efc
         c_true = capacity_at(e, params, u, cfg)
         r_true = resistance_at(e, params, u, cfg)
+        if not math.isfinite(c_true) or c_true <= 0.0:
+            raise ValueError(f"{scenario.id}_{cell_index} cycle={cycle}: capacity_true 非正或非有限")
+        if not math.isfinite(r_true) or r_true <= 0.0:
+            raise ValueError(f"{scenario.id}_{cell_index} cycle={cycle}: resistance_true 非正或非有限")
 
         c_obs = c_true + rng.gauss(0.0, sigma_Q_std)
         r_obs = r_true + rng.gauss(0.0, (cfg.sigma_R_pct / 100.0) * r_true)
@@ -119,19 +148,4 @@ def generate_cell(cfg, scenario, scenario_idx: int, cell_index: int):
     return rows
 
 
-def validate_config(cfg):
-    """输入边界校验：温度 25-50、DOD 0-100、正倍率、CC-CV 协议。"""
-    errs = []
-    if cfg.seed is None:
-        errs.append("seed 未设置")
-    for s in cfg.scenarios:
-        if not (25.0 <= s.temperature_C <= 50.0):
-            errs.append(f"scenario {s.id}: 温度 {s.temperature_C} 超出 [25,50] degC")
-        if not (0.0 < s.dod_pct <= 100.0):
-            errs.append(f"scenario {s.id}: DOD {s.dod_pct} 不在 (0,100]")
-        if not (s.c_rate > 0.0):
-            errs.append(f"scenario {s.id}: 倍率 {s.c_rate} 非正")
-        if s.protocol != "CC-CV":
-            errs.append(f"scenario {s.id}: 协议 {s.protocol} 不支持（仅 CC-CV）")
-    if errs:
-        raise ValueError("; ".join(errs))
+validate_config = cfgmod.validate_config
