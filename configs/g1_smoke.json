@@ -1,0 +1,25 @@
+{
+  "seed": 42,
+  "chemistry": "NMC",
+  "Q_nom_Ah": 2.0,
+  "R0_nom_Ohm": 0.05,
+  "N_cycles": 1000,
+  "n_k_EFC": 700,
+  "knee_gain": 2.0,
+  "SOH_EOL_pct": 80,
+  "alpha": 0.004,
+  "beta": 0.010,
+  "k_T": 0.020,
+  "k_C": 0.10,
+  "k_D": 0.50,
+  "sigma_Q_pct": 0.6,
+  "sigma_R_pct": 1.5,
+  "sigma_cell": 0.05,
+  "protocol": "CC-CV",
+  "scenarios": [
+    {"id": "baseline",      "temperature_C": 25, "c_rate": 1.0, "dod_pct": 80,  "n_cells": 3},
+    {"id": "stress_highT",  "temperature_C": 45, "c_rate": 1.0, "dod_pct": 80,  "n_cells": 3},
+    {"id": "stress_highC",  "temperature_C": 25, "c_rate": 2.0, "dod_pct": 80,  "n_cells": 3},
+    {"id": "stress_highDOD","temperature_C": 25, "c_rate": 1.0, "dod_pct": 100, "n_cells": 3}
+  ]
+}
