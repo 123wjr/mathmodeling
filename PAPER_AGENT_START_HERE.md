@@ -2,7 +2,7 @@
 
 > 适用对象：负责在线文档论文的主笔及其 Agent。代码、配置、实验输出和技术证据保存在 GitHub；论文正文仍以在线文档为唯一写作场所。
 >
-> 当前已推送基线：origin/main 的 fd53604。启动时仍须执行 git pull --ff-only origin main 并重新核对 HEAD。
+> 基线不固定 commit。每次启动先执行 git pull --ff-only origin main，再以 git rev-parse --short HEAD 的输出作为本次读取基线。
 
 ## 0. 任务定义
 
