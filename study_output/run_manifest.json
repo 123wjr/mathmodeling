@@ -212,7 +212,7 @@
     "conditions": 27,
     "rows_regenerated_not_persisted": 108000
   },
-  "git_head_before_commit": "6d8dd478150fb2c170f8b287fe098cf3e8cee64c",
+  "git_head_before_commit": "2079c638839873bdf2e7e564e2b122cf02a69976",
   "input_configs": [
     {
       "path": "configs/study_pipeline.json",
