@@ -1,5 +1,7 @@
 # A题支撑材料说明
 
+论文主笔 Agent 请先阅读根目录 [PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)；本页是复跑与支撑材料说明，不是论文写作入口。
+
 ## 1. 最小复跑
 
 环境：Python 3.13；精确运行版本见 `study_output/run_manifest.json`，安装清单见 `requirements-study.txt`。
