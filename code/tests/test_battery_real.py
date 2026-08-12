@@ -80,6 +80,33 @@ def test_factor_without_replication_abstains():
     assert "levels" in report["reason"] or "replication" in report["reason"]
 
 
+def test_factor_analysis_compares_cells_at_a_common_cycle():
+    rows = []
+    for cell_id, c_rate, last_cycle in (
+        ("cell_a", 1.0, 12),
+        ("cell_b", 1.0, 12),
+        ("cell_c", 2.0, 16),
+        ("cell_d", 2.0, 16),
+    ):
+        cycles = range(1, last_cycle + 1)
+        if c_rate == 2.0:
+            cycles = [cycle for cycle in cycles if cycle != 12]
+        for cycle in cycles:
+            rows.append({
+                "source_id": "TEST_ONLY_common_cycle",
+                "chemistry": "NMC",
+                "cell_id": cell_id,
+                "cycle": cycle,
+                "capacity": 1.0 - 0.001 * cycle,
+                "c_rate": c_rate,
+            })
+
+    report = core.factor_analysis(core.prepare_records(rows), "c_rate")
+
+    assert report["comparison_cycle"] == 11
+    assert report["effect_range"] == pytest.approx(0.0)
+
+
 def test_constant_target_reports_r2_as_null_not_nan():
     rows = make_rows(cells=6, cycles=12)
     for row in rows:
@@ -109,20 +136,61 @@ def test_historical_features_do_not_read_future_rows():
     assert core.historical_feature(base["cell_0"], 6, 6) == core.historical_feature(early_changed["cell_0"], 6, 6)
 
 
+def test_prediction_horizon_uses_cycle_distance_not_row_offset():
+    rows = make_rows(cells=1, cycles=12)
+    rows = [row for row in rows if row["cycle"] != 7]
+    samples = core._samples(core.prepare_records(rows), horizon=3, history_window=4)
+
+    assert samples
+    assert all(row["target_cycle"] - row["cycle"] == 3 for row in samples)
+    assert not any(row["cycle"] == 4 and row["target_cycle"] == 8 for row in samples)
+
+
 def test_grouped_evaluation_and_label_shuffle_sanity():
-    report = core.evaluate(make_rows(cells=8, cycles=24), horizon=4, history_window=6, n_splits=4, bootstrap_reps=80, seed=7)
+    rows = make_rows(cells=8, cycles=24)
+    for row in rows:
+        row.update({
+            "rpt_preprocessing": "RAW_UNPROCESSED",
+            "rpt_method": "none",
+            "rpt_period": "",
+            "future_points_used": "false",
+            "prediction_eligible": "false",
+            "condition_fields": "temperature",
+        })
+    report = core.evaluate(rows, horizon=4, history_window=6, n_splits=4, bootstrap_reps=80, seed=7)
     assert report["scope"] == "TEST_ONLY"
+    assert report["run_status"] == "PASS"
+    assert "status" not in report
+    assert report["evidence_status"] == "TEST_ONLY"
+    assert report["paper_eligible"] is False
+    assert report["preprocessing"]["rpt_preprocessing"] == "RAW_UNPROCESSED"
+    assert report["leakage_audit"]["preprocessing_future_points_used"] is False
     assert report["leakage_audit"]["max_cell_overlap"] == 0
-    assert report["interval"]["coverage"] is not None
+    assert report["interval"]["status"] == "WARN"
+    assert report["interval"]["coverage_unit"] == "prediction_row"
+    assert report["interval"]["finite_sample_guarantee"] is False
+    assert report["interval"]["row_coverage"] is not None
+    assert report["interval"]["whole_cell_simultaneous_coverage"] is not None
+    assert report["interval"]["calibration_cells_per_fold"] == [2, 2, 2, 2]
     assert report["interval"]["mean_width"] > 0
+    assert report["q1"]["knee_analysis"]["status"] == "HOLD_RPT_SENSITIVITY"
+    assert report["q1"]["knee_analysis"]["paper_eligible"] is False
     assert report["label_shuffle_sanity"]["status"] == "PASS"
     assert report["bootstrap"]["unit"] == "cell_id"
+    assert report["leave_condition_out"]["condition_definition"]["fields"] == ["temperature"]
+    assert set(report["leave_condition_out"]["condition_definition"]["cells_per_condition"].values()) == {2, 3}
 
 
 def test_leave_condition_out_requires_condition_field():
     rows = make_rows(cells=6, cycles=16, with_conditions=False)
     report = core.evaluate(rows, horizon=3, history_window=5, n_splits=3, bootstrap_reps=40, seed=3, leave_condition_out=True)
     assert report["leave_condition_out"]["status"] == "ABSTAIN"
+
+
+def test_unknown_rpt_provenance_does_not_invent_source_claims():
+    report = core.evaluate(make_rows(cells=6, cycles=16), horizon=3, history_window=5, n_splits=3, bootstrap_reps=20, seed=3)
+    assert report["evidence_status"] == "HOLD_PREPROCESSING_UNVERIFIED"
+    assert "原始容量含 RPT" not in report["q1"]["knee_analysis"]["reason"]
 
 
 def test_cli_smoke_marks_fixture_and_writes_artifacts(tmp_path):
@@ -134,6 +202,29 @@ def test_cli_smoke_marks_fixture_and_writes_artifacts(tmp_path):
     assert result.returncode == 0, result.stderr
     report = json.loads((out_dir / "report.json").read_text(encoding="utf-8"))
     assert report["scope"] == "TEST_ONLY"
+    assert report["run_status"] == "PASS"
+    assert "status" not in report
+    assert report["evidence_status"] == "TEST_ONLY"
     assert (out_dir / "predictions.csv").exists()
     assert (out_dir / "metrics_by_cell.csv").exists()
     assert (out_dir / "metrics_by_condition.csv").exists()
+
+
+def test_cli_scientific_hold_does_not_change_success_exit_code(tmp_path):
+    input_csv = tmp_path / "input.csv"
+    out_dir = tmp_path / "out"
+    rows = make_rows(cells=8, cycles=16)
+    for row in rows:
+        row.update({"rpt_preprocessing": "RAW_UNPROCESSED", "future_points_used": "false", "prediction_eligible": "false", "condition_fields": "temperature"})
+    write_csv(input_csv, rows)
+    command = [sys.executable, "-m", "battery_real.cli", str(input_csv), "--out", str(out_dir), "--history-window", "5", "--horizon", "3", "--splits", "4"]
+    result = subprocess.run(command, env={"PYTHONPATH": "code"}, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    report = json.loads((out_dir / "report.json").read_text(encoding="utf-8"))
+    assert report["run_status"] == "PASS"
+    assert report["evidence_status"] == "HOLD_RPT_SENSITIVITY"
+    assert report["paper_eligible"] is False
+    stdout = json.loads(result.stdout)
+    assert "status" not in stdout
+    assert stdout["run_status"] == "PASS"
+    assert stdout["evidence_status"] == "HOLD_RPT_SENSITIVITY"

@@ -8,3 +8,4 @@ Stepwise procedure for efficient characterisation of retired batteries towards s
 Diagnosis and remaining useful life prediction of end-of-life battery systems for second-life applications,https://doi.org/10.1016/j.procir.2024.08.271,论文,Lithium-ion,"问题2：退役电池SOH/RUL诊断；问题3：退役电池再利用前的状态评估",已核验
 State of health estimation of second-life lithium-ion batteries under real profile operation,https://doi.org/10.1016/j.apenergy.2022.119992,论文,Lithium-ion,"问题3：第二生命周期电池SOH评估；问题4：实际运行工况下模型验证",已核验
 Dataset for assessing the impact of first-life lithium-ion battery degradation on second-life performance,https://doi.org/10.1016/j.dib.2025.112208,公开数据集/数据论文,Lithium-ion,"问题2：容量保持率与SOH测量；问题3：一生命周期退化对梯次利用性能的影响；问题4：不同充放电倍率下的退化实验",已核验
+Battery-aging-modes-across-NMC,https://doi.org/10.5281/zenodo.7250553,公开数据集,NMC/Graphite（NMC532与NMC811分层）,"候选真实数据层：逐循环容量、CE、EOCV、EODV；当前只准备容量长表并做电芯留组 Q1/Q2 验证",已核验来源与许可证；容量单位/EFC/温度-DOD映射待确认

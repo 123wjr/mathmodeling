@@ -41,6 +41,8 @@ git status --short --branch
 | 8 | [technical/VALIDATION_REPORT.md](technical/VALIDATION_REPORT.md) | 9 个自动闸门、统计完整性和不能声称的内容 |
 | 9 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
 | 10 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
+| 11 | [V2 真实数据候选报告](technical/V2_REAL_DATA_CANDIDATE_REPORT.md) | 独立 Zenodo NMC532/NMC811 候选层；当前 `NEEDS_CHANGES/HOLD_FOR_PAPER`，禁止引用或覆盖 V1 |
+| 12 | [V2 技术方案](technical/TECHNICAL_SOLUTION_V2.md) | 按 `论文草稿.md` 小节提供假设、模型、实验、双口径结果、限制和可更新接口；只作填充材料 |
 
 technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SUPPORTING_MATERIALS_README.md 说明支撑材料如何复跑。
 
@@ -77,6 +79,8 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 当前不可越过的科学边界：
 
 - 所有 G1-G4 数字来自合成数据；没有读取或拟合 CALCE 原始循环数据。
+- V2 候选层已读取 Zenodo NMC/Graphite 容量循环，但当前仍是 `HOLD_FOR_PAPER`；只能写归一化容量的来源特定候选验证，不能把它改名为 CALCE 或绝对容量实测结果。
+- V2 的 `run_status=PASS` 只表示代码运行成功；必须同时检查 `evidence_status` 和 `paper_eligible`。当前两套口径均为 `HOLD_RPT_SENSITIVITY`、`paper_eligible=false`，不得进入论文数字表。
 - 支持域为 25--50 degC、0.5--2C、DOD 50--100%、CC-CV；协议效应不可辨识。
 - 80% SOH 是建模终点/筛选阈值，不是普适安全阈值。
 - 不写真实车辆泛化、货币收益、真实安全失效概率或范围外寿命。
@@ -105,7 +109,7 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 
 竞赛模板优先于通用 IMRaD；下面的内容顺序可映射到模板栏目，不要为了套期刊格式改变题目要求：
 
-1. 摘要、关键词：问题、方法链、最重要的条件化结果、限制。
+1. 摘要、关键词：问题、方法链、最重要的条件化结果、限制。V2 数字只有在 `technical/V2_REAL_DATA_CANDIDATE_REPORT.md` 由总负责人放行后才能进入摘要或正文。
 2. 问题重述与符号说明：只引用题面；列出 cycle/EFC、SOH、RUL、DOD、倍率、温度和删失符号。
 3. 模型假设与数据生成：NMC 主线、分段平方根退化、工况边界、个体差异、噪声和标签。
 4. 问题一：阶段/膝点定义、主效应权重和协议不可辨识说明。
@@ -190,7 +194,7 @@ Owner：论文主笔 Agent / 论文主笔
 9. handoffs/A1_simulation_package.md、A2_prediction_package.md、A3_optimization_package.md、A4_robustness_package.md
 10. study_output/run_manifest.json
 
-第一轮只输出四块（优先使用技术过渡包的章节与证据索引，不从单个 CSV 猜结论）：
+第一轮只输出四块（优先使用技术过渡包和 V2 技术方案的章节与证据索引，不从单个 CSV 猜结论）：
 A. 已读文件清单与当前 HEAD；
 B. Paper Configuration Record（缺失项留空并列问题）；
 C. 主张-证据表（每个数字/比较/因果句一行）；

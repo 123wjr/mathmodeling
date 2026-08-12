@@ -29,11 +29,17 @@ def main(argv=None) -> int:
         bootstrap_reps=args.bootstrap_reps,
         seed=args.seed,
         leave_condition_out=args.leave_condition_out,
-        test_only=True if args.test_only else None,
+        test_only=True if args.test_only else False,
     )
     paths = write_artifacts(report, args.out)
-    print(json.dumps({"status": report["status"], "scope": report["scope"], "artifacts": paths}, ensure_ascii=False))
-    return 0 if report["status"] == "PASS" else 2
+    print(json.dumps({
+        "run_status": report.get("run_status", report.get("status")),
+        "evidence_status": report.get("evidence_status", report.get("status")),
+        "paper_eligible": report.get("paper_eligible", False),
+        "scope": report["scope"],
+        "artifacts": paths,
+    }, ensure_ascii=False))
+    return 0 if report.get("run_status", report.get("status")) == "PASS" else 2
 
 
 if __name__ == "__main__":

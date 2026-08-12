@@ -25,6 +25,7 @@ REQUIRED_COLUMNS = ("source_id", "chemistry", "cell_id", "cycle", "capacity")
 OPTIONAL_COLUMNS = (
     "efc", "resistance", "temperature", "c_rate", "dod", "protocol", "condition_id"
 )
+METADATA_COLUMNS = ("rpt_preprocessing", "rpt_method", "rpt_period", "future_points_used", "prediction_eligible")
 _POSITIVE_OPTIONALS = {"efc", "resistance", "c_rate"}
 _FEATURE_BASE = ("capacity_norm", "slope_cycle", "progress")
 _FEATURE_OPTIONALS = ("temperature", "c_rate", "dod")
@@ -53,11 +54,26 @@ def validate_records(rows: list[dict]) -> list[dict]:
     chemistries = set()
     previous_cycle = {}
     previous_efc = {}
+    metadata = {name: str(rows[0].get(name, "")).strip() for name in METADATA_COLUMNS}
+    for name, value in metadata.items():
+        if not value:
+            metadata[name] = {
+                "rpt_preprocessing": "UNKNOWN",
+                "rpt_method": "UNKNOWN",
+                "rpt_period": "",
+                "future_points_used": "unknown",
+                "prediction_eligible": "unknown",
+            }[name]
     for index, original in enumerate(rows):
         missing = sorted(set(REQUIRED_COLUMNS) - set(original))
         if missing:
             raise ValueError(f"第 {index + 1} 行缺少必需字段: {','.join(missing)}")
         row = dict(original)
+        for name in METADATA_COLUMNS:
+            value = str(row.get(name, metadata[name])).strip()
+            if value != metadata[name]:
+                raise ValueError(f"{name} 必须在一次运行内保持一致")
+            row[name] = metadata[name]
         for key in ("source_id", "chemistry", "cell_id"):
             value = str(row.get(key, "")).strip()
             if not value:
@@ -195,6 +211,10 @@ def analyze_cell(records: list[dict], knee_min_points: int = 10, endpoint_soh: f
 
 
 def factor_analysis(grouped: dict[str, list[dict]], factor: str, response: str = "capacity_norm") -> dict:
+    common_cycles = set.intersection(*({row["cycle"] for row in records} for records in grouped.values()))
+    if not common_cycles:
+        return {"factor": factor, "status": "ABSTAIN", "reason": "电芯之间没有共同 cycle"}
+    comparison_cycle = max(common_cycles)
     values = {}
     for cell_id, records in grouped.items():
         observed = [row.get(factor) for row in records]
@@ -202,7 +222,8 @@ def factor_analysis(grouped: dict[str, list[dict]], factor: str, response: str =
             return {"factor": factor, "status": "ABSTAIN", "reason": f"{factor} 缺失"}
         if len(set(observed)) != 1:
             return {"factor": factor, "status": "ABSTAIN", "reason": f"{factor} 在单电芯内不恒定"}
-        values[cell_id] = (observed[0], float(records[-1][response]))
+        comparison = next(row for row in records if row["cycle"] == comparison_cycle)
+        values[cell_id] = (observed[0], float(comparison[response]))
     by_level = defaultdict(list)
     for level, response_value in values.values():
         by_level[str(level)].append(response_value)
@@ -216,6 +237,7 @@ def factor_analysis(grouped: dict[str, list[dict]], factor: str, response: str =
         "status": "PASS_DESCRIPTIVE",
         "causal": False,
         "n_cells": len(values),
+        "comparison_cycle": comparison_cycle,
         "levels": means,
         "effect_range": max(means.values()) - min(means.values()),
     }
@@ -233,6 +255,7 @@ def historical_feature(records: list[dict], landmark_cycle: int, history_window:
     result = {
         "cell_id": current["cell_id"],
         "condition_id": current.get("condition_id"),
+        "condition_fields": current.get("condition_fields"),
         "cycle": int(current["cycle"]),
         "capacity_norm": float(current["capacity"] / baseline),
         "slope_cycle": slope,
@@ -261,11 +284,15 @@ def _matrix(samples: list[dict], names: tuple[str, ...]) -> np.ndarray:
 def _samples(grouped: dict[str, list[dict]], horizon: int, history_window: int) -> list[dict]:
     result = []
     for cell_id, records in grouped.items():
-        for index in range(history_window - 1, len(records) - horizon):
+        by_cycle = {row["cycle"]: row for row in records}
+        for index in range(history_window - 1, len(records)):
+            target_record = by_cycle.get(records[index]["cycle"] + horizon)
+            if target_record is None:
+                continue
             feature = historical_feature(records, records[index]["cycle"], history_window)
             baseline = float(np.median([row["capacity"] for row in records[: min(10, index + 1)]]))
-            target = records[index + horizon]["capacity"] / baseline
-            result.append({**feature, "target": float(target), "target_cycle": int(records[index + horizon]["cycle"])})
+            target = target_record["capacity"] / baseline
+            result.append({**feature, "target": float(target), "target_cycle": int(target_record["cycle"])})
     return result
 
 
@@ -321,6 +348,12 @@ def _condition_eval(samples, names, n_splits, seed):
     if any(value in (None, "") for value in conditions) or len(set(conditions)) < 2:
         return {"status": "ABSTAIN", "reason": "condition_id 缺失或不足两个水平"}
     rows = []
+    raw_fields = next((str(row.get("condition_fields", "")).strip() for row in samples if str(row.get("condition_fields", "")).strip()), "")
+    condition_fields = [field.strip() for field in raw_fields.split(",") if field.strip()] or ["pack_id", "chemistry", "design", "c_rate", "protocol"]
+    condition_cells = {
+        str(condition): sorted({samples[i]["cell_id"] for i, value in enumerate(conditions) if value == condition})
+        for condition in sorted(set(conditions))
+    }
     for held_out in sorted(set(conditions)):
         train = [i for i, value in enumerate(conditions) if value != held_out]
         test = [i for i, value in enumerate(conditions) if value == held_out]
@@ -331,7 +364,19 @@ def _condition_eval(samples, names, n_splits, seed):
             return {"status": "ABSTAIN", "reason": f"condition_id 与 cell_id 交叉，无法保持 LOCO 电芯隔离: {sorted(overlap)[:3]}"}
         pred, _ = _fit_ridge(_matrix([samples[i] for i in train], names), np.asarray([samples[i]["target"] for i in train]), _matrix([samples[i] for i in test], names))
         rows.extend({**samples[i], "model": "ridge", "prediction": float(pred[j]), "split": f"LOCO:{held_out}"} for j, i in enumerate(test))
-    return {"status": "PASS", "n_folds": len(set(conditions)), "metrics": _metrics(rows), "rows": rows}
+    return {
+        "status": "PASS",
+        "n_folds": len(set(conditions)),
+        "condition_definition": {
+            "fields": condition_fields,
+            "source_adapter_field": "condition_id",
+            "interpretation": "复合实验层留出，不等同单因素或普遍工况泛化",
+            "cells_per_condition": {key: len(value) for key, value in condition_cells.items()},
+            "condition_cells": condition_cells,
+        },
+        "metrics": _metrics(rows),
+        "rows": rows,
+    }
 
 
 def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n_splits: int = 5, bootstrap_reps: int = 300, seed: int = 20260812, leave_condition_out: bool = False, test_only: bool | None = None) -> dict:
@@ -340,10 +385,10 @@ def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n
     grouped = prepare_records(rows)
     samples = _samples(grouped, horizon, history_window)
     if not samples:
-        return {"scope": "ABSTAIN", "status": "ABSTAIN", "reason": "没有足够历史/未来记录"}
+        return {"scope": "ABSTAIN", "status": "ABSTAIN", "run_status": "ABSTAIN", "evidence_status": "ABSTAIN", "paper_eligible": False, "reason": "没有足够历史/未来记录"}
     cells = sorted(grouped)
     if len(cells) < n_splits:
-        return {"scope": "ABSTAIN", "status": "ABSTAIN", "reason": f"电芯数 {len(cells)} 小于分组折数 {n_splits}"}
+        return {"scope": "ABSTAIN", "status": "ABSTAIN", "run_status": "ABSTAIN", "evidence_status": "ABSTAIN", "paper_eligible": False, "reason": f"电芯数 {len(cells)} 小于分组折数 {n_splits}"}
     names = _feature_names(samples)
     x = _matrix(samples, names)
     y = np.asarray([row["target"] for row in samples], dtype=float)
@@ -352,6 +397,7 @@ def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n
     predictions = []
     audit = []
     sanity_rows = []
+    calibration_cells_per_fold = []
     for fold, (train_idx, test_idx) in enumerate(splitter.split(x, y, groups), 1):
         train_cells = sorted(set(groups[train_idx]))
         test_cells = sorted(set(groups[test_idx]))
@@ -368,6 +414,7 @@ def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n
         calibration_count = max(1, len(train_cell_order) // 3) if len(train_cell_order) >= 2 else 0
         calibration_cells = set(train_cell_order[:calibration_count])
         proper_cells = set(train_cell_order[calibration_count:])
+        calibration_cells_per_fold.append(len(calibration_cells))
         radius = None
         prediction_model = None
         if proper_cells and calibration_cells:
@@ -407,11 +454,40 @@ def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n
     ridge_rows = [row for row in predictions if row["model"] == "ridge"]
     interval_rows = [row for row in ridge_rows if row.get("interval_radius") is not None]
     if interval_rows:
-        coverage = float(np.mean([abs(row["target"] - row["prediction"]) <= row["interval_radius"] for row in interval_rows]))
+        covered = [abs(row["target"] - row["prediction"]) <= row["interval_radius"] for row in interval_rows]
+        covered_by_cell = defaultdict(list)
+        for row, is_covered in zip(interval_rows, covered):
+            covered_by_cell[row["cell_id"]].append(is_covered)
         width = float(np.mean([2 * row["interval_radius"] for row in interval_rows]))
-        interval = {"status": "PASS", "nominal": 0.90, "n": len(interval_rows), "coverage": coverage, "mean_width": width}
+        interval = {
+            "status": "WARN",
+            "envelope_type": "descriptive_training_cell_calibrated_residual_envelope",
+            "calibration_quantile_target": 0.90,
+            "coverage_unit": "prediction_row",
+            "n_prediction_rows": len(interval_rows),
+            "n_test_cells": len(covered_by_cell),
+            "row_coverage": float(np.mean(covered)),
+            "whole_cell_simultaneous_coverage": float(np.mean([all(values) for values in covered_by_cell.values()])),
+            "calibration_cells_per_fold": calibration_cells_per_fold,
+            "finite_sample_guarantee": False,
+            "mean_width": width,
+            "reason": "每折校准电芯过少；覆盖率仅作描述，不构成 90% 电芯级有限样本保证",
+        }
     else:
-        interval = {"status": "ABSTAIN", "nominal": 0.90, "n": 0, "coverage": None, "mean_width": None, "reason": "没有独立校准电芯"}
+        interval = {
+            "status": "ABSTAIN",
+            "envelope_type": "descriptive_training_cell_calibrated_residual_envelope",
+            "calibration_quantile_target": 0.90,
+            "coverage_unit": "prediction_row",
+            "n_prediction_rows": 0,
+            "n_test_cells": 0,
+            "row_coverage": None,
+            "whole_cell_simultaneous_coverage": None,
+            "calibration_cells_per_fold": calibration_cells_per_fold,
+            "finite_sample_guarantee": False,
+            "mean_width": None,
+            "reason": "没有独立校准电芯",
+        }
     cell_metrics = []
     condition_metrics = []
     for key, group_key in ((cell_metrics, "cell_id"), (condition_metrics, "condition_id")):
@@ -422,10 +498,48 @@ def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n
             key.append({group_key: value, **_metrics(group_rows)})
     sanity_rmse = float(np.mean([row["normal_rmse"] for row in sanity_rows]))
     shuffled_rmse = float(np.mean([row["shuffled_rmse"] for row in sanity_rows]))
-    scope = "TEST_ONLY" if test_only is True or (test_only is None and all(str(row["source_id"]).startswith("TEST_ONLY") for row in rows)) else "REAL_DATA_CANDIDATE"
+    if test_only is True:
+        scope = "TEST_ONLY"
+    elif test_only is False:
+        scope = "REAL_DATA_CANDIDATE"
+    else:
+        scope = "TEST_ONLY" if all(str(row["source_id"]).startswith("TEST_ONLY") for row in rows) else "REAL_DATA_CANDIDATE"
+    metadata_rows = [record for records in grouped.values() for record in records]
+    preprocessing = {
+        name: next(iter({row.get(name) for row in metadata_rows}), None)
+        for name in METADATA_COLUMNS
+    }
+    if preprocessing["rpt_preprocessing"] == "RAW_UNPROCESSED":
+        q1_status = "HOLD_RPT_SENSITIVITY"
+        q1_reason = "原始容量含来源报告的 RPT 尖峰；需与 period=50 回顾性口径并列"
+    elif preprocessing["rpt_preprocessing"] == "SOURCE_PERIOD50_RETROSPECTIVE":
+        q1_status = "HOLD_RPT_SENSITIVITY"
+        q1_reason = "period=50 双侧趋势使用未来观测，仅作回顾性敏感性，不能作为在线预测预处理"
+    else:
+        q1_status = "HOLD_PREPROCESSING_UNVERIFIED"
+        q1_reason = "输入未提供可核验的 RPT 预处理状态"
+    if test_only is True:
+        evidence_status = "TEST_ONLY"
+    elif preprocessing["rpt_preprocessing"] == "UNKNOWN":
+        evidence_status = "HOLD_PREPROCESSING_UNVERIFIED"
+    elif scope == "TEST_ONLY":
+        evidence_status = "TEST_ONLY"
+    else:
+        evidence_status = q1_status
+    future_points = str(preprocessing["future_points_used"]).strip().lower()
+    preprocessing_future_points_used = True if future_points in {"true", "1", "yes"} else False if future_points in {"false", "0", "no"} else None
+    condition_fields_raw = next((str(row.get("condition_fields", "")).strip() for row in samples if str(row.get("condition_fields", "")).strip()), "")
+    condition_fields = [field.strip() for field in condition_fields_raw.split(",") if field.strip()] or ["pack_id", "chemistry", "design", "c_rate", "protocol"]
+    condition_cells = {
+        str(condition): sorted({row["cell_id"] for row in samples if row.get("condition_id") == condition})
+        for condition in sorted({row.get("condition_id") for row in samples if row.get("condition_id") not in (None, "")})
+    }
     report = {
         "scope": scope,
-        "status": "PASS",
+        "run_status": "PASS",
+        "evidence_status": evidence_status,
+        "paper_eligible": False,
+        "preprocessing": preprocessing,
         "source_ids": sorted({row["source_id"] for row in rows}),
         "chemistry": sorted({row["chemistry"] for row in rows}),
         "n_cells": len(cells),
@@ -433,14 +547,52 @@ def evaluate(rows: list[dict], *, horizon: int = 10, history_window: int = 20, n
         "horizon_cycles": horizon,
         "history_window_cycles": history_window,
         "feature_names": list(names),
-        "q1": {"cells": [analyze_cell(records) for records in grouped.values()], "factors": {factor: factor_analysis(grouped, factor) for factor in ("temperature", "c_rate", "dod", "protocol")}},
+        "q1": {
+            "cells": [
+                {
+                    **analyze_cell(records),
+                    "knee_status": q1_status,
+                    "knee_x": None,
+                    "slope_before": None,
+                    "slope_after": None,
+                    "paper_eligible": False,
+                }
+                for records in grouped.values()
+            ],
+            "knee_analysis": {
+                "status": q1_status,
+                "paper_eligible": False,
+                "reason": q1_reason,
+            },
+            "factors": {factor: factor_analysis(grouped, factor) for factor in ("temperature", "c_rate", "dod", "protocol")},
+        },
         "models": by_model,
         "interval": interval,
         "bootstrap": {"unit": "cell_id", "confidence": 0.90},
-        "leakage_audit": {"max_cell_overlap": max((len(row["cell_overlap"]) for row in audit), default=0), "folds": audit, "future_rows_used": False},
+        "leakage_audit": {
+            "max_cell_overlap": max((len(row["cell_overlap"]) for row in audit), default=0),
+            "folds": audit,
+            "future_rows_used": False,
+            "preprocessing_future_points_used": preprocessing_future_points_used,
+        },
         "label_shuffle_sanity": {"status": "PASS" if shuffled_rmse > sanity_rmse * 1.01 else "WARN", "normal_rmse": sanity_rmse, "shuffled_rmse": shuffled_rmse, "criterion": "shuffled RMSE > normal RMSE by 1%"},
-        "leave_condition_out": _condition_eval(samples, names, n_splits, seed) if leave_condition_out else {"status": "NOT_REQUESTED"},
-        "limitations": ["Descriptive association only; factor effects are not causal.", "No source-specific unit conversion or chemistry harmonization.", "TEST_ONLY metrics are not paper results."],
+        "leave_condition_out": _condition_eval(samples, names, n_splits, seed) if leave_condition_out else {
+            "status": "NOT_REQUESTED",
+            "condition_definition": {
+                "fields": condition_fields,
+                "source_adapter_field": "condition_id",
+                "interpretation": "复合实验层留出，不等同单因素或普遍工况泛化",
+                "cells_per_condition": {key: len(value) for key, value in condition_cells.items()},
+                "condition_cells": condition_cells,
+            },
+        },
+        "limitations": [
+            "Descriptive association only; factor effects are not causal.",
+            "Prediction intervals are descriptive residual envelopes, not finite-sample cell-level guarantees.",
+            "Knee results are held until source-consistent RPT preprocessing is implemented.",
+            "No source-specific unit conversion or chemistry harmonization.",
+            "TEST_ONLY metrics are not paper results.",
+        ],
     }
     report["_predictions"] = predictions
     report["_metrics_by_cell"] = cell_metrics
