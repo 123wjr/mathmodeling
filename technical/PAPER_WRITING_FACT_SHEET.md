@@ -1,6 +1,6 @@
 # 论文写作数字事实表
 
-写作入口：[PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)。本页只提供已验收的论文数字，不替代入口中的阅读顺序、标签规则和交接协议。
+写作入口：[PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)；技术过渡层：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只提供可复制数字，不替代逐问模型、实验协议和限制说明。
 
 > 只复制本页已标记数字；不得把“仿真结果”改写为“实测结果”。详细定义见 `TECHNICAL_REPORT_MINIMAL.md`。
 

@@ -27,27 +27,32 @@ git rev-parse --short HEAD
 git status --short --branch
 ~~~
 
-然后按以下顺序阅读。不要跳过前四项，也不要先从 study_output/*.csv 猜结论。
+然后按以下顺序阅读。不要跳过前四项，也不要先从 study_output/*.csv 猜结论。最新论文骨架是负责人确认的下载版 DOCX；仓库内同名模板不是同一版本时，以下载版 SHA-256 为准。
 
 | 顺序 | 文件 | 你要得到的内容 |
 |---:|---|---|
 | 1 | [试题 A.pdf](试题%20%20A.pdf) | 原题、四个问题和题面约束；题面是问题定义的事实源 |
-| 2 | [template/paper/数模论文模板总结.docx](<template/paper/数模论文模板总结.docx>) | 论文格式、栏目和排版要求；若在线文档有新模板，以总负责人确认的版本为准 |
+| 2 | 最新骨架：`/home/jerry/Downloads/Documents/数模论文模板总结.docx`（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`） | 论文格式、栏目和已部分填入的内容；仓库根目录及 `template/paper` 的两个同名文件哈希均不同，不能替代最新版本 |
 | 3 | [handoffs/PROJECT_COMMAND_CENTER.md](handoffs/PROJECT_COMMAND_CENTER.md) | 当前闸门、责任人、截止时间、停止规则和唯一事实源顺序 |
 | 4 | [technical/PAPER_WRITING_FACT_SHEET.md](technical/PAPER_WRITING_FACT_SHEET.md) | 论文可直接使用的数字及 CONFIRMED/RESULT/UPDATEABLE 标签 |
-| 5 | [technical/TECHNICAL_REPORT_MINIMAL.md](technical/TECHNICAL_REPORT_MINIMAL.md) | 假设、公式、实验设计、结果解释和四部分最小技术文档 |
-| 6 | [technical/VALIDATION_REPORT.md](technical/VALIDATION_REPORT.md) | 9 个自动闸门、统计完整性和不能声称的内容 |
-| 7 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
-| 8 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
+| 5 | [technical/PAPER_TECHNICAL_BRIDGE.md](technical/PAPER_TECHNICAL_BRIDGE.md) | 从最新 DOCX 骨架到论文正文的技术过渡层；逐问列出模型、实验、数字、限制和证据 |
+| 6 | [technical/TECHNICAL_REPORT_MINIMAL.md](technical/TECHNICAL_REPORT_MINIMAL.md) | 假设、公式、实验设计、结果解释和四部分最小技术文档 |
+| 7 | [technical/VALIDATION_REPORT.md](technical/VALIDATION_REPORT.md) | 9 个自动闸门、统计完整性和不能声称的内容 |
+| 8 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
+| 9 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
 
 technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SUPPORTING_MATERIALS_README.md 说明支撑材料如何复跑。
+
+模板处理硬规则：先读 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 2.2 节的“最新 DOCX 原文冲突登记”。其中列出的 CALCE 校准、NASA 对照、串并联/安全成本和范围外压力测试表述不得直接复制；最新 DOCX 只能作为栏目骨架，技术事实以 A5 桥接包和已验收结果为准。
+
+若 Agent 无法访问 `/home/jerry/Downloads/Documents/`，必须让论文主笔提供该 SHA-256 对应的在线文档或导出文件；不得静默改用仓库中的同名旧版本。
 
 ## 2. 事实源优先级
 
 发生冲突时按这个顺序裁决，低优先级内容不能覆盖高优先级内容：
 
 1. 总负责人签署的闸门结论和 .codex/DECISIONS.md。
-2. 已验收的 A0-A4 证据包与总控台。
+2. 已验收的 A0-A5 证据包与总控台。
 3. technical/PAPER_WRITING_FACT_SHEET.md、study_output/*.json/csv、验证闸门和 manifest。
 4. 可复跑代码、配置和图表。
 5. 在线文档草稿、Agent 汇报和聊天内容。
@@ -65,6 +70,8 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 | ASSUMED + UPDATEABLE | 明确是自设参数、阈值、代理或权重，并说明可替换 | 写成 CALCE 实测估计、行业标准或安全规范 |
 | UNCERTAIN | 明确列为未知或限制 | 用常识、模型输出或 Agent 猜测填空 |
 | OOD/ABSTAIN | 说明支持域外弃权、不给数值 | 从趋势图外推低温、过充、过放、3C 或安全概率 |
+| PAPER_GAP | 明确写为当前技术链未覆盖，或补做后再更新 | 用论文措辞、常识或相邻场景结果伪装成已完成 |
+| EVIDENCE_REQUIRED | 保留标记，等待人工全文与页码核验 | 猜作者、DOI、页码，或把候选来源写成已核验 |
 
 当前不可越过的科学边界：
 
@@ -73,6 +80,8 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 - 80% SOH 是建模终点/筛选阈值，不是普适安全阈值。
 - 不写真实车辆泛化、货币收益、真实安全失效概率或范围外寿命。
 - 结构匹配 RUL 是 simulator ceiling，不能反向证明生成器真实有效。
+
+题面覆盖状态必须如实保留：Q1 的 CC-CV 协议效应不可辨识；Q2 的低温/过充/过放/>2C 只弃权；Q3 仅完成 4 芯 module-level set-packing，没有阵列拓扑/货币损耗；Q4 是各场景重新筛选/编组，不是 Q3 同一编组的纵向压力验证。技术过渡包把这些列为 `PAPER_GAP`，不能用摘要或工程建议掩盖。
 
 ## 4. 当前可写数字（只从这里复制）
 
@@ -146,6 +155,8 @@ claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图
 
 引用只接受 DOI、出版社/期刊官网、官方数据页或可人工核验的原文。禁止编造作者、年份、卷期、页码和 DOI。正文引用与参考文献必须双向零孤儿；无法核验的来源标 UNVERIFIED，不用于关键结论。
 
+当前 A5 预审为 `NOT_READY_FOR_STAGE_2_5_PASS`：33 个 `EVIDENCE REQUIRED` 和早期合成框架锁定尚未闭环。可以继续形成草稿，但不得把草稿标记为完整性通过或最终完整题解。
+
 ### 阶段 F：交接报告
 
 每次交接使用总控台的六行协议：
@@ -169,15 +180,16 @@ Owner：论文主笔 Agent / 论文主笔
 按顺序阅读：
 1. PAPER_AGENT_START_HERE.md
 2. 试题  A.pdf
-3. template/paper/数模论文模板总结.docx
+3. `/home/jerry/Downloads/Documents/数模论文模板总结.docx`（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`）
 4. handoffs/PROJECT_COMMAND_CENTER.md
 5. technical/PAPER_WRITING_FACT_SHEET.md
-6. technical/TECHNICAL_REPORT_MINIMAL.md
-7. technical/VALIDATION_REPORT.md
-8. handoffs/A1_simulation_package.md、A2_prediction_package.md、A3_optimization_package.md、A4_robustness_package.md
-9. study_output/run_manifest.json
+6. technical/PAPER_TECHNICAL_BRIDGE.md
+7. technical/TECHNICAL_REPORT_MINIMAL.md
+8. technical/VALIDATION_REPORT.md
+9. handoffs/A1_simulation_package.md、A2_prediction_package.md、A3_optimization_package.md、A4_robustness_package.md
+10. study_output/run_manifest.json
 
-第一轮只输出四块：
+第一轮只输出四块（优先使用技术过渡包的章节与证据索引，不从单个 CSV 猜结论）：
 A. 已读文件清单与当前 HEAD；
 B. Paper Configuration Record（缺失项留空并列问题）；
 C. 主张-证据表（每个数字/比较/因果句一行）；

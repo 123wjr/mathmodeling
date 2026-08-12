@@ -238,14 +238,35 @@ def write_validation_report(project_root: str, results: dict, gates: list[dict])
 - `[ASSUMED][UPDATEABLE]` 80% SOH、筛选门槛、批次代理、权重与成本收益均可从配置追溯。
 - `[UNCERTAIN]` 真实数据泛化、范围外工况、货币收益及安全失效概率仍未解决。
 
-## 4. 可能推翻当前结论的证据
+## 4. 统计解释与谬误扫描接口
+
+- `[CONFIRMED]` academic-research-suite experiment-agent 的 11 类统计/方法学谬误已完成 `11/11` 扫描；逐项判定见 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 8.3 节。
+- `[CAUTION]` RUL 点误差仅覆盖可观测事件；删失样本必须单列，不能把事件子集误当全部电芯。
+- `[CAUTION]` Q1 主效应为总体边际结果；必须同时检查分层方向，不能把总体排序写成每个工况或电芯都严格单调。
+- `[CAUTION]` 所有 CI、OAT 和权重均为描述性仿真结果，不作显著性、因果或行业总体推断。
+
+## 5. AI 研究失败模式预审
+
+| 模式 | 判定 | 技术证据/处置 |
+|---|---|---|
+| 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | 56 tests、9 gates、双跑 manifest 与 43/43 产物哈希；代码变更后需重审 |
+| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | 33 个 `EVIDENCE REQUIRED` 未完成人工全文/页码核验；阻塞 Stage 2.5 |
+| 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | 数字回指保存的 CSV/JSON，manifest 可回算 |
+| 4 捷径依赖 | `INSUFFICIENT_EVIDENCE` | 同一仿真家族内生成/训练/验证，无真实外部集或去捷径消融；只能作仿真内比较 |
+| 5 缺陷包装为发现 | `CLEAR_WITHIN_CURRENT_SCOPE` | 未建立反常机理叙事；局部反转按随机效应限制报告 |
+| 6 方法学伪造 | `CLEAR_WITHIN_CURRENT_SCOPE` | 方法、seed、配置、代码和产物已逐项对照；DOCX 冲突句必须替换 |
+| 7 早期框架锁定 | `SUSPECTED` | 单协议/合成主线留下 Q1-Q4 题面覆盖缺口；补做或由总负责人书面接受限制后再审 |
+
+预审状态：`NOT_READY_FOR_STAGE_2_5_PASS`。详细证据和处置见 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 8.4 节。
+
+## 6. 可能推翻当前结论的证据
 
 1. 真实同化学体系数据若显示温度/倍率/DOD 方向或阶段结构相反，应重开 G0 并替换生成器。
 2. 若独立数据留组误差显著高于仿真，论文必须以独立数据为准，仿真精度降为机制演示。
 3. 若筛选门槛无法对应真实检测误差或安全规范，Q3 只保留优化框架，不保留阈值结论。
 4. 若批次分布可取得，应删除当前批次代理，改用分层随机效应或实测批次固定效应。
 
-## 5. 复核命令
+## 7. 复核命令
 
 ```bash
 PYTHONPATH=code python -m battery_study.cli --config configs/study_pipeline.json --out study_output
@@ -263,6 +284,8 @@ def write_fact_sheet(project_root: str, results: dict) -> str:
     soh_best = min(q2["soh_metrics"], key=lambda row: row["rmse"])
     aft = _by_name(q2["rul_metrics"])["lognormal_aft_censored"]
     text = f"""# 论文写作数字事实表
+
+写作入口：[PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)；技术过渡层：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只提供可复制数字，不替代逐问模型、实验协议和限制说明。
 
 > 只复制本页已标记数字；不得把“仿真结果”改写为“实测结果”。详细定义见 `TECHNICAL_REPORT_MINIMAL.md`。
 
@@ -283,6 +306,8 @@ def write_fact_sheet(project_root: str, results: dict) -> str:
 def write_supporting_readme(project_root: str) -> str:
     text = """# A题支撑材料说明
 
+论文主笔 Agent 的技术过渡入口：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)；本页只负责复跑和支撑材料打包。
+
 ## 1. 最小复跑
 
 环境：Python 3.13；精确运行版本见 `study_output/run_manifest.json`，安装清单见 `requirements-study.txt`。
@@ -300,8 +325,8 @@ python -m pytest code/tests -q
 - `configs/`：全部固定参数、工况、seed、阈值和权重。
 - `g1_output/`：G1 冒烟数据、图和清单。
 - `study_output/`：G2-G4 CSV/JSON/SVG、验证闸门和 SHA-256 清单。
-- `technical/`：四段最小技术报告、实验计划、验证报告和论文取数表。
-- `handoffs/A1-A4*.md`：论文与代码之间的交接证据包。
+- `technical/`：四段最小技术报告、实验计划、验证报告、论文取数表和 A5 技术过渡层。
+- `handoffs/A1-A5*.md`：论文与代码之间的交接证据包。
 
 ## 3. 事实源顺序
 

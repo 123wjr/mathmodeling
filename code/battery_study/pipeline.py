@@ -218,6 +218,15 @@ def run(study_cfg, out_dir: str) -> dict:
     output_paths.extend(document_paths)
     output_paths.extend(figure_paths)
     output_paths.append(gates_path)
+    # The paper bridge is a manually maintained handoff, but it is part of the
+    # evidence chain: record its hash so a regenerated result set cannot be
+    # silently paired with an older technical interpretation.
+    for bridge_path in (
+        os.path.join(project_root, "technical", "PAPER_TECHNICAL_BRIDGE.md"),
+        os.path.join(project_root, "handoffs", "A5_paper_technical_bridge.md"),
+    ):
+        if os.path.isfile(bridge_path):
+            output_paths.append(bridge_path)
     source_config_path = study_cfg.source_g1_path
     study_config_path = getattr(study_cfg, "_loaded_path", config.DEFAULT_CONFIG_PATH)
     manifest = {

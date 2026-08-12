@@ -1,6 +1,6 @@
 # A题支撑材料说明
 
-论文主笔 Agent 请先阅读根目录 [PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)；本页是复跑与支撑材料说明，不是论文写作入口。
+论文主笔 Agent 的技术过渡入口：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)；本页只负责复跑和支撑材料打包。
 
 ## 1. 最小复跑
 
@@ -19,8 +19,8 @@ python -m pytest code/tests -q
 - `configs/`：全部固定参数、工况、seed、阈值和权重。
 - `g1_output/`：G1 冒烟数据、图和清单。
 - `study_output/`：G2-G4 CSV/JSON/SVG、验证闸门和 SHA-256 清单。
-- `technical/`：四段最小技术报告、实验计划、验证报告和论文取数表。
-- `handoffs/A1-A4*.md`：论文与代码之间的交接证据包。
+- `technical/`：四段最小技术报告、实验计划、验证报告、论文取数表和 A5 技术过渡层。
+- `handoffs/A1-A5*.md`：论文与代码之间的交接证据包。
 
 ## 3. 事实源顺序
 
