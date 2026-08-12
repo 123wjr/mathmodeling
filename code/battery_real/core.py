@@ -321,7 +321,7 @@ def _condition_eval(samples, names, n_splits, seed):
     if any(value in (None, "") for value in conditions) or len(set(conditions)) < 2:
         return {"status": "ABSTAIN", "reason": "condition_id 缺失或不足两个水平"}
     rows = []
-    for index, held_out in enumerate(sorted(set(conditions))):
+    for held_out in sorted(set(conditions)):
         train = [i for i, value in enumerate(conditions) if value != held_out]
         test = [i for i, value in enumerate(conditions) if value == held_out]
         train_cells = {samples[i]["cell_id"] for i in train}
