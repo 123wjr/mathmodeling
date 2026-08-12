@@ -1,0 +1,101 @@
+{
+  "status": "[RESULT][SYNTHETIC_ONLY]",
+  "purpose": "Mechanism consistency and anti-shortcut audit; not external validation.",
+  "source_files": [
+    "q1_factor_effects.csv",
+    "q2_leave_condition_out.csv"
+  ],
+  "mechanism_monotonicity": {
+    "capacity_fade": {
+      "temperature_C": {
+        "n_levels": 3,
+        "increasing": true,
+        "min_adjacent_delta": 0.03248131000000001,
+        "max_adjacent_delta": 0.03944022,
+        "share_total_variance": 0.22892892795103423,
+        "normalized_main_effect_weight": 0.23779066216138925
+      },
+      "c_rate_C": {
+        "n_levels": 3,
+        "increasing": true,
+        "min_adjacent_delta": 0.010000689999999979,
+        "max_adjacent_delta": 0.01813045000000002,
+        "share_total_variance": 0.03588637177202794,
+        "normalized_main_effect_weight": 0.03727551682793682
+      },
+      "dod_pct": {
+        "n_levels": 3,
+        "increasing": true,
+        "min_adjacent_delta": 0.06153622,
+        "max_adjacent_delta": 0.06422713999999999,
+        "share_total_variance": 0.6979177439978029,
+        "normalized_main_effect_weight": 0.7249338210106738
+      }
+    },
+    "final_resistance_growth": {
+      "temperature_C": {
+        "n_levels": 3,
+        "increasing": true,
+        "min_adjacent_delta": 0.07915120999999997,
+        "max_adjacent_delta": 0.08887205000000004,
+        "share_total_variance": 0.22636211434915673,
+        "normalized_main_effect_weight": 0.23459153186797874
+      },
+      "c_rate_C": {
+        "n_levels": 3,
+        "increasing": true,
+        "min_adjacent_delta": 0.017910780000000015,
+        "max_adjacent_delta": 0.044019310000000034,
+        "share_total_variance": 0.03253717402186489,
+        "normalized_main_effect_weight": 0.033720066268115426
+      },
+      "dod_pct": {
+        "n_levels": 3,
+        "increasing": true,
+        "min_adjacent_delta": 0.14176951000000004,
+        "max_adjacent_delta": 0.15503730999999998,
+        "share_total_variance": 0.706020939340125,
+        "normalized_main_effect_weight": 0.7316884018639058
+      }
+    }
+  },
+  "leave_condition_out": {
+    "local_linear": {
+      "n_conditions": 27,
+      "mean_rmse": 0.010947290764854218,
+      "worst_rmse": 0.01707319990266192,
+      "best_rmse": 0.00713677907980593,
+      "wins_vs_persistence": 27
+    },
+    "persistence": {
+      "n_conditions": 27,
+      "mean_rmse": 0.018631857401169443,
+      "worst_rmse": 0.03089471987324375,
+      "best_rmse": 0.010618662027302116,
+      "wins_vs_persistence": null
+    },
+    "random_forest": {
+      "n_conditions": 27,
+      "mean_rmse": 0.004774572493714253,
+      "worst_rmse": 0.011721405168908574,
+      "best_rmse": 0.0034129354637830863,
+      "wins_vs_persistence": 27
+    },
+    "ridge": {
+      "n_conditions": 27,
+      "mean_rmse": 0.004180016000396529,
+      "worst_rmse": 0.006305480882744536,
+      "best_rmse": 0.0032708989664119296,
+      "wins_vs_persistence": 27
+    }
+  },
+  "interpretation": [
+    "Monotone marginal means support consistency with the frozen generator over its 3x3x3 support, but do not identify real electrochemical causality.",
+    "Condition-held-out metrics test interpolation across the frozen synthetic design; they are not independent-cell validation.",
+    "A model winning against persistence is evidence of incremental signal in this simulation, not evidence of deployment accuracy."
+  ],
+  "unknowns": [
+    "External chemistry/protocol transfer remains untested until the independent V2 real-data package is accepted.",
+    "No claim about safety probability, monetary benefit, or out-of-domain conditions is made."
+  ]
+}
