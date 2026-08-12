@@ -45,6 +45,42 @@
 | `[PAPER_GAP]` | 技术链没有完全覆盖题面或论文栏目 | 限定范围或补做，不伪装成已完成 |
 | `[EVIDENCE_REQUIRED]` | 外部文献尚未完成全文/页码核验 | 核验前不得作为关键结论依据 |
 
+### 1.1 V2 三态更新协议
+
+当前 V2 闸门固定为：
+
+```text
+run_status=PASS
+evidence_status=HOLD_RPT_SENSITIVITY
+paper_eligible=false
+```
+
+`run_status=PASS` 只表示程序成功运行，不表示结果可以写进论文。论文手按以下三态处理：
+
+| 状态 | 当前内容 | `论文草稿.md` 动作 |
+|---|---|---|
+| `[已确定/CONFIRMED]` | 数据源为 Zenodo `10.5281/zenodo.7250553`；44 芯、24,525 行；NMC532=26、NMC811=18；两体系分层且按 `cell_id` 留组；容量单位未确认，温度、DOD、EFC、内阻缺失；当前 V2 未通过论文闸门 | 可写入 1.2、6.2、6.3；段末保留 `[已确定/CONFIRMED]` 内部标记、来源、缺失字段和“未进入主结果”的限制 |
+| `[可能更新/UPDATEABLE]` | V2 的膝点、RMSE、相对改善、区间覆盖及由此形成的摘要/结论 | 只插入下方 Markdown 注释占位，不写成当前事实 |
+| `[暂缓写入/HOLD]` | NMC532/NMC811 的全部候选结果数字，以及“CALCE 校准”“外部验证”“真实精度”“跨体系泛化”等主张 | 不得进入摘要、结果表、结论或图注；不得选择单一 RPT 口径 |
+
+论文中可立即使用的 `[已确定/CONFIRMED]` 技术表述：
+
+> 除合成仿真主线外，本文对 Zenodo `10.5281/zenodo.7250553` 的 44 个 NMC/Graphite 电芯建立了独立候选验证层，并将 NMC532 与 NMC811 分层、按 `cell_id` 留组。该数据的容量单位尚未确认，且缺少温度、DOD、EFC 与内阻字段；同时 NMC532 的模型比较对 RPT 处理口径敏感，因此 V2 当前未进入论文主结果。[CONFIRMED][UNCERTAIN]
+
+论文手在 `5.1.3` 和 `5.2.3` 对应位置分别保留以下占位；注释不影响 Markdown 正文显示：
+
+```markdown
+<!-- V2_UPDATEABLE
+target: 5.1.3 或 5.2.3
+state: HOLD_RPT_SENSITIVITY
+replace_when: evidence_status 不再为 HOLD，且 paper_eligible=true，且总负责人批准
+source: technical/V2_REAL_DATA_CANDIDATE_REPORT.md
+action: 仅插入重新放行后的指标、口径、适用范围和证据路径
+-->
+```
+
+触发条件缺一不可。论文 Agent 不得自行把 `run_status=PASS` 解释为放行，也不得自行挑选原始或 `period=50` 口径。重新放行后，先更新本节和主张-证据表，再替换草稿占位。所有内部标签只在总负责人终审后统一隐藏或删除。
+
 硬禁止：
 
 - 不写“基于 CALCE 实测完成参数校准”。

@@ -193,6 +193,8 @@ Owner：论文主笔 Agent / 论文主笔
 8. technical/VALIDATION_REPORT.md
 9. handoffs/A1_simulation_package.md、A2_prediction_package.md、A3_optimization_package.md、A4_robustness_package.md
 10. study_output/run_manifest.json
+11. technical/V2_REAL_DATA_CANDIDATE_REPORT.md
+12. technical/TECHNICAL_SOLUTION_V2.md
 
 第一轮只输出四块（优先使用技术过渡包和 V2 技术方案的章节与证据索引，不从单个 CSV 猜结论）：
 A. 已读文件清单与当前 HEAD；
@@ -209,6 +211,21 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 - 模板要求优先于通用论文模板；格式缺口只向人提问，不自行推断。
 
 完成四块后停止，等待总负责人确认配置和大纲，再在 `论文草稿.md` 中逐节填充。在线文档只是同步副本。
+~~~
+
+### V2 增量更新提示（配置和大纲已确认后使用）
+
+~~~text
+只编辑 `论文草稿.md`，不得修改 V1 数字、代码、CSV、JSON 或 SVG。
+
+先读取 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 1.1 节，再读取
+`technical/V2_REAL_DATA_CANDIDATE_REPORT.md`。按三态更新：
+
+1. `[已确定/CONFIRMED]`：只把数据来源、规模、分层方法、缺失字段和当前 HOLD 判定写入 1.2、6.2、6.3；每个新增段落末尾保留 `[已确定/CONFIRMED]` 内部编辑标记和“未进入主结果”的限制。
+2. `[可能更新/UPDATEABLE]`：在 5.1.3、5.2.3 插入 `V2_UPDATEABLE` Markdown 注释，不写候选数字。
+3. `[暂缓写入/HOLD]`：V2 RMSE、相对改善、膝点和覆盖率不得进入摘要、结果表、图注或结论；不得写成 CALCE 校准或外部验证。
+
+只有 `evidence_status` 不再为 HOLD、`paper_eligible=true` 且总负责人批准三项同时满足，才可替换占位。内部标签只在总负责人终审后统一隐藏或删除，论文 Agent 不得提前清理。完成后只汇报：修改章节、CONFIRMED 主张、UPDATEABLE 占位、HOLD 清单；不要提交或推送。
 ~~~
 
 ## 8. 最终交稿前验收
