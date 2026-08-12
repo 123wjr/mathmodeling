@@ -1,6 +1,6 @@
 # A题论文 Agent 入口
 
-> 适用对象：负责在线文档论文的主笔及其 Agent。代码、配置、实验输出和技术证据保存在 GitHub；论文正文仍以在线文档为唯一写作场所。
+> 适用对象：负责论文的主笔及其 Agent。`论文草稿.md` 是 Git 中唯一可编辑的论文源；在线文档是协作/提交副本。代码、配置、实验输出和技术证据保存在 GitHub。
 >
 > 基线不固定 commit。每次启动先执行 git pull --ff-only origin main，再以 git rev-parse --short HEAD 的输出作为本次读取基线。
 
@@ -11,7 +11,7 @@
 1. 性能退化特征与影响因子辨识。
 2. SOH 评估与 RUL 预测。
 3. 退役筛选与储能编组多目标优化。
-4. 多工况仿真、鲁棒性分析与工程建议。
+4. 多工况仿真、鲁棒性分析与仿真条件下的触发规则。
 
 本仓库当前交付的是一条可复跑的 NMC 合成仿真研究链，不是 CALCE 实测校准报告。论文的目标是把“题面问题 → 假设 → 模型 → 实验 → 条件化结论”讲成一条可审计的证据链。
 
@@ -27,25 +27,26 @@ git rev-parse --short HEAD
 git status --short --branch
 ~~~
 
-然后按以下顺序阅读。不要跳过前四项，也不要先从 study_output/*.csv 猜结论。最新论文骨架是负责人确认的下载版 DOCX；仓库内同名模板不是同一版本时，以下载版 SHA-256 为准。
+然后按以下顺序阅读。不要跳过前四项，也不要先从 study_output/*.csv 猜结论。论文草稿以下载版 DOCX 的栏目骨架为参考，但内容编辑以仓库内 `论文草稿.md` 为准。
 
 | 顺序 | 文件 | 你要得到的内容 |
 |---:|---|---|
 | 1 | [试题 A.pdf](试题%20%20A.pdf) | 原题、四个问题和题面约束；题面是问题定义的事实源 |
-| 2 | 最新骨架：`/home/jerry/Downloads/Documents/数模论文模板总结.docx`（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`） | 论文格式、栏目和已部分填入的内容；仓库根目录及 `template/paper` 的两个同名文件哈希均不同，不能替代最新版本 |
-| 3 | [handoffs/PROJECT_COMMAND_CENTER.md](handoffs/PROJECT_COMMAND_CENTER.md) | 当前闸门、责任人、截止时间、停止规则和唯一事实源顺序 |
-| 4 | [technical/PAPER_WRITING_FACT_SHEET.md](technical/PAPER_WRITING_FACT_SHEET.md) | 论文可直接使用的数字及 CONFIRMED/RESULT/UPDATEABLE 标签 |
-| 5 | [technical/PAPER_TECHNICAL_BRIDGE.md](technical/PAPER_TECHNICAL_BRIDGE.md) | 从最新 DOCX 骨架到论文正文的技术过渡层；逐问列出模型、实验、数字、限制和证据 |
-| 6 | [technical/TECHNICAL_REPORT_MINIMAL.md](technical/TECHNICAL_REPORT_MINIMAL.md) | 假设、公式、实验设计、结果解释和四部分最小技术文档 |
-| 7 | [technical/VALIDATION_REPORT.md](technical/VALIDATION_REPORT.md) | 9 个自动闸门、统计完整性和不能声称的内容 |
-| 8 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
-| 9 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
+| 2 | [论文草稿.md](论文草稿.md) | 论文现有章节、候选文字、待核验标记和待确认项；仅作内容骨架，数字必须回指证据 |
+| 3 | 外部 DOCX 格式参考（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`） | 可选的格式/栏目比较记录；不是仓库接口，不要因本机路径不可用而中断 |
+| 4 | [handoffs/PROJECT_COMMAND_CENTER.md](handoffs/PROJECT_COMMAND_CENTER.md) | 当前闸门、责任人、截止时间、停止规则和唯一事实源顺序 |
+| 5 | [technical/PAPER_WRITING_FACT_SHEET.md](technical/PAPER_WRITING_FACT_SHEET.md) | 论文可直接使用的数字及 CONFIRMED/RESULT/UPDATEABLE 标签 |
+| 6 | [technical/PAPER_TECHNICAL_BRIDGE.md](technical/PAPER_TECHNICAL_BRIDGE.md) | 与 `论文草稿.md` 逐节对齐的技术填充层；逐问列出模型、实验、数字、限制和证据 |
+| 7 | [technical/TECHNICAL_REPORT_MINIMAL.md](technical/TECHNICAL_REPORT_MINIMAL.md) | 假设、公式、实验设计、结果解释和四部分最小技术文档 |
+| 8 | [technical/VALIDATION_REPORT.md](technical/VALIDATION_REPORT.md) | 9 个自动闸门、统计完整性和不能声称的内容 |
+| 9 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
+| 10 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
 
 technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SUPPORTING_MATERIALS_README.md 说明支撑材料如何复跑。
 
-模板处理硬规则：先读 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 2.2 节的“最新 DOCX 原文冲突登记”。其中列出的 CALCE 校准、NASA 对照、串并联/安全成本和范围外压力测试表述不得直接复制；最新 DOCX 只能作为栏目骨架，技术事实以 A5 桥接包和已验收结果为准。
+模板处理硬规则：先读 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 2.2 节的 DOCX 冲突登记，再以第 2.0 节的草稿逐节映射为执行清单。DOCX 只作格式比较；不因本机绝对路径、仓库同名旧版本或在线文档访问问题而中断。
 
-若 Agent 无法访问 `/home/jerry/Downloads/Documents/`，必须让论文主笔提供该 SHA-256 对应的在线文档或导出文件；不得静默改用仓库中的同名旧版本。
+先做 Markdown 与技术桥接文档的逐节对齐审计，再直接编辑 `论文草稿.md`；不编辑代码、CSV、JSON、SVG。
 
 ## 2. 事实源优先级
 
@@ -55,13 +56,13 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 2. 已验收的 A0-A5 证据包与总控台。
 3. technical/PAPER_WRITING_FACT_SHEET.md、study_output/*.json/csv、验证闸门和 manifest。
 4. 可复跑代码、配置和图表。
-5. 在线文档草稿、Agent 汇报和聊天内容。
+5. `论文草稿.md` 中尚未回指的文字、在线文档副本、Agent 汇报和聊天内容。
 
 题面只定义研究问题，不提供实验数字。任何“聊天中出现过但文件中找不到”的数字都视为不可用。
 
 ## 3. 证据标签与硬边界
 
-每个结果性句子在写入在线文档前，先在证据表中登记：claim_id、原句、标签、来源文件、精确字段/行或图号、核验人/日期、核验状态。
+每个结果性句子在写入 `论文草稿.md` 前，先在证据表中登记：claim_id、原句、标签、来源文件、精确字段/行或图号、核验人/日期、核验状态。
 
 | 标签 | 可以怎么写 | 不能怎么写 |
 |---|---|---|
@@ -124,14 +125,14 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 - 论文类型：数学建模竞赛论文/会议型短文（以模板为准）。
 - 正文语言、摘要语言、目标字数/页数、引用格式。
 - 三位作者与贡献；无经费/无利益冲突也要显式记录。
-- 在线文档链接、当前草稿版本、模板限制。
+- 当前 `论文草稿.md` 版本、在线文档链接（如有）、模板限制。
 - 是否已有人工核验的参考文献；没有就不要假装已有文献库。
 
 配置不完整时，Agent 只问缺失项，不直接生成整篇论文。
 
 ### 阶段 B：证据台账（先于正文）
 
-在在线文档建立“主张-证据表”，推荐字段：
+建立与当前 `论文草稿.md` 版本配套的“主张-证据表”，推荐字段：
 
 ~~~text
 claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图号 | 核验人/日期 | 状态
@@ -149,13 +150,13 @@ claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图
 - 图注必须写数据类型（合成仿真）、工况、seed/折分和回指路径。
 - 每个模型选择都写“为什么采用 + 用什么对照 + 局限是什么”。
 - 不把代码名直接当结论；先解释统计对象和评价口径。
-- 图表编号在在线文档中固定，改图后同步更新图注和证据表。
+- 图表编号先在 `论文草稿.md` 中固定，再同步在线文档；改图后同步更新图注和证据表。
 
 ### 阶段 E：引用与诚信审查
 
 引用只接受 DOI、出版社/期刊官网、官方数据页或可人工核验的原文。禁止编造作者、年份、卷期、页码和 DOI。正文引用与参考文献必须双向零孤儿；无法核验的来源标 UNVERIFIED，不用于关键结论。
 
-当前 A5 预审为 `NOT_READY_FOR_STAGE_2_5_PASS`：33 个 `EVIDENCE REQUIRED` 和早期合成框架锁定尚未闭环。可以继续形成草稿，但不得把草稿标记为完整性通过或最终完整题解。
+当前 A5 预审为 `NOT_READY_FOR_STAGE_2_5_PASS`：`论文草稿.md` 中 34 条候选文献尚未逐条完成全文、页码与主张范围核验，早期合成框架锁定也未闭环。可以继续形成草稿，但不得把草稿标记为完整性通过或最终完整题解。
 
 ### 阶段 F：交接报告
 
@@ -164,7 +165,7 @@ claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图
 ~~~text
 状态：DONE / IN_PROGRESS / BLOCKED
 Owner：论文主笔 Agent / 论文主笔
-产物：在线文档链接 + 章节/证据表版本
+产物：`论文草稿.md` 版本/commit + 章节/证据表版本 + 在线文档链接（如有）
 验证：事实表条目数；已回指数字/图数；人工核验引用数
 阻塞：缺失信息 + 等谁决定；无则 NONE
 下一步：动作 + CST 截止
@@ -173,14 +174,14 @@ Owner：论文主笔 Agent / 论文主笔
 ## 7. 可直接复制给论文 Agent 的启动提示
 
 ~~~text
-你是 A 题数学建模论文主笔 Agent。你的写作目标是在线文档，不是修改 GitHub 代码。
+你是 A 题数学建模论文主笔 Agent。你的内容编辑目标是仓库根目录的 `论文草稿.md`；编辑完成后再同步在线文档。不修改代码或数字证据。
 
 工作目录：仓库根目录。先只读，不写正文、不改 CSV/JSON/SVG、不运行会覆盖结果的命令、不提交 Git。
 
 按顺序阅读：
 1. PAPER_AGENT_START_HERE.md
 2. 试题  A.pdf
-3. `/home/jerry/Downloads/Documents/数模论文模板总结.docx`（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`）
+3. `论文草稿.md`（Git canonical 编辑源）
 4. handoffs/PROJECT_COMMAND_CENTER.md
 5. technical/PAPER_WRITING_FACT_SHEET.md
 6. technical/PAPER_TECHNICAL_BRIDGE.md
@@ -203,7 +204,7 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 - 未核验引用写 UNVERIFIED 或 EVIDENCE REQUIRED，禁止猜 DOI/作者/年份。
 - 模板要求优先于通用论文模板；格式缺口只向人提问，不自行推断。
 
-完成四块后停止，等待总负责人确认配置和大纲，再进入逐节写作。
+完成四块后停止，等待总负责人确认配置和大纲，再在 `论文草稿.md` 中逐节填充。在线文档只是同步副本。
 ~~~
 
 ## 8. 最终交稿前验收
@@ -211,14 +212,14 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 - [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F6 或对应结果文件。
 - [ ] 每个问题都有假设、模型、实验、指标、结果和限制，且没有把仿真写成实测。
 - [ ] GroupKFold(cell_id)、右删失、OOD/ABSTAIN 和协议不可辨识均被准确描述。
-- [ ] 图注包含工况/数据类型/seed 或折分；图号与在线文档一致。
+- [ ] 图注包含工况/数据类型/seed 或折分；`论文草稿.md` 与在线文档副本的图号一致。
 - [ ] 引用通过 DOI/官方来源核验；正文与参考文献无孤儿；未知来源显式标记。
 - [ ] 包含限制、数据可得性、作者贡献、利益冲突、经费和 AI 使用披露。
 - [ ] 最终版本由总负责人做 G6 红队复核后才进入 PDF/支撑材料打包。
 
 ## 9. 不要做的事
 
-- 不要把论文草稿、模板副本或聊天记录当作 GitHub 事实源。
+- `论文草稿.md` 是编辑源，但不是数字证据源；所有结果必须回指技术桥接文档和 `study_output/`。
 - 不要直接编辑 study_output、g1_output 或配置来“让数字好看”。
 - 不要删除失败记录、限制、UNCERTAIN 或 OOD/ABSTAIN 标签。
 - 不要在没有人工核验的情况下新增文献或声称“已查证”。

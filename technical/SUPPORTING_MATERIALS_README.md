@@ -1,6 +1,6 @@
 # A题支撑材料说明
 
-论文主笔 Agent 的技术过渡入口：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)；本页只负责复跑和支撑材料打包。
+论文主笔 Agent 的编辑源是 [论文草稿.md](../论文草稿.md)；技术过渡入口是 [PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只负责复跑和支撑材料打包。
 
 ## 1. 最小复跑
 

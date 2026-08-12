@@ -41,7 +41,7 @@
 | 模式 | 判定 | 技术证据/处置 |
 |---|---|---|
 | 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | 56 tests、9 gates、双跑 manifest 与 43/43 产物哈希；代码变更后需重审 |
-| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | 33 个 `EVIDENCE REQUIRED` 未完成人工全文/页码核验；阻塞 Stage 2.5 |
+| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | `论文草稿.md` 中 34 条候选文献未逐条完成人工全文、页码与主张范围核验；阻塞 Stage 2.5 |
 | 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | 数字回指保存的 CSV/JSON，manifest 可回算 |
 | 4 捷径依赖 | `INSUFFICIENT_EVIDENCE` | 同一仿真家族内生成/训练/验证，无真实外部集或去捷径消融；只能作仿真内比较 |
 | 5 缺陷包装为发现 | `CLEAR_WITHIN_CURRENT_SCOPE` | 未建立反常机理叙事；局部反转按随机效应限制报告 |

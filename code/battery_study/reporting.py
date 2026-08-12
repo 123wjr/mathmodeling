@@ -250,7 +250,7 @@ def write_validation_report(project_root: str, results: dict, gates: list[dict])
 | 模式 | 判定 | 技术证据/处置 |
 |---|---|---|
 | 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | 56 tests、9 gates、双跑 manifest 与 43/43 产物哈希；代码变更后需重审 |
-| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | 33 个 `EVIDENCE REQUIRED` 未完成人工全文/页码核验；阻塞 Stage 2.5 |
+| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | `论文草稿.md` 中 34 条候选文献未逐条完成人工全文、页码与主张范围核验；阻塞 Stage 2.5 |
 | 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | 数字回指保存的 CSV/JSON，manifest 可回算 |
 | 4 捷径依赖 | `INSUFFICIENT_EVIDENCE` | 同一仿真家族内生成/训练/验证，无真实外部集或去捷径消融；只能作仿真内比较 |
 | 5 缺陷包装为发现 | `CLEAR_WITHIN_CURRENT_SCOPE` | 未建立反常机理叙事；局部反转按随机效应限制报告 |
@@ -285,7 +285,7 @@ def write_fact_sheet(project_root: str, results: dict) -> str:
     aft = _by_name(q2["rul_metrics"])["lognormal_aft_censored"]
     text = f"""# 论文写作数字事实表
 
-写作入口：[PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)；技术过渡层：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只提供可复制数字，不替代逐问模型、实验协议和限制说明。
+写作入口：[PAPER_AGENT_START_HERE.md](../PAPER_AGENT_START_HERE.md)；编辑源：[论文草稿.md](../论文草稿.md)；技术过渡层：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只提供可复制数字，不替代逐问模型、实验协议和限制说明。
 
 > 只复制本页已标记数字；不得把“仿真结果”改写为“实测结果”。详细定义见 `TECHNICAL_REPORT_MINIMAL.md`。
 
@@ -306,7 +306,7 @@ def write_fact_sheet(project_root: str, results: dict) -> str:
 def write_supporting_readme(project_root: str) -> str:
     text = """# A题支撑材料说明
 
-论文主笔 Agent 的技术过渡入口：[PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)；本页只负责复跑和支撑材料打包。
+论文主笔 Agent 的编辑源是 [论文草稿.md](../论文草稿.md)；技术过渡入口是 [PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只负责复跑和支撑材料打包。
 
 ## 1. 最小复跑
 

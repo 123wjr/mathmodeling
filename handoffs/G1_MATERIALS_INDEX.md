@@ -39,12 +39,12 @@
 
 ## 三、论文手材料包
 
-论文手不需要直接操作 GitHub；总负责人或建模手把验收后的结果和链接转交到腾讯文档。
+论文手的内容编辑源是仓库根目录 `论文草稿.md`；在线文档是协作/提交副本。论文手无需操作代码或结果文件。
 
 ### 先读
 
 1. [G1_TASK_DISPATCH.md](G1_TASK_DISPATCH.md) 的“队友 1”部分。
-2. [g0.docx](../g0.docx) 作为当前论文草稿和术语/假设来源。
+2. [论文草稿.md](../论文草稿.md) 作为当前唯一可编辑论文源；`g0.docx` 仅是历史交接草稿。
 3. [G0_EVIDENCE_INTERFACE.md](G0_EVIDENCE_INTERFACE.md) 的证据 ID 和标记规则。
 4. [A0_Task_Contract.md](A0_Task_Contract.md) 的禁止声称结论。
 5. [Data_Strategy.md](../docs/Data_Strategy.md) 和 [Simulation_Protocol.md](../docs/Simulation_Protocol.md) 的方法边界。
@@ -59,7 +59,7 @@
 
 ### 交付回指
 
-- 正文、证据表和修订记录保存在腾讯文档。
+- 正文先保存在 `论文草稿.md`，再同步到在线文档；证据表和修订记录与对应版本一起维护。
 - 论文数字必须回指 A1 输出文件或已人工核验的 A1-A4 来源。
 - 不把豆包生成的未核验引用直接放入参考文献。
 

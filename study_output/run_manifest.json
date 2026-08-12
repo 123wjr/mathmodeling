@@ -16,9 +16,9 @@
       "sha256": "f34f1ae0313645fe00615bd5f00ebb52452af9bf24235ce49c4363adbe040eef"
     },
     {
-      "bytes": 4245,
+      "bytes": 4328,
       "path": "handoffs/A5_paper_technical_bridge.md",
-      "sha256": "29387ae2e223283ad56ae011f14e6e0f4883d9b6a0e469463ad4c6f1ef97a846"
+      "sha256": "f6ef6622c57cc847e4e4d297652d619a29030fd32c3c480eccfbb8692598d0b7"
     },
     {
       "bytes": 27649,
@@ -186,19 +186,19 @@
       "sha256": "fc616ec0a1177e28c30a83c0c6d0f0ccd6131363115bb9e029cc53a167b565f4"
     },
     {
-      "bytes": 50532,
+      "bytes": 55008,
       "path": "technical/PAPER_TECHNICAL_BRIDGE.md",
-      "sha256": "61ecf33e939ba0e17180b2c268b6999ddc027c6813c1451659f7a4c0c6ea7787"
+      "sha256": "a609508263d468882ca6ce994aa496b3792aa3139f0170ebfa1943d6861fd66b"
     },
     {
-      "bytes": 1393,
+      "bytes": 1445,
       "path": "technical/PAPER_WRITING_FACT_SHEET.md",
-      "sha256": "d56889f3386ee7c2e267c08082bb5468939606d488fd6ff069e46fa615bf866a"
+      "sha256": "bb38faa7d307b354fe7b394aca2e9fceb4fbc64774717a55acf06b8da68cdea1"
     },
     {
-      "bytes": 2045,
+      "bytes": 2099,
       "path": "technical/SUPPORTING_MATERIALS_README.md",
-      "sha256": "e833a615308e6b5aed09fce3be3737a0be4aac4e6746c7c6580fb854268a5af0"
+      "sha256": "cfd330dcdc5c61ee740b2e8cd2912ba5f40820f059a84b7acd8bcbd07861d783"
     },
     {
       "bytes": 4186,
@@ -211,9 +211,9 @@
       "sha256": "d49d053b11c22b67dd8c65ddee01c97ae03846dbdf12f29235fbe2ab8727b6a8"
     },
     {
-      "bytes": 4378,
+      "bytes": 4414,
       "path": "technical/VALIDATION_REPORT.md",
-      "sha256": "31a8190b535dbf3b74d24da7b40fe63d0f1acc99c4d3087f818abaa9a2997b23"
+      "sha256": "ef277abac2a1d588385ec697f760e131aea0865698a2e13a1af3726a8b464335"
     }
   ],
   "command": "PYTHONPATH=code python -m battery_study.cli --config configs/study_pipeline.json --out study_output",
@@ -222,7 +222,7 @@
     "conditions": 27,
     "rows_regenerated_not_persisted": 108000
   },
-  "git_head_before_commit": "cc135c17ecaaaded4263a25416322fde676c81d6",
+  "git_head_before_commit": "a85f7f8a51afba05d7fc9694094ab571591d9f9f",
   "input_configs": [
     {
       "path": "configs/study_pipeline.json",
@@ -297,9 +297,9 @@
       "sha256": "a48bc6c2618713083bdf0eaa75a19b76694011ad85aaf888b7ae1f632e031f65"
     },
     {
-      "bytes": 29906,
+      "bytes": 30048,
       "path": "code/battery_study/reporting.py",
-      "sha256": "01456ed0116697856b8f7e1037c620a3f0b7a4e14fdf2531f4e4f20cd691edfb"
+      "sha256": "fc86a8fdfe5a9ae4e81f22ab5e5af2483ec97ede617003c7377119ea88e28986"
     },
     {
       "bytes": 6141,
