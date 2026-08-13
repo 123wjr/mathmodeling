@@ -1,21 +1,34 @@
-参数,符号,单位,范围,来源,用途,假设/观测标签,不确定性
-化学体系,chemistry,-,NMC (LiNiMnCo/graphite),CALCE NMC数据,确定主建模对象,OBSERVED,中
-额定容量,Q_nom,Ah,2.0,CALCE INR18650-20R,确定初始容量尺度,OBSERVED,低
-循环次数,N,cycle,0-1000,公开循环老化数据,退化时间轴,OBSERVED,中
-环境温度,T,degC,25-50,CALCE温度实验,温度工况,OBSERVED,中
-充放电倍率,C_rate,C,0.5-2,公开循环实验,倍率退化因素,OBSERVED,中
-放电深度,DOD,%,50-100,公开文献,退化严重程度,OBSERVED,高
-充电方式,protocol,-,CC-CV,公开实验协议,充电过程,OBSERVED,低
-初始内阻,R0,Ohm,0.03-0.10,CALCE INR18650-20R首循环阻抗量级,内阻初值,OBSERVED,中
-容量衰减系数,alpha,SOH/sqrt(EFC),0.003-0.006,仿真校准边界（不作为实测值）,容量退化模型,ASSUMED,高
-内阻增长系数,beta,relative growth/sqrt(EFC),0.005-0.020,仿真校准边界（不作为实测值）,内阻退化模型,ASSUMED,高
-温度加速系数,k_T,1/degC,0.010-0.030,文献支持方向+仿真场景设定,温度退化修正,ASSUMED,高
-倍率加速系数,k_C,1/C,0.05-0.20,文献支持方向+仿真场景设定,倍率退化修正,ASSUMED,高
-DOD加速系数,k_D,1,0.20-0.80,文献支持方向+仿真场景设定,DOD退化修正,ASSUMED,高
-SOH_EOL阈值,SOH_EOL,%,80,文献常用定义/本研究可调建模阈值,RUL终点,LITERATURE_FIXED,中
-测量噪声,sigma_Q,% of Q_nom,0.2-1.0,仿真设定,容量测量误差,ASSUMED,高
-测量噪声,sigma_R,% of R_true,0.5-3.0,仿真设定,内阻测量误差,ASSUMED,高
-电芯个体差异,sigma_cell,relative SD,0.03-0.10,仿真设定,初值和退化速率随机效应,ASSUMED,高
-膝点位置,n_k,EFC,600-850,仿真设定（N_max=1000）,分段退化转折,ASSUMED,高
-膝点后斜率倍数,knee_gain,-,2.0,仿真设定,膝点后加速退化,ASSUMED,高
-随机种子,seed,-,42（冒烟）；正式实验预注册,G1配置,可复现性控制,ASSUMED,低
+参数,符号,单位,允许范围或候选集,本研究冻结值,依据等级,依据与取值理由,敏感性/决策后果,更新条件,论文标签
+化学体系,chemistry,-,NMC (LiNiMnCo/graphite),NMC,L1_REFERENCE_OBJECT,CALCE 公开页用于选择 NMC/graphite 参考对象；未读取其原始循环拟合参数,决定结论适用化学体系,获得匹配体系原始数据后独立校准并重新验证,REFERENCE_SCALE_NOT_FITTED
+额定容量,Q_nom,Ah,2.0,2.0,L1_REFERENCE_SCALE,CALCE INR18650-20R 名称与公开元数据提供容量尺度；不作为样本统计量,缩放容量与容量噪声绝对量,更换参考电芯型号或取得实测初始容量分布,REFERENCE_SCALE_NOT_FITTED
+初始内阻,R0,Ohm,0.03--0.10,0.05,L1_REFERENCE_SCALE,公开电芯阻抗量级只约束范围；中心值为仿真冻结值且未拟合,影响内阻绝对值；相对增长结论较稳定,取得同协议同温度的 DCIR/EIS 首循环测量,ASSUMED_UPDATEABLE
+循环上限,N,cycle,1--1000,1000,L2_DESIGN,竞赛仿真观察窗设计；不是电芯物理寿命上限,决定删失比例和可观察膝点数量,题目观察窗或实验周期改变,ASSUMED_UPDATEABLE
+温度水平,T,degC,25--50,"25,35,45",L2_DESIGN,在 G0 冻结支持域内采用三水平平衡全因子；不代表 CALCE 原测试矩阵,改变 Q1 主效应与压力追踪结果,取得匹配温度试验后按试验水平替换,ASSUMED_UPDATEABLE
+倍率水平,C_rate,C,0.5--2.0,"0.5,1.0,2.0",L2_DESIGN,在冻结支持域内采用三水平平衡全因子,改变倍率主效应和 EFC/退化速度,取得匹配倍率协议后替换,ASSUMED_UPDATEABLE
+DOD 水平,DOD,%,50--100,"50,80,100",L2_DESIGN,在冻结支持域内采用三水平平衡全因子,显著改变 EFC 与当前仿真主效应排序,取得匹配 DOD 试验后替换,ASSUMED_UPDATEABLE
+充电协议,protocol,-,CC-CV,CC-CV,L1_PROTOCOL_REFERENCE,公开老化实验常用协议；本研究仅一个水平因此协议效应不可辨识,限制外推范围；不能估计协议权重,增加可核验多协议数据并重新设计全因子,CONFIRMED_SINGLE_LEVEL
+容量衰减系数,alpha,SOH/sqrt(EFC),0.003--0.006,0.004,L2_MECHANISM_CONSTRAINED_ASSUMPTION,平方根退化方向由机理/综述支持；范围与中心均为仿真假设而非实验估计,直接控制容量衰减和终点事件数；V1 OAT 对容量输出敏感,用匹配原始轨迹按训练电芯拟合并留组验证,ASSUMED_UPDATEABLE
+内阻增长系数,beta,relative growth/sqrt(EFC),0.005--0.020,0.010,L2_MECHANISM_CONSTRAINED_ASSUMPTION,容量衰退伴随内阻增长的方向有公开依据；数值为仿真假设,控制内阻门槛与组内一致性；V1 OAT 对内阻输出敏感,用同协议 DCIR/EIS 时序拟合,ASSUMED_UPDATEABLE
+温度加速系数,k_T,1/degC,0.010--0.030,0.020,L2_MECHANISM_CONSTRAINED_ASSUMPTION,高温加速方向由老化机理支持；线性指数系数为场景设定,影响 Q1 温度权重与高温压力结果,取得多温度同批次重复试验后估计并给区间,ASSUMED_UPDATEABLE
+倍率加速系数,k_C,1/C,0.05--0.20,0.10,L2_MECHANISM_CONSTRAINED_ASSUMPTION,倍率增加加速退化方向受支持；数值未实测拟合,影响倍率主效应和高倍率压力结果,取得多倍率同批次重复试验后估计,ASSUMED_UPDATEABLE
+DOD 加速系数,k_D,1,0.20--0.80,0.50,L2_MECHANISM_CONSTRAINED_ASSUMPTION,更深循环增加等效损伤方向受支持；数值未实测拟合,当前仿真中主导 DOD 权重；不能推广为真实机理排序,取得多 DOD 同批次试验后估计,ASSUMED_UPDATEABLE
+膝点位置,n_k,EFC,600--850,700,L2_DESIGN_ASSUMPTION,用于构造可辨识的分段退化；范围为仿真设计且不是 CALCE 统计结果,控制膝点可见率和后期退化加速时点；V1 OAT 敏感,按预注册膝点算法在训练电芯估计分布,ASSUMED_UPDATEABLE
+膝点后斜率倍数,knee_gain,-,2.0,2.0,L2_DESIGN_ASSUMPTION,冻结为最小连续分段模型的场景值,控制膝点后衰退和终点事件数,获得膝点后足够观测时估计,ASSUMED_UPDATEABLE
+容量高斯噪声,sigma_Q,% of Q_nom,0.2--1.0,0.6,L2_OBSERVATION_ASSUMPTION,加性高斯仅为基础测量误差模型；数值未由仪器重复性标定,影响 SOH 特征与短期预测误差,用重复容量测试估计仪器与协议方差,ASSUMED_UPDATEABLE
+内阻高斯噪声,sigma_R,% of R_true,0.5--3.0,1.5,L2_OBSERVATION_ASSUMPTION,乘性尺度高斯仅为基础测量误差模型；数值未标定,影响内阻增长筛选和组内一致性,用重复 DCIR/EIS 测试估计,ASSUMED_UPDATEABLE
+电芯个体差异,sigma_cell,relative SD,0.03--0.10,0.05,L2_POPULATION_ASSUMPTION,截断正态用于避免非物理尾部；分布和标准差均未实测拟合,影响事件数/删失率/筛选可行性,取得同批次重复电芯后比较正态/偏态/混合分布,ASSUMED_UPDATEABLE
+RPT 周期,rpt_period,cycle,"0,25,50","none=0; light=50; heavy=25",L2_OBSERVATION_STRESS,RPT 周期仅用于冻结仿真压力档；不是候选真实数据的协议识别结果,改变近期斜率与退役快照观测,核验数据源测试协议或识别 RPT 标记后替换,ASSUMED_UPDATEABLE
+容量恢复脉冲,a_Q,%,"0,0.4,1.0","none=0; light=0.4; heavy=1.0",L2_OBSERVATION_STRESS,无/轻/重三档压力假设；不称真实恢复幅度,影响模型 RMSE 和入选成员,用相邻 RPT 前后容量差分在训练电芯估计,ASSUMED_UPDATEABLE
+内阻恢复脉冲,a_R,%,"0,0.8,2.0","none=0; light=0.8; heavy=2.0",L2_OBSERVATION_STRESS,无/轻/重三档压力假设；不称真实恢复幅度,影响内阻增长门槛和编组成员,用相邻 RPT 前后内阻差分估计,ASSUMED_UPDATEABLE
+异常观测比例,p_out,-,"0,0.002,0.005","none=0; light=0.002; heavy=0.005",L2_OBSERVATION_STRESS,稀疏异常压力假设且上限锁定低于 1%,影响局部特征但不改变潜在状态,用仪器质量控制日志估计并区分可剔除错误,ASSUMED_UPDATEABLE
+异常幅度,m_out,基础噪声倍数,"0,3,5","none=0; light=3; heavy=5",L2_OBSERVATION_STRESS,异常幅度相对现有测量残差定义,影响预测排序与决策 Jaccard,由重复测量残差分布尾部估计,ASSUMED_UPDATEABLE
+SOH 终点,SOH_EOL,-,0.80,0.80,L1_COMMON_DEFINITION,80% 为文献常用寿命定义；本研究作为可调建模终点而非普适安全阈值,决定事件/删失和条件 RUL,采用题目或应用规范终点后全量重跑,ASSUMED_UPDATEABLE
+退役时点,t0,cycle,750,750,L2_DECISION_DESIGN,为闭合退役快照与后续追踪而冻结的决策时点,决定风险集和条件 RUL 观察窗,题目指定退役时点或业务台账改变,ASSUMED_UPDATEABLE
+最低 SOH,min_soh,-,0.74--0.78,0.76,L2_DECISION_ASSUMPTION,OAT 扫描范围内冻结基准；不是安全标准,影响入选率与最大可行组数,采用规范/检测能力/风险偏好重新设定,ASSUMED_UPDATEABLE
+RUL 下界门槛,min_rul_lower,cycle,20--60,40,L2_DECISION_ASSUMPTION,对 90% 下界施加的风险门槛；数值为场景值,影响区间风险筛选和弃权,按目标服务周期与风险容忍度设定,ASSUMED_UPDATEABLE
+最大内阻增长,max_R_growth,-,0.40--0.50,0.45,L2_DECISION_ASSUMPTION,OAT 扫描范围内冻结基准；不是安全标准,影响入选率和一致性,按检测协议和应用功率需求设定,ASSUMED_UPDATEABLE
+最大 RUL 区间宽度,max_interval_width,cycle,3000,3000,L2_DECISION_ASSUMPTION,只作不确定性筛选门槛且不截断 AFT 原区间,当前决定 INTERVAL_RISK 由 89 芯降至 41 芯,取得校准更好的数据后按覆盖-可行性权衡更新,ASSUMED_UPDATEABLE
+编组规模,group_size,cell,4,4,L2_DECISION_DESIGN,模块级最小演示规模；不是实际储能系统拓扑,决定候选组合和 MILP 约束,获得额定电压/功率/容量需求后建立串并联拓扑,ASSUMED_UPDATEABLE
+目标组数,target_groups,group,8,8,L2_CAPACITY_TARGET,用于比较固定产能目标与最大可信产能,不可行时触发弃权而非放宽门槛,按任务需求设定；始终同时报告最大可行组数,ASSUMED_UPDATEABLE
+目标权重,w,-,四项非负且和为1,"balanced=(0.35,0.25,0.25,0.15)",L2_PREFERENCE_ASSUMPTION,效益/一致性/风险/成本权重为决策偏好而非统计估计,改变选中成员与目标值；仅同归一化口径比较,由决策者偏好或多准则赋权更新,ASSUMED_UPDATEABLE
+随机种子,seed,-,"42;123;2026;4096;8110;20260811;20260813",见配置,L2_REPRODUCIBILITY,固定种子用于复现和五种子稳定性扫描,影响具体随机电芯但不应改变验证规则,扩大种子集合并报告分布,CONFIRMED_CONFIG

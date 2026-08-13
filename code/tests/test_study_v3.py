@@ -94,6 +94,43 @@ def test_decision_modes_use_distinct_rul_gates():
     assert "RUL_LOWER_BELOW_MIN" in interval["gate_failures"]
 
 
+def test_observation_pressure_changes_measurements_not_latent_state(inputs):
+    _, _, dataset = inputs
+    regime = {
+        "name": "light",
+        "rpt_period_cycles": 50,
+        "capacity_recovery_pct": 0.4,
+        "resistance_recovery_pct": 0.8,
+        "outlier_fraction": 0.002,
+        "outlier_scale": 3.0,
+    }
+    first, first_audit = v3.apply_observation_pressure(dataset["rows"], regime, seed=17)
+    second, second_audit = v3.apply_observation_pressure(dataset["rows"], regime, seed=17)
+    assert first == second
+    assert first_audit == second_audit
+    assert any(a["capacity_obs"] != b["capacity_obs"] for a, b in zip(dataset["rows"], first))
+    assert all(a["capacity_true"] == b["capacity_true"] for a, b in zip(dataset["rows"], first))
+    assert all(a["resistance_true"] == b["resistance_true"] for a, b in zip(dataset["rows"], first))
+    assert first[:2] == dataset["rows"][:2]
+    assert first_audit["latent_state_unchanged"] is True
+    assert first_audit["rpt_affected_rows"] > 0
+
+
+def test_observation_pressure_off_is_exact_identity(inputs):
+    _, _, dataset = inputs
+    regime = {
+        "name": "none",
+        "rpt_period_cycles": 0,
+        "capacity_recovery_pct": 0.0,
+        "resistance_recovery_pct": 0.0,
+        "outlier_fraction": 0.0,
+        "outlier_scale": 0.0,
+    }
+    rows, audit = v3.apply_observation_pressure(dataset["rows"], regime, seed=17)
+    assert rows == dataset["rows"]
+    assert audit["changed_measurement_rows"] == 0
+
+
 def test_jaccard_is_bounded_and_empty_is_defined():
     assert v3.jaccard({"a"}, {"a", "b"}) == pytest.approx(0.5)
     assert v3.jaccard(set(), set()) == 1.0
@@ -175,6 +212,67 @@ def test_interval_risk_milp_uses_rul_lower_bound_in_group_metrics(inputs):
     assert solution["selected"][0]["min_predicted_rul"] == 100.0
 
 
+def test_decision_abstains_instead_of_relaxing_gates_when_target_is_unreachable(inputs):
+    study_cfg, _, _ = inputs
+    candidates = []
+    for index in range(20):
+        candidates.append({
+            "cell_id": f"cell_{index}",
+            "eligible": index < 12,
+            "capacity_Ah": 2.0 + index * 0.001,
+            "soh_estimate": 0.9,
+            "resistance_growth": 0.1,
+            "predicted_rul_cycles": 100.0,
+            "rul_lower_cycles": 80.0,
+            "decision_rul_cycles": 80.0,
+            "lifetime_interval_width": 100.0,
+            "actual_interval_width": 100.0,
+            "gate_failures": "NONE" if index < 12 else "SOH_BELOW_MIN",
+        })
+    solution = v3.optimize_decision(
+        candidates, study_cfg, tuple(study_cfg.q3.weights["balanced"]), target_groups=8
+    )
+    assert solution["decision_status"] == "ABSTAIN_INSUFFICIENT_FEASIBILITY"
+    assert solution["requested_groups"] == 8
+    assert solution["max_feasible_groups"] == solution["n_groups"] == 3
+    assert solution["group_shortfall"] == 5
+    assert solution["thresholds_relaxed"] is False
+    assert solution["abstention_reasons"] == "INSUFFICIENT_ELIGIBLE_CELLS"
+
+
+def test_decision_abstains_when_group_overlap_limits_capacity(inputs, monkeypatch):
+    study_cfg, _, _ = inputs
+    candidates = [{
+        "cell_id": f"cell_{index}", "eligible": True,
+        "capacity_Ah": 2.0, "soh_estimate": 0.9, "resistance_growth": 0.1,
+        "predicted_rul_cycles": 100.0, "rul_lower_cycles": 80.0,
+        "decision_rul_cycles": 80.0, "lifetime_interval_width": 100.0,
+        "actual_interval_width": 100.0, "gate_failures": "NONE",
+    } for index in range(32)]
+    groups = []
+    for index in range(8):
+        groups.append({
+            "members": ("cell_0", f"cell_{1 + 3 * index}",
+                        f"cell_{2 + 3 * index}", f"cell_{3 + 3 * index}"),
+            "mean_capacity_Ah": 2.0, "min_soh": 0.9, "min_predicted_rul": 80.0,
+            "capacity_cv": 0.0, "soh_range": 0.0, "rul_cv": 0.0,
+            "resistance_range": 0.0, "raw_benefit": 1.0,
+            "raw_inconsistency": 0.0, "raw_risk": 0.0, "raw_cost": 1.0,
+            "benefit_index": 0.5, "inconsistency_index": 0.5,
+            "risk_index": 0.5, "cost_index": 0.5,
+        })
+    monkeypatch.setattr(v3.q3, "enumerate_candidate_groups", lambda *args, **kwargs: groups)
+    solution = v3.optimize_decision(
+        candidates, study_cfg, tuple(study_cfg.q3.weights["balanced"]), target_groups=8
+    )
+    assert solution["eligible_cells"] == 32
+    assert solution["max_feasible_groups"] == solution["n_groups"] == 1
+    assert solution["group_shortfall"] == 7
+    assert solution["decision_status"] == "ABSTAIN_INSUFFICIENT_FEASIBILITY"
+    assert solution["abstention_reasons"] == "GROUP_COMPATIBILITY_LIMIT"
+    assert solution["thresholds_relaxed"] is False
+
+
 def test_stability_sweep_is_oat_and_reports_jaccard(inputs):
     study_cfg, _, dataset = inputs
     settings = v3.load_settings(os.path.join(REPO_ROOT, "configs", "study_pipeline_v3.json"))
@@ -187,6 +285,11 @@ def test_stability_sweep_is_oat_and_reports_jaccard(inputs):
     assert all(row["changed_parameter_count"] <= 1 for row in result)
     assert all(row["eligible_rate"] == pytest.approx(
         row["eligible_cells"] / row["risk_set_cells"]
+    ) for row in result)
+    assert all(row["thresholds_relaxed"] is False for row in result)
+    assert all(row["decision_status"] == (
+        "ABSTAIN_INSUFFICIENT_FEASIBILITY" if row["group_shortfall"] else
+        "ACCEPT_FIXED_GROUPS"
     ) for row in result)
 
 
@@ -228,6 +331,9 @@ def test_stability_summary_reports_registered_aggregates():
             "worst_selected_resistance_growth_margin_min": 0.1,
             "worst_selected_interval_width_margin_cycles_min": 50.0,
             "infeasible_count": 1,
+            "abstention_count": 0,
+            "group_shortfall_max": 0,
+            "threshold_relaxation_count": 0,
         }
 
 
@@ -430,6 +536,8 @@ def test_manifest_source_paths_include_v3_and_g1_configs():
     assert g1_config in paths
     assert os.path.join(REPO_ROOT, "requirements-study.txt") in paths
     assert os.path.join(REPO_ROOT, "technical", "v2_evidence_status.json") in paths
+    assert os.path.join(REPO_ROOT, "evidence", "parameter_ledger.txt") in paths
+    assert os.path.join(REPO_ROOT, "evidence", "source_ledger.txt") in paths
 
 
 def test_v3_document_paths_cover_technical_and_paper_handoffs():
@@ -443,6 +551,9 @@ def test_v3_document_paths_cover_technical_and_paper_handoffs():
         os.path.join(REPO_ROOT, "handoffs", "PROJECT_COMMAND_CENTER.md"),
         os.path.join(REPO_ROOT, "technical", "PAPER_TECHNICAL_BRIDGE.md"),
         os.path.join(REPO_ROOT, "technical", "PAPER_WRITING_FACT_SHEET.md"),
+        os.path.join(REPO_ROOT, "technical", "TECHNICAL_SOLUTION_FINAL.md"),
+        os.path.join(REPO_ROOT, "technical", "FINAL_VALIDATION_REPORT.md"),
+        os.path.join(REPO_ROOT, "technical", "FINAL_CHANGELOG_FOR_PAPER.md"),
         os.path.join(REPO_ROOT, "technical", "TECHNICAL_SOLUTION_V3.md"),
         os.path.join(REPO_ROOT, "technical", "V3_EXPERIMENT_PLAN.md"),
         report,

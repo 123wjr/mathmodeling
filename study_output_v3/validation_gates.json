@@ -58,5 +58,20 @@
     "evidence": "endpoint breach or post-750 event always rejects forced assignment",
     "gate": "stress_trigger_endpoint_guard",
     "status": "PASS"
+  },
+  {
+    "evidence": "none/light/heavy all report four Q2 models and Q3 decision outcomes",
+    "gate": "observation_pressure_complete",
+    "status": "PASS"
+  },
+  {
+    "evidence": "only observed channels changed; grouped split overlap remains zero",
+    "gate": "observation_latent_state_preserved",
+    "status": "PASS"
+  },
+  {
+    "evidence": "shortfall returns explicit abstention; screening thresholds never relax",
+    "gate": "decision_abstention_enforced",
+    "status": "PASS"
   }
 ]

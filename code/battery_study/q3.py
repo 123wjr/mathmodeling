@@ -226,6 +226,36 @@ def solve_milp(groups: list[dict], weights, target_groups: int) -> dict:
     }
 
 
+def maximum_disjoint_group_count(groups: list[dict]) -> int:
+    """Return exact set-packing capacity without relaxing candidate gates."""
+    if not groups:
+        return 0
+    cells = sorted({cell for group in groups for cell in group["members"]})
+    cell_index = {cell: index for index, cell in enumerate(cells)}
+    matrix_rows, matrix_columns, matrix_values = [], [], []
+    for column, group in enumerate(groups):
+        for cell in group["members"]:
+            matrix_rows.append(cell_index[cell])
+            matrix_columns.append(column)
+            matrix_values.append(1.0)
+    constraint_matrix = coo_array(
+        (matrix_values, (matrix_rows, matrix_columns)),
+        shape=(len(cells), len(groups)),
+    ).tocsc()
+    result = milp(
+        c=-np.ones(len(groups)),
+        integrality=np.ones(len(groups)),
+        bounds=Bounds(0.0, 1.0),
+        constraints=LinearConstraint(
+            constraint_matrix, np.full(len(cells), -np.inf), np.ones(len(cells))
+        ),
+        options={"time_limit": 60.0, "mip_rel_gap": 0.0},
+    )
+    if not result.success or result.x is None:
+        raise RuntimeError(f"最大可行组数 MILP 失败: {result.message}")
+    return int(round(float(np.sum(result.x > 0.5))))
+
+
 def solve_greedy(groups: list[dict], weights, target_groups: int) -> dict:
     selected, used = [], set()
     ranked = sorted(groups, key=lambda group: (-group_score(group, weights), group["members"]))

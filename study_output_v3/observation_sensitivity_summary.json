@@ -1,0 +1,80 @@
+{
+  "audits": [
+    {
+      "changed_measurement_rows": 0,
+      "latent_state_unchanged": true,
+      "outlier_rows": 0,
+      "q2_split_overlap": 0,
+      "regime": "none",
+      "retirement_split_overlap": 0,
+      "rpt_affected_rows": 0
+    },
+    {
+      "changed_measurement_rows": 6472,
+      "latent_state_unchanged": true,
+      "outlier_rows": 221,
+      "q2_split_overlap": 0,
+      "regime": "light",
+      "retirement_split_overlap": 0,
+      "rpt_affected_rows": 6264
+    },
+    {
+      "changed_measurement_rows": 13218,
+      "latent_state_unchanged": true,
+      "outlier_rows": 528,
+      "q2_split_overlap": 0,
+      "regime": "heavy",
+      "retirement_split_overlap": 0,
+      "rpt_affected_rows": 12744
+    }
+  ],
+  "decision_rows": [
+    {
+      "abstention_reasons": "NONE",
+      "decision_status": "ACCEPT_FIXED_GROUPS",
+      "eligible_cells": 41,
+      "group_shortfall": 0,
+      "max_feasible_groups": 10,
+      "regime": "none",
+      "requested_groups": 8,
+      "risk_set_cells": 92,
+      "selected_cell_ids": "T25_C0p5_D100_0;T25_C0p5_D100_1;T25_C0p5_D100_3;T25_C1_D100_0;T25_C1_D100_2;T25_C1_D100_3;T25_C2_D100_1;T25_C2_D100_3;T25_C2_D80_0;T25_C2_D80_2;T25_C2_D80_3;T35_C0p5_D100_1;T35_C0p5_D100_3;T35_C0p5_D80_0;T35_C0p5_D80_1;T35_C0p5_D80_3;T35_C1_D80_0;T35_C1_D80_2;T35_C1_D80_3;T35_C2_D80_1;T35_C2_D80_2;T35_C2_D80_3;T45_C0p5_D80_0;T45_C0p5_D80_1;T45_C0p5_D80_2;T45_C0p5_D80_3;T45_C1_D50_0;T45_C1_D50_3;T45_C1_D80_2;T45_C2_D50_0;T45_C2_D50_2;baseline_0",
+      "selected_cell_jaccard_vs_none": 1.0,
+      "selected_groups": 8,
+      "thresholds_relaxed": false
+    },
+    {
+      "abstention_reasons": "NONE",
+      "decision_status": "ACCEPT_FIXED_GROUPS",
+      "eligible_cells": 39,
+      "group_shortfall": 0,
+      "max_feasible_groups": 9,
+      "regime": "light",
+      "requested_groups": 8,
+      "risk_set_cells": 92,
+      "selected_cell_ids": "T25_C0p5_D100_0;T25_C0p5_D100_1;T25_C0p5_D100_2;T25_C0p5_D100_3;T25_C1_D100_0;T25_C1_D100_1;T25_C1_D100_2;T25_C1_D100_3;T25_C2_D100_1;T25_C2_D100_3;T25_C2_D80_0;T25_C2_D80_3;T35_C0p5_D100_1;T35_C0p5_D100_3;T35_C0p5_D80_0;T35_C0p5_D80_1;T35_C0p5_D80_3;T35_C1_D80_0;T35_C1_D80_1;T35_C1_D80_2;T35_C1_D80_3;T35_C2_D80_1;T35_C2_D80_2;T35_C2_D80_3;T45_C0p5_D80_0;T45_C0p5_D80_1;T45_C0p5_D80_2;T45_C0p5_D80_3;T45_C1_D50_0;T45_C1_D80_2;T45_C2_D50_0;T45_C2_D50_2",
+      "selected_cell_jaccard_vs_none": 0.8285714285714286,
+      "selected_groups": 8,
+      "thresholds_relaxed": false
+    },
+    {
+      "abstention_reasons": "NONE",
+      "decision_status": "ACCEPT_FIXED_GROUPS",
+      "eligible_cells": 40,
+      "group_shortfall": 0,
+      "max_feasible_groups": 10,
+      "regime": "heavy",
+      "requested_groups": 8,
+      "risk_set_cells": 92,
+      "selected_cell_ids": "T25_C0p5_D100_0;T25_C0p5_D100_1;T25_C0p5_D100_3;T25_C1_D100_0;T25_C1_D100_2;T25_C1_D100_3;T25_C2_D100_0;T25_C2_D100_1;T25_C2_D100_3;T25_C2_D80_0;T25_C2_D80_2;T35_C0p5_D100_1;T35_C0p5_D100_3;T35_C0p5_D80_0;T35_C0p5_D80_1;T35_C0p5_D80_3;T35_C1_D100_2;T35_C1_D80_0;T35_C1_D80_2;T35_C1_D80_3;T35_C2_D80_0;T35_C2_D80_1;T35_C2_D80_2;T35_C2_D80_3;T45_C0p5_D80_0;T45_C0p5_D80_1;T45_C0p5_D80_2;T45_C0p5_D80_3;T45_C1_D80_1;T45_C1_D80_2;T45_C2_D50_0;T45_C2_D50_2",
+      "selected_cell_jaccard_vs_none": 0.7777777777777778,
+      "selected_groups": 8,
+      "thresholds_relaxed": false
+    }
+  ],
+  "latent_model": "X(c)=registered semi-mechanistic latent degradation",
+  "observation_model": "Y(c)=X(c)+Gaussian measurement noise+RPT/recovery pulse+sparse outlier",
+  "parameter_status": "[ASSUMED][UPDATEABLE]",
+  "ranking_flip_regimes": [],
+  "scope": "ASSUMED_OBSERVATION_PROCESS_STRESS_NOT_REAL_CALIBRATION"
+}

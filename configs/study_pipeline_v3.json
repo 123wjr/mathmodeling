@@ -46,6 +46,15 @@
   },
   "v3": {
     "decision_modes": ["POINT", "INTERVAL_RISK"],
+    "observation_pressure": {
+      "seed": 20260813,
+      "interpretation": "ASSUMED simulation stress test; not CALCE calibration",
+      "regimes": [
+        {"name": "none", "rpt_period_cycles": 0, "capacity_recovery_pct": 0.0, "resistance_recovery_pct": 0.0, "outlier_fraction": 0.0, "outlier_scale": 0.0},
+        {"name": "light", "rpt_period_cycles": 50, "capacity_recovery_pct": 0.4, "resistance_recovery_pct": 0.8, "outlier_fraction": 0.002, "outlier_scale": 3.0},
+        {"name": "heavy", "rpt_period_cycles": 25, "capacity_recovery_pct": 1.0, "resistance_recovery_pct": 2.0, "outlier_fraction": 0.005, "outlier_scale": 5.0}
+      ]
+    },
     "ablation": {
       "history_windows": [25, 50, 100],
       "common_start_cycle": 100,

@@ -1,9 +1,9 @@
 {
   "artifacts": [
     {
-      "bytes": 19650,
+      "bytes": 19385,
       "path": "PAPER_AGENT_START_HERE.md",
-      "sha256": "6e19fe6bd2076fc834148ffd1e705cc5edce187954b761ff00b6ad088cf71dc0"
+      "sha256": "ce9d8fa93951564ea05137e7dcd50bd268a964d813114161fda06ff9e6c89d81"
     },
     {
       "bytes": 999,
@@ -16,9 +16,9 @@
       "sha256": "d6e7e3e450af5dff52d273f34ea6fb0e478d9cf2998c16f0dbba0701e88dc836"
     },
     {
-      "bytes": 12673,
+      "bytes": 12598,
       "path": "handoffs/PROJECT_COMMAND_CENTER.md",
-      "sha256": "8ff5309bd3889296150931ed84cd72490a234fb531622436ad628d3647d49f44"
+      "sha256": "9eaaa99d1d1576cb2ae7f4d3d747f145c736a84859d4055d88e7e667259f9349"
     },
     {
       "bytes": 27649,
@@ -186,6 +186,21 @@
       "sha256": "d33e6592e0197da73e79b432891ea8db7cad3c315d4c4aef5a2d9e09bd516437"
     },
     {
+      "bytes": 1758,
+      "path": "study_output_v3/observation_decision_sensitivity.csv",
+      "sha256": "a9c6dc2c08056789adbd41cb9c24851b1b3afb03663a41fba66011ffbe12178d"
+    },
+    {
+      "bytes": 3228,
+      "path": "study_output_v3/observation_model_metrics.csv",
+      "sha256": "a5357663d25fb7d64fa3cf97ded4f8a1f55c471bf20c2b852c518fba58eb619f"
+    },
+    {
+      "bytes": 3673,
+      "path": "study_output_v3/observation_sensitivity_summary.json",
+      "sha256": "feb62a3b50fbfb22326b55de363ad91231f3f0254cc4034dc9de480df3cf8b19"
+    },
+    {
       "bytes": 14492,
       "path": "study_output_v3/q2_ablation_metrics.csv",
       "sha256": "25f8ccd91775e24426840e56d2f3816b376fad53dd4fb9d58d96aa8bd9298a2d"
@@ -196,9 +211,9 @@
       "sha256": "381ac0bde6d978fdfcfd56e127c85df2f29ce635ce2518bedcc6073338de683b"
     },
     {
-      "bytes": 1633,
+      "bytes": 1816,
       "path": "study_output_v3/q3_decision_comparison.csv",
-      "sha256": "91684691fe812b1796f4721f9a140c12c49472d5ebcf0bf3c260110d3a70eabe"
+      "sha256": "e1706e5e19dc54eaff86b13f3b7e31a6df4117bab6dcbb20d10c97ae5a04f521"
     },
     {
       "bytes": 11465,
@@ -216,14 +231,14 @@
       "sha256": "b0c5cb9855527a25c8518168acc6cf4cbf8cb2536aa09237ecfbda1fa7cb9e11"
     },
     {
-      "bytes": 37743,
+      "bytes": 48776,
       "path": "study_output_v3/q3_stability_summary.json",
-      "sha256": "3293471a7e17e362bea409192743a2c9345ffbdbc83cae4b8723bde4f845d80e"
+      "sha256": "643a53ebb6fab06c2dfc90098bacdf01357405f711962b7be366558d7845b0b6"
     },
     {
-      "bytes": 11614,
+      "bytes": 14970,
       "path": "study_output_v3/q3_stability_sweep.csv",
-      "sha256": "45cbac6153c84c04b18a715a1e54c79fd12ffca381979b1fba735b62454fb357"
+      "sha256": "5d33e04ce043d5f7b2701d4b40a53e75bc43b26cf79df4b02403740015675f1c"
     },
     {
       "bytes": 103875,
@@ -241,9 +256,19 @@
       "sha256": "4840deb3545081b738a2bbfa72d4b27c908e17ee791c0a4861f532388fe2575d"
     },
     {
-      "bytes": 1697,
+      "bytes": 2190,
       "path": "study_output_v3/validation_gates.json",
-      "sha256": "51c4c08c2a3925e7f09ad39860fe759d707f6e347dd4e729830aacab51102231"
+      "sha256": "59509e77f5375339e58c95c3c816b6d12d5570fe09e2bf3bb393fceec982588e"
+    },
+    {
+      "bytes": 3540,
+      "path": "technical/FINAL_CHANGELOG_FOR_PAPER.md",
+      "sha256": "9bda2e20372bf1e00cda48982908fc32139aa6f5ecfca377c78fc15c4dbb5645"
+    },
+    {
+      "bytes": 3088,
+      "path": "technical/FINAL_VALIDATION_REPORT.md",
+      "sha256": "4aed4b6157eb9d503b1f8aa3575db6ad627fd84c345c2e292bd8283cb522e4ff"
     },
     {
       "bytes": 60046,
@@ -251,9 +276,14 @@
       "sha256": "ea2a0b691f297c03a9a9011ca3ff9d426e58b1fc6eb99598f269c196fee8783d"
     },
     {
-      "bytes": 2896,
+      "bytes": 3561,
       "path": "technical/PAPER_WRITING_FACT_SHEET.md",
-      "sha256": "3b6d697af20125043fca243f8dad0b11813e59f94a4d785302f79ce1ca5c4fba"
+      "sha256": "780fc8ce793121dd420ca17c8ecd2dff9391e1796691267d065edae0d1cd5f58"
+    },
+    {
+      "bytes": 12662,
+      "path": "technical/TECHNICAL_SOLUTION_FINAL.md",
+      "sha256": "7079d1faa50751993e6f1370afaf27134f8de110d8010b80928e67c9e8970ea7"
     },
     {
       "bytes": 9883,
@@ -266,9 +296,9 @@
       "sha256": "1887c3cb5ced440e04524266bb3deb3867a9a84a1c5d61b577f9c46cc3f7c8ec"
     },
     {
-      "bytes": 3100,
+      "bytes": 3888,
       "path": "technical/V3_VALIDATION_REPORT.md",
-      "sha256": "dbc705f3ddc56f03ab40e4753aab6fcf19dba69f25ac70b6a4958e260f749706"
+      "sha256": "c6cc40f2958510e0e1b5d2bbd653bcb8ed17f9ef098236357e3c5945a6fdf261"
     },
     {
       "bytes": 71687,
@@ -281,7 +311,7 @@
     "cells": 108,
     "rows_regenerated": 108000
   },
-  "git_head_before_commit": "f8ce96cf6dc500ccf813cbc5d3403394e2d42120",
+  "git_head_before_commit": "1af327ba92067de9343358e1478d3877eb66dacc",
   "labels": {
     "confirmed": "landmark, split, fixed group signature, continuity gates",
     "ood_abstain": "outside 25-50 degC, 0.5-2C, 50-100% DOD, CC-CV",
@@ -332,9 +362,9 @@
       "sha256": "e365244913759b115f7b8f993f442026dfebc45cd7a9beb6c7ac9f4456c1aecb"
     },
     {
-      "bytes": 16629,
+      "bytes": 17867,
       "path": "code/battery_study/q3.py",
-      "sha256": "e08982a91e927c029cb67950c81c23ac09497158e32bbbcff0ec51f51f925b10"
+      "sha256": "751396411dea21eb56b7b8a31ba5f00f21a4dc94b9d61b5f1f40c0db52714108"
     },
     {
       "bytes": 13460,
@@ -347,9 +377,9 @@
       "sha256": "fc86a8fdfe5a9ae4e81f22ab5e5af2483ec97ede617003c7377119ea88e28986"
     },
     {
-      "bytes": 71250,
+      "bytes": 85270,
       "path": "code/battery_study/v3.py",
-      "sha256": "be9021a33352844ce847daec7e8b4f2cd9e2f22d30cd9446aff5f515f9e6bbfd"
+      "sha256": "5110b7fc04db7d52c1d14b3f1db3e16dd1b566cf313f9e68d66d1c29a5b9dcf4"
     },
     {
       "bytes": 1078,
@@ -422,9 +452,9 @@
       "sha256": "02b1ba4c2018c162f37dfa0cdb841c80e8cac9fcd3c2d4a4eb1ac54367e25ea7"
     },
     {
-      "bytes": 20105,
+      "bytes": 25202,
       "path": "code/tests/test_study_v3.py",
-      "sha256": "4e5c9b63ffc810ba7ef3852cceab8c5797ca4cb0173dc253d9f98cc981ec1cff"
+      "sha256": "cf05a1dc1007868182b1a5b5289dbc598ec94e38f05b5aaba1b11eb58632b488"
     },
     {
       "bytes": 730,
@@ -432,9 +462,19 @@
       "sha256": "2ae8e9ead7600ae67a8f76c7c44af02d154a656a2e4b91dd1306cf4b5c932192"
     },
     {
-      "bytes": 2740,
+      "bytes": 3393,
       "path": "configs/study_pipeline_v3.json",
-      "sha256": "9748f22f022150910d53702e29f69c7f915509d03ce9ff0178406b232f26fde5"
+      "sha256": "44c1f713b5ac4b5146ceb99efe80256d86ce11aba6ce96ee25eb4bdbf7e56f13"
+    },
+    {
+      "bytes": 8491,
+      "path": "evidence/parameter_ledger.txt",
+      "sha256": "9bc958e55f227566ab1f93853629e4dd3564ba27b0fbb998824e0cb3b64b38af"
+    },
+    {
+      "bytes": 3031,
+      "path": "evidence/source_ledger.txt",
+      "sha256": "50a77d47b55587c387da57a4275b21ac27225459b03c549ead0f32833045eda6"
     },
     {
       "bytes": 81,
@@ -511,6 +551,21 @@
     {
       "evidence": "endpoint breach or post-750 event always rejects forced assignment",
       "gate": "stress_trigger_endpoint_guard",
+      "status": "PASS"
+    },
+    {
+      "evidence": "none/light/heavy all report four Q2 models and Q3 decision outcomes",
+      "gate": "observation_pressure_complete",
+      "status": "PASS"
+    },
+    {
+      "evidence": "only observed channels changed; grouped split overlap remains zero",
+      "gate": "observation_latent_state_preserved",
+      "status": "PASS"
+    },
+    {
+      "evidence": "shortfall returns explicit abstention; screening thresholds never relax",
+      "gate": "decision_abstention_enforced",
       "status": "PASS"
     }
   ]

@@ -1,6 +1,7 @@
 """V3 retirement-landmark decision loop and fixed-group stress tracking."""
 from __future__ import annotations
 
+import copy
 import json
 import math
 import os
@@ -52,9 +53,84 @@ def load_settings(path: str) -> dict:
         triggers = settings["triggers"]
         if any(float(value) <= 0 for value in triggers.values()):
             raise ValueError("触发阈值必须为正")
+        observation = settings["observation_pressure"]
+        if [row["name"] for row in observation["regimes"]] != ["none", "light", "heavy"]:
+            raise ValueError("观测压力必须按 none/light/heavy 冻结")
+        for regime in observation["regimes"]:
+            values = (
+                regime["rpt_period_cycles"], regime["capacity_recovery_pct"],
+                regime["resistance_recovery_pct"], regime["outlier_fraction"],
+                regime["outlier_scale"],
+            )
+            if any(float(value) < 0 for value in values):
+                raise ValueError("观测压力参数不得为负")
+            if float(regime["outlier_fraction"]) > 0.01:
+                raise ValueError("局部异常比例不得超过 1%")
     except (KeyError, TypeError) as exc:
         raise ValueError(f"V3 配置字段无效: {exc}") from exc
     return settings
+
+
+def apply_observation_pressure(rows: list[dict], regime: dict, *, seed: int):
+    """Add deterministic protocol/recovery artifacts only to observed channels."""
+    required = {
+        "name", "rpt_period_cycles", "capacity_recovery_pct",
+        "resistance_recovery_pct", "outlier_fraction", "outlier_scale",
+    }
+    if not required <= set(regime):
+        raise ValueError(f"观测压力缺字段: {sorted(required - set(regime))}")
+    period = int(regime["rpt_period_cycles"])
+    cap_recovery = float(regime["capacity_recovery_pct"]) / 100.0
+    resistance_recovery = float(regime["resistance_recovery_pct"]) / 100.0
+    outlier_fraction = float(regime["outlier_fraction"])
+    outlier_scale = float(regime["outlier_scale"])
+    if period < 0 or min(cap_recovery, resistance_recovery, outlier_fraction, outlier_scale) < 0:
+        raise ValueError("观测压力参数不得为负")
+    if outlier_fraction > 0.01:
+        raise ValueError("局部异常比例不得超过 1%")
+    if period == 0 and not any((cap_recovery, resistance_recovery, outlier_fraction, outlier_scale)):
+        return copy.deepcopy(rows), {
+            "regime": regime["name"], "changed_measurement_rows": 0,
+            "rpt_affected_rows": 0, "outlier_rows": 0, "latent_state_unchanged": True,
+        }
+
+    output, changed, rpt_rows, outliers = [], 0, 0, 0
+    for index, source in enumerate(rows):
+        row = dict(source)
+        cycle = int(row["cycle"])
+        pulse = period > 0 and cycle >= period and cycle % period in (0, 1, 2)
+        decay = (1.0, 0.55, 0.25)[cycle % period] if pulse else 0.0
+        capacity_shift = float(row["capacity_true"]) * cap_recovery * decay
+        resistance_shift = -float(row["resistance_true"]) * resistance_recovery * decay
+        rng = random.Random(seed * 1000003 + index * 101)
+        is_outlier = rng.random() < outlier_fraction
+        if is_outlier:
+            capacity_shift += rng.choice((-1.0, 1.0)) * outlier_scale * abs(
+                float(row["capacity_obs"]) - float(row["capacity_true"])
+            )
+            resistance_shift += rng.choice((-1.0, 1.0)) * outlier_scale * abs(
+                float(row["resistance_obs"]) - float(row["resistance_true"])
+            )
+            outliers += 1
+        if pulse:
+            rpt_rows += 1
+        if capacity_shift or resistance_shift:
+            row["capacity_obs"] = round(max(1e-4, float(row["capacity_obs"]) + capacity_shift), 6)
+            row["resistance_obs"] = round(max(1e-4, float(row["resistance_obs"]) + resistance_shift), 6)
+            changed += 1
+        output.append(row)
+    latent_keys = ("capacity_true", "resistance_true", "soh")
+    latent_unchanged = all(
+        all(before[key] == after[key] for key in latent_keys)
+        for before, after in zip(rows, output)
+    )
+    if not latent_unchanged:
+        raise RuntimeError("观测压力不得改变潜在退化状态")
+    return output, {
+        "regime": regime["name"], "changed_measurement_rows": changed,
+        "rpt_affected_rows": rpt_rows, "outlier_rows": outliers,
+        "latent_state_unchanged": latent_unchanged,
+    }
 
 
 def retirement_risk_set(rows, study_cfg, retirement_cycle: int, threshold: float) -> list[dict]:
@@ -370,11 +446,19 @@ def optimize_decision(
 ):
     eligible = [row for row in candidates if row["eligible"]]
     requested = study_cfg.q3.target_groups if target_groups is None else target_groups
-    target = min(requested, len(eligible) // study_cfg.q3.group_size)
-    if target < 1:
+    empty = {
+        "groups": [], "selected": [], "objective": None, "n_groups": 0,
+        "eligible_cells": len(eligible), "selected_cell_ids": [],
+        "weakest_selected_soh": None, "weakest_selected_rul_lower_cycles": None,
+        "largest_selected_resistance_growth": None, "largest_selected_interval_width": None,
+        "target_groups": 0, "requested_groups": requested, "max_feasible_groups": 0,
+        "group_shortfall": requested, "thresholds_relaxed": False,
+        "decision_status": "ABSTAIN_INSUFFICIENT_FEASIBILITY",
+    }
+    if len(eligible) < study_cfg.q3.group_size:
         return {
-            "groups": [], "selected": [], "objective": None, "n_groups": 0,
-            "solver_status": "NO_FEASIBLE_GROUP_TARGET", "eligible_cells": len(eligible),
+            **empty, "solver_status": "NO_FEASIBLE_GROUP_TARGET",
+            "abstention_reasons": "INSUFFICIENT_ELIGIBLE_CELLS",
         }
     decision_candidates = [
         {
@@ -393,8 +477,16 @@ def optimize_decision(
     )
     if not groups:
         return {
-            "groups": [], "selected": [], "objective": None, "n_groups": 0,
-            "solver_status": "NO_CANDIDATE_GROUPS", "eligible_cells": len(eligible),
+            **empty, "solver_status": "NO_CANDIDATE_GROUPS",
+            "abstention_reasons": "NO_COMPATIBLE_CANDIDATE_GROUPS",
+            "normalization_bounds": normalization_bounds,
+        }
+    maximum = q3.maximum_disjoint_group_count(groups)
+    target = min(requested, maximum)
+    if target < 1:
+        return {
+            **empty, "groups": groups, "solver_status": "NO_DISJOINT_GROUPS",
+            "abstention_reasons": "NO_MUTUALLY_DISJOINT_GROUPS",
             "normalization_bounds": normalization_bounds,
         }
     solution = q3.solve_milp(groups, weights, target)
@@ -420,6 +512,19 @@ def optimize_decision(
             row["actual_interval_width"] for row in selected_candidates
         ),
         "target_groups": target,
+        "requested_groups": requested,
+        "max_feasible_groups": maximum,
+        "group_shortfall": requested - target,
+        "thresholds_relaxed": False,
+        "decision_status": (
+            "ACCEPT_FIXED_GROUPS" if target == requested
+            else "ABSTAIN_INSUFFICIENT_FEASIBILITY"
+        ),
+        "abstention_reasons": (
+            "NONE" if target == requested else
+            ("INSUFFICIENT_ELIGIBLE_CELLS" if len(eligible) < requested * study_cfg.q3.group_size
+             else "GROUP_COMPATIBILITY_LIMIT")
+        ),
         "weights": list(weights),
         "normalization_bounds": q3.group_normalization_bounds(groups)
         if normalization_bounds is None else normalization_bounds,
@@ -543,6 +648,12 @@ def stability_sweep(study_cfg, settings, *, seeds=None) -> list[dict]:
                 "eligible_rate": solution["eligible_cells"] / len(base["risk_set"]),
                 "n_groups": solution["n_groups"],
                 "infeasible": solution["n_groups"] < study_cfg.q3.target_groups,
+                "decision_status": solution["decision_status"],
+                "requested_groups": solution["requested_groups"],
+                "max_feasible_groups": solution["max_feasible_groups"],
+                "group_shortfall": solution["group_shortfall"],
+                "abstention_reasons": solution["abstention_reasons"],
+                "thresholds_relaxed": solution["thresholds_relaxed"],
                 "objective": solution["objective"],
                 "objective_delta": objective_delta,
                 "selected_cell_jaccard": jaccard(base_ids, selected),
@@ -580,6 +691,91 @@ def summarize_stability(rows: list[dict]) -> dict:
             for name in margin_names
         },
         "infeasible_count": sum(row["infeasible"] for row in rows),
+        "abstention_count": sum(
+            row.get("decision_status") == "ABSTAIN_INSUFFICIENT_FEASIBILITY"
+            for row in rows
+        ),
+        "group_shortfall_max": max(
+            (row.get("group_shortfall", 0) for row in rows), default=0
+        ),
+        "threshold_relaxation_count": sum(row.get("thresholds_relaxed", False) for row in rows),
+    }
+
+
+def run_observation_sensitivity(study_cfg, settings, rows: list[dict]) -> dict:
+    """Stress observable channels while preserving the registered latent paths."""
+    metric_rows, decision_rows, audits = [], [], []
+    baseline_selected: set[str] | None = None
+    baseline_ranking: list[str] | None = None
+    seed = int(settings["observation_pressure"]["seed"])
+    for regime in settings["observation_pressure"]["regimes"]:
+        observed_rows, observation_audit = apply_observation_pressure(rows, regime, seed=seed)
+        grouped = data.group_cells(observed_rows)
+        samples = q2.make_soh_samples(grouped, study_cfg)
+        soh_predictions, split_audit = q2.cross_validated_soh_predictions(samples, study_cfg)
+        metrics = q2._prediction_metrics(
+            soh_predictions, "target_soh", "predicted_soh", study_cfg
+        )
+        ordered = sorted(metrics, key=lambda row: (row["rmse"], row["model"]))
+        ranking = [row["model"] for row in ordered]
+        if baseline_ranking is None:
+            baseline_ranking = ranking
+        persistence_rmse = next(row["rmse"] for row in metrics if row["model"] == "persistence")
+        for rank, metric in enumerate(ordered, start=1):
+            metric_rows.append({
+                "regime": regime["name"], "rank": rank,
+                "ranking_changed_vs_none": ranking != baseline_ranking,
+                "relative_rmse_vs_persistence": metric["rmse"] / persistence_rmse - 1.0,
+                **{key: regime[key] for key in (
+                    "rpt_period_cycles", "capacity_recovery_pct",
+                    "resistance_recovery_pct", "outlier_fraction", "outlier_scale",
+                )},
+                **metric,
+            })
+        risk_set = retirement_risk_set(
+            observed_rows, study_cfg, study_cfg.q3.retirement_cycle,
+            study_cfg.q1.critical_soh,
+        )
+        retirement_predictions, retirement_audit = cross_validated_retirement_predictions(
+            risk_set, study_cfg
+        )
+        candidates = build_decision_pools(
+            risk_set, retirement_predictions, study_cfg
+        )["INTERVAL_RISK"]
+        solution = optimize_decision(
+            candidates, study_cfg, tuple(study_cfg.q3.weights["balanced"])
+        )
+        selected = set(solution.get("selected_cell_ids", []))
+        if baseline_selected is None:
+            baseline_selected = selected
+        decision_rows.append({
+            "regime": regime["name"],
+            "risk_set_cells": len(risk_set),
+            "eligible_cells": solution["eligible_cells"],
+            "requested_groups": solution["requested_groups"],
+            "max_feasible_groups": solution["max_feasible_groups"],
+            "selected_groups": solution["n_groups"],
+            "group_shortfall": solution["group_shortfall"],
+            "decision_status": solution["decision_status"],
+            "abstention_reasons": solution["abstention_reasons"],
+            "thresholds_relaxed": solution["thresholds_relaxed"],
+            "selected_cell_jaccard_vs_none": jaccard(baseline_selected, selected),
+            "selected_cell_ids": ";".join(sorted(selected)),
+        })
+        audits.append({
+            **observation_audit,
+            "q2_split_overlap": sum(len(row["cell_overlap"]) for row in split_audit),
+            "retirement_split_overlap": sum(
+                len(row["train_test_overlap"]) for row in retirement_audit
+            ),
+        })
+    return {
+        "model_metrics": metric_rows,
+        "decision_rows": decision_rows,
+        "audits": audits,
+        "ranking_flip_regimes": sorted({
+            row["regime"] for row in metric_rows if row["ranking_changed_vs_none"]
+        }),
     }
 
 
@@ -947,6 +1143,8 @@ def _source_paths(
     paths.append(os.path.join(project_root, "configs", "study_pipeline_v3.json"))
     paths.append(os.path.join(project_root, "requirements-study.txt"))
     paths.append(os.path.join(project_root, "technical", "v2_evidence_status.json"))
+    paths.append(os.path.join(project_root, "evidence", "parameter_ledger.txt"))
+    paths.append(os.path.join(project_root, "evidence", "source_ledger.txt"))
     if source_config_path:
         paths.append(os.path.abspath(source_config_path))
     if source_g1_config_path:
@@ -980,6 +1178,9 @@ def _v3_document_paths(project_root: str, report_path: str) -> list[str]:
         os.path.join(project_root, "handoffs", "PROJECT_COMMAND_CENTER.md"),
         os.path.join(project_root, "technical", "PAPER_TECHNICAL_BRIDGE.md"),
         os.path.join(project_root, "technical", "PAPER_WRITING_FACT_SHEET.md"),
+        os.path.join(project_root, "technical", "TECHNICAL_SOLUTION_FINAL.md"),
+        os.path.join(project_root, "technical", "FINAL_VALIDATION_REPORT.md"),
+        os.path.join(project_root, "technical", "FINAL_CHANGELOG_FOR_PAPER.md"),
         os.path.join(project_root, "technical", "TECHNICAL_SOLUTION_V3.md"),
         os.path.join(project_root, "technical", "V3_EXPERIMENT_PLAN.md"),
         report_path,
@@ -1142,7 +1343,8 @@ def fixed_group_membership_is_constant(tracking: dict, scenario_names: list[str]
 
 
 def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
-                 comparison, stability_rows, ablation_rows, tracking) -> list[dict]:
+                 comparison, stability_rows, ablation_rows, tracking,
+                 observation) -> list[dict]:
     gates = []
     def gate(name, condition, evidence):
         if not condition:
@@ -1250,6 +1452,34 @@ def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
         ),
         "endpoint breach or post-750 event always rejects forced assignment",
     )
+    expected_regimes = {"none", "light", "heavy"}
+    actual_regimes = {row["regime"] for row in observation["decision_rows"]}
+    gate(
+        "observation_pressure_complete",
+        actual_regimes == expected_regimes
+        and {row["regime"] for row in observation["model_metrics"]} == expected_regimes
+        and len(observation["model_metrics"]) == 12,
+        "none/light/heavy all report four Q2 models and Q3 decision outcomes",
+    )
+    gate(
+        "observation_latent_state_preserved",
+        all(row["latent_state_unchanged"] for row in observation["audits"])
+        and all(row["q2_split_overlap"] == 0 for row in observation["audits"])
+        and all(row["retirement_split_overlap"] == 0 for row in observation["audits"]),
+        "only observed channels changed; grouped split overlap remains zero",
+    )
+    gate(
+        "decision_abstention_enforced",
+        all(not row["thresholds_relaxed"] for row in observation["decision_rows"])
+        and all(
+            row["decision_status"] == (
+                "ACCEPT_FIXED_GROUPS" if row["group_shortfall"] == 0
+                else "ABSTAIN_INSUFFICIENT_FEASIBILITY"
+            )
+            for row in observation["decision_rows"]
+        ),
+        "shortfall returns explicit abstention; screening thresholds never relax",
+    )
     return gates
 
 
@@ -1275,6 +1505,13 @@ def _write_validation_report(project_root, out_dir, summary, gates):
         f"- `[RESULT]` 条件 RUL 事件 RMSE：{summary['risk_metrics']['rmse']:.4f} cycles；嵌套留组校准区间经验覆盖：{summary['risk_metrics']['event_interval_90pct_coverage']:.4f}。",
         f"- `[RESULT]` POINT 入选 {summary['decisions']['POINT']['eligible_cells']} 芯；INTERVAL_RISK 入选 {summary['decisions']['INTERVAL_RISK']['eligible_cells']} 芯。",
         (
+            f"- `[RESULT]` POINT 最大可行 {point['max_feasible_groups']} 组、"
+            f"INTERVAL_RISK 最大可行 {interval['max_feasible_groups']} 组；"
+            f"目标均为 {point['requested_groups']} 组，状态分别为 "
+            f"`{point['decision_status']}` / `{interval['decision_status']}`；"
+            "筛选门槛均未放宽。"
+        ),
+        (
             f"- `[RESULT]` POINT 选中电芯的最小 RUL 下界为 "
             f"{point['weakest_selected_rul_lower_cycles']:.4f} cycles、最大实际区间宽度为 "
             f"{point['largest_selected_interval_width']:.4f}；INTERVAL_RISK 对应为 "
@@ -1293,8 +1530,10 @@ def _write_validation_report(project_root, out_dir, summary, gates):
             f"最小 RUL 下界裕度={stability['worst_selected_rul_lower_margin_cycles_min']:.4f} cycles、"
             f"最小内阻增长裕度={stability['worst_selected_resistance_growth_margin_min']:.4f}、"
             f"最小区间宽度裕度={stability['worst_selected_interval_width_margin_cycles_min']:.4f} cycles；"
-            f"不可行 OAT 点 {stability['infeasible_count']}/"
-            f"{len(summary['stability_rows'])}；消融配置：{len(summary['ablation_rows'])}。"
+            f"显式弃权 OAT 点 {stability['abstention_count']}/"
+            f"{len(summary['stability_rows'])}，最大组数缺口={stability['group_shortfall_max']}，"
+            f"门槛放宽次数={stability['threshold_relaxation_count']}；"
+            f"消融配置：{len(summary['ablation_rows'])}。"
         ),
         (
             f"- `[RESULT]` Q2 消融最低 RMSE 配置为 {best['model']} + "
@@ -1310,6 +1549,21 @@ def _write_validation_report(project_root, out_dir, summary, gates):
             f"{sum(row['trigger'] == 'REINSPECT' for row in summary['tracking_rows'])} 行 `REINSPECT`，"
             f"{sum(row['trigger'] == 'REJECT_FORCED_ASSIGNMENT' for row in summary['tracking_rows'])} 行 "
             "`REJECT_FORCED_ASSIGNMENT`；终点突破/事件触发强制拒绝。"
+        ),
+        (
+            "- `[RESULT][ASSUMED]` 观测压力 none/light/heavy 的 Ridge RMSE 为 "
+            + "/".join(
+                f"{row['rmse']:.6f}" for row in summary["observation"]["model_metrics"]
+                if row["model"] == "ridge"
+            )
+            + "；模型排序翻转档位="
+            + (", ".join(summary["observation"]["ranking_flip_regimes"]) or "none")
+            + "；选中成员 Jaccard="
+            + "/".join(
+                f"{row['selected_cell_jaccard_vs_none']:.3f}"
+                for row in summary["observation"]["decision_rows"]
+            )
+            + "。观测档是仿真压力，不是真实 RPT 标定。"
         ),
         "",
         "## 验收闸门",
@@ -1359,6 +1613,12 @@ def run(study_cfg, settings, out_dir: str) -> dict:
             "objective": solution["objective"],
             "selected_cell_ids": solution.get("selected_cell_ids", []),
             "solver_status": solution["solver_status"],
+            "decision_status": solution["decision_status"],
+            "requested_groups": solution["requested_groups"],
+            "max_feasible_groups": solution["max_feasible_groups"],
+            "group_shortfall": solution["group_shortfall"],
+            "abstention_reasons": solution["abstention_reasons"],
+            "thresholds_relaxed": solution["thresholds_relaxed"],
             "weakest_selected_soh": solution["weakest_selected_soh"],
             "weakest_selected_rul_lower_cycles": solution[
                 "weakest_selected_rul_lower_cycles"
@@ -1377,12 +1637,13 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         }
     stability_rows = stability_sweep(study_cfg, settings)
     ablation_rows = run_ablation(study_cfg, settings, dataset["rows"])
+    observation = run_observation_sensitivity(study_cfg, settings, dataset["rows"])
     tracking = track_fixed_groups(
         dataset["rows"], g1_cfg, study_cfg, settings, decisions["INTERVAL_RISK"]
     )
     gates = _validate_v3(
         study_cfg, settings, dataset, risk_set, audit, decisions,
-        comparison, stability_rows, ablation_rows, tracking,
+        comparison, stability_rows, ablation_rows, tracking, observation,
     )
 
     common.write_csv(os.path.join(out_dir, "q3_retirement_landmark_predictions.csv"), predictions)
@@ -1430,6 +1691,23 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         "leakage_exclusions": ["soh_true", "lifetime_cycle", "event_observed", "capacity_true"],
         **summarize_ablation(ablation_rows),
     })
+    common.write_csv(
+        os.path.join(out_dir, "observation_model_metrics.csv"),
+        observation["model_metrics"],
+    )
+    common.write_csv(
+        os.path.join(out_dir, "observation_decision_sensitivity.csv"),
+        observation["decision_rows"],
+    )
+    common.write_json(os.path.join(out_dir, "observation_sensitivity_summary.json"), {
+        "scope": "ASSUMED_OBSERVATION_PROCESS_STRESS_NOT_REAL_CALIBRATION",
+        "latent_model": "X(c)=registered semi-mechanistic latent degradation",
+        "observation_model": "Y(c)=X(c)+Gaussian measurement noise+RPT/recovery pulse+sparse outlier",
+        "parameter_status": "[ASSUMED][UPDATEABLE]",
+        "ranking_flip_regimes": observation["ranking_flip_regimes"],
+        "audits": observation["audits"],
+        "decision_rows": observation["decision_rows"],
+    })
     common.write_csv(os.path.join(out_dir, "q4_fixed_group_cell_tracking.csv"), tracking["cell_rows"])
     common.write_csv(os.path.join(out_dir, "q4_fixed_group_summary.csv"), tracking["group_summary"])
     common.write_json(os.path.join(out_dir, "q4_fixed_group_summary.json"), {
@@ -1453,6 +1731,7 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         "stability_rows": stability_rows,
         "ablation_rows": ablation_rows,
         "tracking_rows": tracking["group_summary"],
+        "observation": observation,
     }
     report_path = _write_validation_report(project_root, out_dir, summary, gates)
     artifact_paths = []
