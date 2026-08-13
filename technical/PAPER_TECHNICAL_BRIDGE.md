@@ -180,7 +180,7 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 | Q1 退化特征与因素辨识 | cycle、EFC、容量、内阻、T、C-rate、DOD、协议 | 阶段、膝点、因素权重、协议不可辨识 | `PARTIAL_SYNTHETIC_PROTOCOL_UNIDENTIFIED` |
 | Q2 SOH 与 RUL | 历史观测、工况、右删失信息 | 当前 SOH、50-cycle SOH、RUL 点预测与区间 | `PARTIAL_IN_DOMAIN_EXTREMES_ABSTAINED` |
 | Q3 筛选与编组 | cycle=750 风险集、条件 RUL、SOH、内阻 | POINT/INTERVAL_RISK、4 芯兼容组、8 组 MILP、45 行 OAT | `V3_ACTIVE_MODULE_GROUPING_ONLY` |
-| Q4 多工况与鲁棒性 | V3 固定同一 8 组、5 个支持域场景 | cycle 750 连续；删失感知 RUL 变化；复检/拒绝触发 | `V3_ACTIVE_FIXED_GROUP_SIMULATION_ONLY` |
+| Q4 多工况与鲁棒性 | V3 固定同一 8 组、5 个支持域场景；V4 留一场景盲测鲁棒编组 | cycle 750 连续；删失感知 RUL 变化；复检/拒绝触发；严格鲁棒策略与参考策略的风险—产能差异 | `V4_ACTIVE_SYNTHETIC_LOSO_NEGATIVE_RESULT` |
 
 `[PAPER_GAP]`：Q3 当前是电芯到 4 芯兼容组的 module-level set-packing，不包含给定电压、功率、容量需求下的串并联阵列拓扑；论文不得称为完整储能系统电气设计。
 

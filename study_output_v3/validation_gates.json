@@ -83,5 +83,15 @@
     "evidence": "shortfall returns explicit abstention; screening thresholds never relax",
     "gate": "decision_abstention_enforced",
     "status": "PASS"
+  },
+  {
+    "evidence": "30 seeds x 5 held-out scenarios x 2 strategies",
+    "gate": "robust_loso_complete",
+    "status": "PASS"
+  },
+  {
+    "evidence": "paired bootstrap aggregates five folds within each seed",
+    "gate": "robust_loso_pairing",
+    "status": "PASS"
   }
 ]

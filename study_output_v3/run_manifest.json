@@ -1,9 +1,9 @@
 {
   "artifacts": [
     {
-      "bytes": 19860,
+      "bytes": 20065,
       "path": "PAPER_AGENT_START_HERE.md",
-      "sha256": "ff4ad317ba345d40e9681712c8ef31cc698a9fd0f0c9e88d85d32b387ccf25a8"
+      "sha256": "c98793341bfc30659714161484756f592c1da7c90b382be86aced64543765820"
     },
     {
       "bytes": 999,
@@ -186,9 +186,9 @@
       "sha256": "d33e6592e0197da73e79b432891ea8db7cad3c315d4c4aef5a2d9e09bd516437"
     },
     {
-      "bytes": 1149,
+      "bytes": 1498,
       "path": "study_output_v3/final_figures/CAPTIONS.md",
-      "sha256": "69f386d24a76f07c35501cbdf64fd5d5c3b2cd7e0a1e4972345704ab602b044f"
+      "sha256": "b3cf731c248b814d55d9803b8cdb102717acec1e1c431a52f5d64753d0f731b3"
     },
     {
       "bytes": 355509,
@@ -198,7 +198,7 @@
     {
       "bytes": 35550,
       "path": "study_output_v3/final_figures/fig1_capacity_landscape.svg",
-      "sha256": "13763e5b8c29772fc3c187871a59e09b10c12b2fc200cce799a797a677ddf322"
+      "sha256": "f57bd680d2c186966d6f52337752d111fcb9da6e8998282e0df3821e2c4c9807"
     },
     {
       "bytes": 429358,
@@ -208,7 +208,7 @@
     {
       "bytes": 27193,
       "path": "study_output_v3/final_figures/fig2_cell_selection_stability.svg",
-      "sha256": "c045d2085f68a93b3f58b2080bb2a66a9027d4301bcdc40eb6c341e03d7647c4"
+      "sha256": "968eb19f9c76ce561b5493985f6d7f2e4d3c8632930ca0a2e81bbaf47e0aeed8"
     },
     {
       "bytes": 353550,
@@ -218,7 +218,7 @@
     {
       "bytes": 21351,
       "path": "study_output_v3/final_figures/fig3_observation_decision_sensitivity.svg",
-      "sha256": "2c0551685df6d642055046ccfd1357a293ced57b8d06cb80e2070c4c66432461"
+      "sha256": "d1240bb57bb1bcba4f063b30b50a8e1f978021b8417595f728695da8a3166185"
     },
     {
       "bytes": 240309,
@@ -228,7 +228,7 @@
     {
       "bytes": 15483,
       "path": "study_output_v3/final_figures/fig4_fixed_group_trigger_matrix.svg",
-      "sha256": "4ce1a3c22792058ff76afe1e9a1207ff95a10671db876516db089f3586c67ea0"
+      "sha256": "c56f020132dd8fd35e7ad7b21b0fdda24d8b3d5ba58f5dd32afecea04410d56e"
     },
     {
       "bytes": 448685,
@@ -238,7 +238,17 @@
     {
       "bytes": 26045,
       "path": "study_output_v3/final_figures/fig5_paired_decision_modes.svg",
-      "sha256": "cd3c204c48ef103916c377a6178ce97c84fa0bd418f213f900eddc994da0d586"
+      "sha256": "5a4c4a08bb249872db3cf2743ab4cff28fe1d008d98f0e6e94c61896ca029446"
+    },
+    {
+      "bytes": 881865,
+      "path": "study_output_v3/final_figures/fig6_robust_loso_tradeoff.png",
+      "sha256": "14e1b4ba48a03d234af31405a3c228a454ea1f90836cfa53cf987925581bb2bf"
+    },
+    {
+      "bytes": 27418,
+      "path": "study_output_v3/final_figures/fig6_robust_loso_tradeoff.svg",
+      "sha256": "7031aaac70eb0e71dd104e0ea076ab12f660977e66d368fc1c3f6e314e9e7eff"
     },
     {
       "bytes": 1758,
@@ -336,34 +346,49 @@
       "sha256": "eda323a4c31e8267324c46d50764f2ab3d1bd3f3285806c81774c04a871a4fa0"
     },
     {
-      "bytes": 2519,
+      "bytes": 60674,
+      "path": "study_output_v3/q4_robust_loso_folds.csv",
+      "sha256": "2dee18bc6e43640f54f1ee0905741df6afa2b525be617a67eb120cfd901d60e4"
+    },
+    {
+      "bytes": 118149,
+      "path": "study_output_v3/q4_robust_loso_selected_groups.csv",
+      "sha256": "74e4a1cecaab7f04de9cc56a7aec0d9efcafc92e2f2bce632c37096082d560a5"
+    },
+    {
+      "bytes": 23981,
+      "path": "study_output_v3/q4_robust_loso_summary.json",
+      "sha256": "42c43742590ef5ba901c95085b6b3b549ac82c266bacd100dc22c9e90d30f1eb"
+    },
+    {
+      "bytes": 2791,
       "path": "study_output_v3/validation_gates.json",
-      "sha256": "0eba85383dfd769c2de09bc4eb6bca8f5a0c2219d05fe9a861289d0422632130"
+      "sha256": "a5c533f6ae52a73cedc1560305104db93169c98886874603e1d839bda1d0367e"
     },
     {
-      "bytes": 4151,
+      "bytes": 4622,
       "path": "technical/FINAL_CHANGELOG_FOR_PAPER.md",
-      "sha256": "72526cd65faa1413fc560f52c864554a2a7e312f29a95a44e2babaedd3300084"
+      "sha256": "6a03b5a3c4a59205d064373ea7e2298392bcf3651b7c3b9df8b269663a0ea41f"
     },
     {
-      "bytes": 3642,
+      "bytes": 4427,
       "path": "technical/FINAL_VALIDATION_REPORT.md",
-      "sha256": "154cdc181ceb560782b14393d0fff80d5dda89edd0fb0300257e180d48ed9fbb"
+      "sha256": "3f73fad920154fc961040f1c050e9cbecae56018ba2eb20f71384a2ab4bbab68"
     },
     {
-      "bytes": 60560,
+      "bytes": 60659,
       "path": "technical/PAPER_TECHNICAL_BRIDGE.md",
-      "sha256": "19b89594a2b6adcde9bfb9230834cd2c30bd52814fd0ff052c7351e86b082efe"
+      "sha256": "b1e9d5916142eed48ac63c93bfd7d96ff3168049f7434d1867b6377a6d51687a"
     },
     {
-      "bytes": 4211,
+      "bytes": 4642,
       "path": "technical/PAPER_WRITING_FACT_SHEET.md",
-      "sha256": "898d493c5a7ef8937b4bac8deb4b8414f89a645e33289d5c57511cc0d87619b9"
+      "sha256": "7f2c25e641ba4558a052eaea34f1ca2fc81b7423b0c1aaf45717a6ee525afb3b"
     },
     {
-      "bytes": 13833,
+      "bytes": 15095,
       "path": "technical/TECHNICAL_SOLUTION_FINAL.md",
-      "sha256": "ce3f68fb3f7b8cd9f5b436603682f1b630afca2e1b14c90789234e3cb975a957"
+      "sha256": "13423516e2508226af46e5685ec172b71563fab6e131d28cf9614c7e44b8794a"
     },
     {
       "bytes": 9883,
@@ -376,9 +401,9 @@
       "sha256": "1887c3cb5ced440e04524266bb3deb3867a9a84a1c5d61b577f9c46cc3f7c8ec"
     },
     {
-      "bytes": 4587,
+      "bytes": 5130,
       "path": "technical/V3_VALIDATION_REPORT.md",
-      "sha256": "1b0de92c2901c41208f0f10b5257472ff82f9dca47f323cda1fe94aba0501da1"
+      "sha256": "968f84184257f707852c184f8f336816dba079b6c9d935d49a5438bd96b224a8"
     },
     {
       "bytes": 71687,
@@ -391,7 +416,7 @@
     "cells": 108,
     "rows_regenerated": 108000
   },
-  "git_head_before_commit": "63ef86ed952dd0ac1267b2292903bdcd9b4f3c4e",
+  "git_head_before_commit": "90bd265693b77e0f44d186903e69f6cb57104ee0",
   "labels": {
     "confirmed": "landmark, split, fixed group signature, continuity gates",
     "ood_abstain": "outside 25-50 degC, 0.5-2C, 50-100% DOD, CC-CV",
@@ -442,9 +467,9 @@
       "sha256": "e365244913759b115f7b8f993f442026dfebc45cd7a9beb6c7ac9f4456c1aecb"
     },
     {
-      "bytes": 17867,
+      "bytes": 20602,
       "path": "code/battery_study/q3.py",
-      "sha256": "751396411dea21eb56b7b8a31ba5f00f21a4dc94b9d61b5f1f40c0db52714108"
+      "sha256": "e45d2035bff77a4c6a0c1648d494d86e2ebb5ce755bcc01cc2197557e2f28e28"
     },
     {
       "bytes": 13460,
@@ -457,9 +482,9 @@
       "sha256": "fc86a8fdfe5a9ae4e81f22ab5e5af2483ec97ede617003c7377119ea88e28986"
     },
     {
-      "bytes": 94652,
+      "bytes": 113684,
       "path": "code/battery_study/v3.py",
-      "sha256": "a3ce7bb78e7540bb2730d6a6b4ba01805c141656a1f9c3cf0956f255ee07278c"
+      "sha256": "b9ae84131ed78dfd89bb7e21a9233e08bb54513d9c9c81a625f75f7f8d17b7d7"
     },
     {
       "bytes": 1078,
@@ -532,9 +557,9 @@
       "sha256": "02b1ba4c2018c162f37dfa0cdb841c80e8cac9fcd3c2d4a4eb1ac54367e25ea7"
     },
     {
-      "bytes": 27039,
+      "bytes": 30408,
       "path": "code/tests/test_study_v3.py",
-      "sha256": "cbabc284f4ec7d595b0ac8dcc7ea4610dfbfa87fcd3aff749d35b0d43accc01d"
+      "sha256": "05986d5951fd861db9af706737800f1c55657955d231ef69e71136f4839d5b7c"
     },
     {
       "bytes": 730,
@@ -542,9 +567,9 @@
       "sha256": "2ae8e9ead7600ae67a8f76c7c44af02d154a656a2e4b91dd1306cf4b5c932192"
     },
     {
-      "bytes": 3647,
+      "bytes": 3961,
       "path": "configs/study_pipeline_v3.json",
-      "sha256": "c7edc7d67130df69f9ccf4a70345f52c4e727555354f4695aa80b80f23555b39"
+      "sha256": "4bf83ca1c9cce9bc3d49b2fe2475167764eb1b1790a037c39d2e978c77c344cc"
     },
     {
       "bytes": 8491,
@@ -562,9 +587,9 @@
       "sha256": "6500f0d7e8a1c37fc41ad987429c686d0b5e53d23b2a15a882624ca60344af6c"
     },
     {
-      "bytes": 16245,
+      "bytes": 20006,
       "path": "technical/plot_final_figures.py",
-      "sha256": "0d8c4cd548e93a211340d20171f590d292ac02dc87f1a3d0f8e69230732c8254"
+      "sha256": "577cc7918aae5dc3d19d53c746c1bd17c16e25edd041493d3a5f506a3c966ee9"
     },
     {
       "bytes": 264,
@@ -661,6 +686,16 @@
     {
       "evidence": "shortfall returns explicit abstention; screening thresholds never relax",
       "gate": "decision_abstention_enforced",
+      "status": "PASS"
+    },
+    {
+      "evidence": "30 seeds x 5 held-out scenarios x 2 strategies",
+      "gate": "robust_loso_complete",
+      "status": "PASS"
+    },
+    {
+      "evidence": "paired bootstrap aggregates five folds within each seed",
+      "gate": "robust_loso_pairing",
       "status": "PASS"
     }
   ]

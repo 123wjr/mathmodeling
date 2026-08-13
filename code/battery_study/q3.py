@@ -226,6 +226,65 @@ def solve_milp(groups: list[dict], weights, target_groups: int) -> dict:
     }
 
 
+def solve_robust_milp(
+    groups: list[dict], margins: dict[str, float], tie_scores: dict[str, float],
+    target_groups: int,
+) -> dict:
+    """Maximize the selected groups' minimum safety margin, then tie-break score."""
+    if target_groups < 1 or not groups:
+        raise ValueError("鲁棒 MILP 需要正目标和非空候选组")
+    missing = {str(group["group_id"]) for group in groups} - set(margins)
+    if missing:
+        raise ValueError(f"鲁棒裕量缺少候选组: {sorted(missing)}")
+    cells = sorted({cell for group in groups for cell in group["members"]})
+    cell_index = {cell: index for index, cell in enumerate(cells)}
+    n_groups = len(groups)
+    margin_index = n_groups
+    rows, columns, values = [], [], []
+    for column, group in enumerate(groups):
+        for cell in group["members"]:
+            rows.append(cell_index[cell]); columns.append(column); values.append(1.0)
+        rows.append(len(cells)); columns.append(column); values.append(1.0)
+        # m + M*z_g <= margin_g + M; when z_g=1, m <= margin_g.
+        row = len(cells) + 1 + column
+        rows.append(row); columns.append(column); values.append(10.0)
+        rows.append(row); columns.append(margin_index); values.append(1.0)
+    matrix = coo_array(
+        (values, (rows, columns)), shape=(len(cells) + 1 + n_groups, n_groups + 1)
+    ).tocsc()
+    lower = np.concatenate([
+        np.full(len(cells), -np.inf), [float(target_groups)],
+        np.full(n_groups, -np.inf)
+    ])
+    upper = np.concatenate([
+        np.ones(len(cells)), [float(target_groups)],
+        np.asarray([float(margins[str(group["group_id"])]) + 10.0 for group in groups])
+    ])
+    score = np.asarray([float(tie_scores.get(str(group["group_id"]), 0.0)) for group in groups])
+    objective = np.concatenate([-1e-6 * score, [-1.0]])
+    result = milp(
+        c=objective,
+        integrality=np.concatenate([np.ones(n_groups), [0.0]]),
+        bounds=Bounds(
+            np.concatenate([np.zeros(n_groups), [-10.0]]),
+            np.concatenate([np.ones(n_groups), [10.0]]),
+        ),
+        constraints=LinearConstraint(matrix, lower, upper),
+        options={"time_limit": 60.0, "mip_rel_gap": 0.0},
+    )
+    if not result.success or result.x is None:
+        raise RuntimeError(f"鲁棒 MILP 未得到可行最优解: {result.message}")
+    selected = [groups[index] for index, value in enumerate(result.x[:n_groups]) if value > 0.5]
+    return {
+        "method": "ROBUST_MAX_MIN_MILP",
+        "selected": selected,
+        "objective": float(result.x[margin_index]),
+        "worst_margin": float(result.x[margin_index]),
+        "solver_status": str(result.message),
+        "mip_gap": float(getattr(result, "mip_gap", 0.0) or 0.0),
+    }
+
+
 def maximum_disjoint_group_count(groups: list[dict]) -> int:
     """Return exact set-packing capacity without relaxing candidate gates."""
     if not groups:

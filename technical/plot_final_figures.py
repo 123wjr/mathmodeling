@@ -1,7 +1,8 @@
-"""从 V3 证据表生成四张中文期刊风格图。"""
+"""从 V3/V4 证据表生成中文期刊风格图。"""
 from __future__ import annotations
 
 from pathlib import Path
+import json
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -44,7 +45,12 @@ def configure_style() -> None:
 
 def save(fig: plt.Figure, stem: str) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUT / f"{stem}.svg")
+    svg_path = OUT / f"{stem}.svg"
+    fig.savefig(svg_path)
+    svg_path.write_text(
+        "\n".join(line.rstrip() for line in svg_path.read_text(encoding="utf-8").splitlines()) + "\n",
+        encoding="utf-8",
+    )
     fig.savefig(OUT / f"{stem}.png", dpi=600)
     plt.close(fig)
 
@@ -54,6 +60,13 @@ def read_csv(name: str) -> pd.DataFrame:
     if not path.is_file():
         raise FileNotFoundError(f"缺少实验结果：{path}")
     return pd.read_csv(path)
+
+
+def read_json(name: str) -> dict:
+    path = DATA / name
+    if not path.is_file():
+        raise FileNotFoundError(f"缺少实验结果：{path}")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def plot_capacity_landscape() -> None:
@@ -273,6 +286,56 @@ def plot_paired_decision_modes() -> None:
     save(fig, "fig5_paired_decision_modes")
 
 
+def plot_robust_loso_tradeoff() -> None:
+    summary = read_json("q4_robust_loso_summary.json")
+    seed_rows = pd.DataFrame(summary["seed_rows"])
+    strategies = ["REFERENCE_INTERVAL_RISK", "ROBUST_LOSO"]
+    if len(seed_rows) != 60 or set(seed_rows["strategy"]) != set(strategies):
+        raise ValueError("鲁棒 LOSO 图要求 30 seeds × 2 strategies")
+    pivot = seed_rows.pivot(index="seed", columns="strategy", values="mean_selected_groups")
+    diff = summary["paired_differences_robust_minus_reference"]
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 4.5), constrained_layout=True,
+                             gridspec_kw={"width_ratios": (1, 1.35)})
+    ax = axes[0]
+    for _, row in pivot.iterrows():
+        ax.plot([0, 1], [row[strategies[0]], row[strategies[1]]],
+                color=COLORS["grey"], linewidth=0.65, alpha=0.5, zorder=1)
+    means = [pivot[strategy].mean() for strategy in strategies]
+    ax.scatter([0, 1], means, s=64, color=[COLORS["blue"], COLORS["orange"]],
+               edgecolor="white", linewidth=0.7, zorder=3)
+    ax.set(title="a 可信产能的配对变化", ylabel="每折平均选中组数（组）",
+           xticks=[0, 1], xticklabels=["区间风险基线", "严格鲁棒 LOSO"])
+    ax.set_ylim(bottom=0)
+    ax.grid(axis="y")
+    ax.text(0.5, 0.98, "细线：同一 seed；圆点：30-seed 均值",
+            transform=ax.transAxes, ha="center", va="top", color="#5B616B", fontsize=8)
+
+    ax = axes[1]
+    metrics = [
+        ("mean_selected_groups", "选中组数差", 1.0),
+        ("mean_stable_rate_target", "稳定组/目标比例差", 100.0),
+        ("mean_selected_group_reject_rate", "已选组拒绝率差", 100.0),
+        ("mean_worst_safety_margin", "最坏安全裕量差", 100.0),
+    ]
+    y = np.arange(len(metrics))
+    values = np.array([diff[key]["mean"] * scale for key, _, scale in metrics])
+    low = np.array([diff[key]["ci_low"] * scale for key, _, scale in metrics])
+    high = np.array([diff[key]["ci_high"] * scale for key, _, scale in metrics])
+    colors = [COLORS["red"] if value < 0 else COLORS["teal"] for value in values]
+    ax.errorbar(values, y, xerr=[values - low, high - values], fmt="none",
+                ecolor=COLORS["dark"], elinewidth=1.1, capsize=3, zorder=2)
+    ax.scatter(values, y, s=48, color=colors, edgecolor="white", linewidth=0.6, zorder=3)
+    ax.axvline(0, color=COLORS["dark"], linewidth=0.8, linestyle="--")
+    ax.set(title="b 鲁棒策略减参考策略", xlabel="配对均值差（90% seed-bootstrap 区间）",
+           yticks=y, yticklabels=[label for _, label, _ in metrics])
+    ax.invert_yaxis()
+    ax.grid(axis="x")
+    ax.text(0.99, 0.02, "比例与裕量按百分点显示；组数保持原单位",
+            transform=ax.transAxes, ha="right", va="bottom", color="#5B616B", fontsize=7.5)
+    fig.suptitle("留一压力场景盲测揭示风险—产能权衡", fontweight="bold")
+    save(fig, "fig6_robust_loso_tradeoff")
+
+
 def write_captions() -> None:
     text = "# 最终图组图注\n\n"
     text += "1. **跨种子可信产能与参数扰动景观。** 左图为 30 个独立 seed 下区间风险基线的最大可信组数分布，右图为 45 个离散单因素扰动（OAT）参数点；虚线为 8 组目标。OAT 点不连接为连续 Pareto 前沿。\n"
@@ -280,6 +343,7 @@ def write_captions() -> None:
     text += "3. **观测层压力下的预测与决策敏感性。** 左图比较四种模型在无、轻度和重度观测压力下的 SOH 预测 RMSE；右图分别按行着色并标注可用电芯数、最大可信组数和成员 Jaccard 原值，行间颜色不可比较。\n"
     text += "4. **固定编组压力追踪状态矩阵。** 对 Q3 选出的同一 8 组电芯在 5 个压力场景中追踪触发状态，全程不重新筛选、不重新优化。\n"
     text += "5. **点预测与区间风险的固定编组压力对照。** 两种模式使用同一仿真数据和同一场景集，各自固定 Q3 编组；区间风险模式减少复检但增加强制拒绝，不解释为无条件优于点预测。\n"
+    text += "6. **留一压力场景鲁棒编组的风险—产能权衡。** 每轮仅用四个训练场景筛除强制拒绝组并最大化最坏安全裕量，再在未参与选择的第五场景盲测。严格鲁棒策略提高最坏裕量，但显著减少可信产能，且已选组拒绝率差的 90% 配对区间跨 0；不解释为鲁棒策略获胜。\n"
     (OUT / "CAPTIONS.md").write_text(text, encoding="utf-8")
 
 
@@ -290,8 +354,9 @@ def main() -> None:
     plot_observation_sensitivity()
     plot_fixed_group_matrix()
     plot_paired_decision_modes()
+    plot_robust_loso_tradeoff()
     write_captions()
-    print(f"已生成 5 张 SVG + 5 张 600 DPI PNG：{OUT}")
+    print(f"已生成 6 张 SVG + 6 张 600 DPI PNG：{OUT}")
 
 
 if __name__ == "__main__":

@@ -46,9 +46,17 @@
 - 右删失时不输出不可识别的精确 RUL CV。
 - `[RESULT][UPDATEABLE]` P1 在相同 5 场景下让 POINT 与 INTERVAL_RISK 各自固定 Q3 选出的 8 组：POINT=20 稳定、10 复检、10 拒绝；INTERVAL_RISK=16 稳定、5 复检、19 拒绝。区间风险更保守，不能写成无条件更优。
 
+### 2.4 V4 留一压力场景盲测
+
+- `[CONFIRMED]` 30 seeds x 5 留出场景 x 2 策略，共 300 条策略折；bootstrap 独立单位是 seed，不把折或编组当独立样本。
+- `[RESULT][UPDATEABLE]` 参考/严格鲁棒策略每折平均选择 5.667/1.160 组；配对差 -4.507，90% 区间 `[-5.020,-3.980]`。
+- `[RESULT][UPDATEABLE]` 最坏安全裕量差 +0.332，90% 区间 `[0.181,0.496]`；稳定组目标比例差 -0.078，区间 `[-0.106,-0.050]`。
+- `[RESULT][UPDATEABLE]` 已选组拒绝率差 +0.028，90% 区间 `[-0.080,0.134]`；没有证据证明严格鲁棒策略降低拒绝率。
+- 判定：`PASS_NEGATIVE_RESULT / RISK_CAPACITY_TRADEOFF`。只能写“识别严格鲁棒策略的产能代价”，不能写“鲁棒优化显著提升安全性”。
+
 ## 3. 自动验证
 
-- V3 gates：17/17 PASS。
+- V3/V4 gates：19/19 PASS。
 - manifest：PASS。
 - V2 canonical 状态：`PASS / HOLD_RPT_SENSITIVITY / false`。
 - 完整测试数与最终 Git 状态以本次提交前命令输出和 `run_manifest.json` 为准。

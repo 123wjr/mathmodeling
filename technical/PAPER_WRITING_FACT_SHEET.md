@@ -15,6 +15,7 @@
 | F7 | POINT 入选 89 芯、最大可行 22 组；INTERVAL_RISK 入选 41 芯、最大可行 10 组；目标均为 8 组，状态均为 `ACCEPT_FIXED_GROUPS`，门槛未放宽 | `[RESULT][UPDATEABLE]` | `study_output_v3/q3_decision_comparison.csv`、`configs/study_pipeline_v3.json` |
 | F8 | 5 seed、45 行 OAT 决策稳定性扫描；入选率=0.1489--0.3511，选中电芯 Jaccard=0.5714--1.0000；44/45 显式弃权，最大组数缺口=5，门槛放宽次数=0 | `[RESULT][UPDATEABLE]` | `study_output_v3/q3_stability_sweep.csv`、`q3_stability_summary.json` |
 | F14 | 30 个独立 seed 的基线区间风险产能：G_max=1--17，中位数 5.5；至少达到 4/5/6/7/8 组的经验比例=86.7%/70.0%/50.0%/40.0%/30.0%；9/30 接受 8 组 | `[RESULT][UPDATEABLE]` 合成跨种子经验分布，不是真实概率 | `study_output_v3/q3_capacity_seed_runs.csv`、`q3_capacity_seed_summary.json` |
+| F16 | V4 30-seed 留一场景盲测：参考/严格鲁棒策略平均 5.667/1.160 组；组数差 -4.507（90% CI `[-5.020,-3.980]`）；最坏安全裕量差 +0.332（`[0.181,0.496]`）；已选组拒绝率差 +0.028（`[-0.080,0.134]`） | `[RESULT][UPDATEABLE]` 严格鲁棒过滤改善最坏裕量但显著牺牲产能，未证明拒绝率下降 | `study_output_v3/q4_robust_loso_folds.csv`、`q4_robust_loso_summary.json` |
 | F15 | 同一 5 场景、各自固定 8 组的 POINT/INTERVAL_RISK 配对追踪：POINT=20 稳定/10 复检/10 拒绝；INTERVAL_RISK=16/5/19 | `[RESULT][UPDATEABLE]` 区间风险更保守，不宣称无条件更优 | `study_output_v3/q4_paired_decision_mode_summary.csv`、`q4_paired_decision_mode_summary.json` |
 | F9 | Q2 消融共 48 个预注册配置：3 个历史窗口 x 4 个特征组 x 4 个模型 | `[CONFIRMED][RESULT]` 仿真留组 | `study_output_v3/q2_ablation_metrics.csv` |
 | F10 | 固定同一 8 组跨 5 个压力场景追踪，cycle 750 连续；40 个组级记录中 16 个稳定、5 个复检、19 个强制拒绝 | `[RESULT][CONFIRMED]` 仿真固定编组追踪 | `study_output_v3/q4_fixed_group_summary.csv` |

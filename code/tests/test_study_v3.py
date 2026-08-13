@@ -489,6 +489,87 @@ def test_trigger_rejects_endpoint_breach_before_dispersion_rules():
     assert v3._trigger_status(base, triggers) == "REJECT_FORCED_ASSIGNMENT"
 
 
+def test_safety_margin_uses_existing_trigger_boundaries():
+    triggers = {
+        "max_capacity_cv": 0.03,
+        "max_soh_range": 0.03,
+        "max_rul_cv": 0.25,
+        "max_resistance_growth_range": 0.1,
+    }
+    group = {
+        "capacity_cv": 0.015,
+        "soh_range": 0.015,
+        "rul_cv": 0.125,
+        "resistance_range": 0.05,
+        "weakest_soh": 0.85,
+        "post_750_event_count": 0,
+    }
+    assert v3._group_safety_margin(group, triggers, 0.8) == pytest.approx(0.25)
+    group["weakest_soh"] = 0.8
+    assert v3._group_safety_margin(group, triggers, 0.8) == pytest.approx(0.0)
+
+
+def test_robust_selection_excludes_training_rejects_and_is_disjoint(inputs):
+    study_cfg, _, _ = inputs
+    groups = []
+    for index in range(3):
+        groups.append({
+            "group_id": f"g{index}",
+            "members": tuple(f"c{index * 4 + offset}" for offset in range(4)),
+            "benefit_index": 0.5,
+            "inconsistency_index": 0.5,
+            "risk_index": 0.5,
+            "cost_index": 0.5,
+        })
+    outcomes = {
+        ("train_a", "g0"): {"trigger": "STABLE_UNDER_SCENARIO", "safety_margin": 0.2},
+        ("train_b", "g0"): {"trigger": "STABLE_UNDER_SCENARIO", "safety_margin": 0.1},
+        ("train_a", "g1"): {"trigger": "REJECT_FORCED_ASSIGNMENT", "safety_margin": -0.2},
+        ("train_b", "g1"): {"trigger": "STABLE_UNDER_SCENARIO", "safety_margin": 0.3},
+        ("train_a", "g2"): {"trigger": "STABLE_UNDER_SCENARIO", "safety_margin": 0.4},
+        ("train_b", "g2"): {"trigger": "REINSPECT", "safety_margin": -0.1},
+        # Held-out values must not enter selection.
+        ("held_out", "g0"): {"trigger": "REJECT_FORCED_ASSIGNMENT", "safety_margin": -99.0},
+        ("held_out", "g2"): {"trigger": "REJECT_FORCED_ASSIGNMENT", "safety_margin": -99.0},
+    }
+    result = v3.optimize_robust_groups(
+        groups, outcomes, ["train_a", "train_b"], study_cfg, target_groups=2
+    )
+    assert {row["group_id"] for row in result["selected"]} == {"g0", "g2"}
+    assert result["training_reject_groups"] == 1
+    members = [cell for group in result["selected"] for cell in group["members"]]
+    assert len(members) == len(set(members))
+    assert result["thresholds_relaxed"] is False
+
+
+def test_scenario_group_rul_cv_requires_all_events(inputs):
+    study_cfg, _, _ = inputs
+    group = {
+        "members": ("a", "b", "c", "d"), "capacity_cv": 0.0,
+    }
+    triggers = {
+        "max_capacity_cv": 0.03, "max_soh_range": 0.03,
+        "max_rul_cv": 0.25, "max_resistance_growth_range": 0.1,
+    }
+    cells = {
+        cell: {
+            "cycle_1000_soh": 0.9, "cycle_1000_capacity": 1.8,
+            "resistance_growth_increment": 0.05,
+            "post_750_event_observed": True,
+            "post_750_observed_or_censor_duration": 100 + index * 5,
+            "cycle_750_continuity_error": 0.0,
+        }
+        for index, cell in enumerate(group["members"])
+    }
+    observed = v3._scenario_group_summary(group, cells, "s", triggers, 0.8)
+    assert observed["rul_cv"] is not None
+    assert observed["rul_consistency_status"] == "OBSERVED_EVENTS"
+    cells["d"]["post_750_event_observed"] = False
+    censored = v3._scenario_group_summary(group, cells, "s", triggers, 0.8)
+    assert censored["rul_cv"] is None
+    assert censored["rul_consistency_status"] == "RIGHT_CENSORED_NOT_IDENTIFIABLE"
+
+
 def test_track_fixed_cell_marks_boundary_as_historical_and_751_as_stress(inputs):
     study_cfg, g1_cfg, dataset = inputs
     records = data.group_cells(dataset["rows"])["T45_C2_D100_0"]

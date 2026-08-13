@@ -1,6 +1,6 @@
-# V3 验证报告
+# V3/V4 验证报告
 
-> 状态：`V3_RESULT_READY_WITH_SIMULATION_LIMITS`。本文档只描述本次 V3 合成仿真和固定编组压力追踪；不构成真实外部验证。
+> 状态：`V3_V4_RESULT_READY_WITH_SIMULATION_LIMITS`。本文档只描述本次 V3 合成仿真、固定编组压力追踪和 V4 留一压力场景盲测；不构成真实外部验证。
 
 ## 结果摘要
 
@@ -15,6 +15,7 @@
 - `[RESULT]` Q4 固定组级记录 40 行；16 行 `STABLE_UNDER_SCENARIO`，5 行 `REINSPECT`，19 行 `REJECT_FORCED_ASSIGNMENT`；终点突破/事件触发强制拒绝。
 - `[RESULT][UPDATEABLE]` 同一五场景的模式配对固定追踪：POINT=20 稳定/10 复检/10 拒绝；INTERVAL_RISK=16 稳定/5 复检/19 拒绝。区间风险减少复检但增加拒绝，只支持更保守的弃权描述。
 - `[RESULT][ASSUMED]` 观测压力 none/light/heavy 的 Ridge RMSE 为 0.004206/0.004224/0.004344；模型排序翻转档位=none；选中成员 Jaccard=1.000/0.829/0.778。观测档是仿真压力，不是真实 RPT 标定。
+- `[RESULT][UPDATEABLE]` V4 留一压力场景盲测共 300 条策略折；鲁棒策略相对参考策略的平均选中组数差为 -4.507 （90% 配对 bootstrap 区间 [-5.020, -3.980]）；稳定组目标比例差为 -0.078，已选组拒绝率差为 0.028。这是合成压力场景下的风险—产能权衡，不是真实鲁棒性保证。
 
 ## 验收闸门
 
@@ -35,6 +36,8 @@
 - [x] observation_pressure_complete: none/light/heavy all report four Q2 models and Q3 decision outcomes
 - [x] observation_latent_state_preserved: only observed channels changed; grouped split overlap remains zero
 - [x] decision_abstention_enforced: shortfall returns explicit abstention; screening thresholds never relax
+- [x] robust_loso_complete: 30 seeds x 5 held-out scenarios x 2 strategies
+- [x] robust_loso_pairing: paired bootstrap aggregates five folds within each seed
 
 ## 边界
 

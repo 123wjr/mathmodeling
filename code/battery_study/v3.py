@@ -41,9 +41,18 @@ def load_settings(path: str) -> dict:
         capacity_seeds = settings["capacity_seed_study"]["seeds"]
         if len(capacity_seeds) != 30 or len(set(capacity_seeds)) != 30:
             raise ValueError("容量种子研究必须使用 30 个不同 seed")
+        robust = settings["robust_loso"]
+        if robust["seeds"] != capacity_seeds:
+            raise ValueError("鲁棒 LOSO 必须复用预注册的 30 个容量 seed")
+        if int(robust["bootstrap_repetitions"]) < 1000:
+            raise ValueError("鲁棒 LOSO 配对 bootstrap 至少 1000 次")
+        if not 0.0 < float(robust["confidence_level"]) < 1.0:
+            raise ValueError("鲁棒 LOSO 置信水平必须位于 0 和 1 之间")
         scenarios = settings["pressure_scenarios"]
-        if not scenarios or scenarios[0]["name"] != "baseline_use":
+        if len(scenarios) != 5 or scenarios[0]["name"] != "baseline_use":
             raise ValueError("首个压力场景必须是 baseline_use")
+        if len({row["name"] for row in scenarios}) != len(scenarios):
+            raise ValueError("压力场景名称不得重复")
         for scenario in scenarios:
             status = data.supported_domain_status(
                 float(scenario["temperature_C"]),
@@ -962,6 +971,23 @@ def _trigger_status(group, triggers, endpoint_soh: float = 0.8):
     return "STABLE_UNDER_SCENARIO"
 
 
+def _group_safety_margin(group, triggers, endpoint_soh: float = 0.8) -> float:
+    """Minimum dimensionless distance to an existing Q4 trigger boundary."""
+    margins = [
+        (float(group["weakest_soh"]) - endpoint_soh) / (1.0 - endpoint_soh),
+        1.0 - float(group["soh_range"]) / float(triggers["max_soh_range"]),
+        1.0 - float(group["resistance_range"]) / float(
+            triggers["max_resistance_growth_range"]
+        ),
+        1.0 - float(group["capacity_cv"]) / float(triggers["max_capacity_cv"]),
+    ]
+    if group.get("rul_cv") is not None:
+        margins.append(1.0 - float(group["rul_cv"]) / float(triggers["max_rul_cv"]))
+    if int(group.get("post_750_event_count", 0)) > 0:
+        margins.append(-1.0)
+    return float(min(margins))
+
+
 def _add_rul_change_bounds(cell_rows):
     baseline = {
         row["cell_id"]: row for row in cell_rows if row["scenario"] == "baseline_use"
@@ -1206,6 +1232,252 @@ def paired_fixed_group_tracking(rows, g1_cfg, study_cfg, settings, decisions) ->
     }
 
 
+def _scenario_cell_summary(tracked: list[dict], study_cfg) -> dict:
+    first, final = tracked[0], tracked[-1]
+    crossing = next(
+        (row["cycle"] for row in tracked[1:] if row["soh"] <= study_cfg.q1.critical_soh),
+        None,
+    )
+    duration = (
+        crossing - study_cfg.q3.retirement_cycle
+        if crossing is not None else len(tracked) - 1
+    )
+    return {
+        "cycle_750_soh": float(first["soh"]),
+        "cycle_1000_soh": float(final["soh"]),
+        "cycle_1000_capacity": float(final["capacity_true"]),
+        "resistance_growth_increment": float(final["resistance_true"] / first["resistance_true"] - 1.0),
+        "post_750_event_observed": crossing is not None,
+        "post_750_observed_or_censor_duration": int(duration),
+        "cycle_750_continuity_error": float(first["formula_continuity_error"]),
+    }
+
+
+def _scenario_group_summary(group: dict, cell_summaries: dict[str, dict], scenario: str,
+                            triggers: dict, endpoint_soh: float) -> dict:
+    cells = [cell_summaries[cell] for cell in group["members"]]
+    soh = [row["cycle_1000_soh"] for row in cells]
+    resistance = [row["resistance_growth_increment"] for row in cells]
+    durations = [row["post_750_observed_or_censor_duration"] for row in cells]
+    events = sum(row["post_750_event_observed"] for row in cells)
+    censored = len(cells) - events
+    capacities = [row["cycle_1000_capacity"] for row in cells]
+    capacity_cv = float(np.std(capacities) / abs(np.mean(capacities))) if np.mean(capacities) else 0.0
+    rul_cv = None if censored else float(np.std(durations) / abs(np.mean(durations))) if np.mean(durations) else 0.0
+    summary = {
+        "scenario": scenario,
+        "group_number": None,
+        "group_signature": ",".join(group["members"]),
+        "capacity_cv": capacity_cv,
+        "soh_range": float(max(soh) - min(soh)),
+        "rul_cv": rul_cv,
+        "rul_consistency_status": "RIGHT_CENSORED_NOT_IDENTIFIABLE" if censored else "OBSERVED_EVENTS",
+        "right_censored_cell_count": censored,
+        "resistance_range": float(max(resistance) - min(resistance)),
+        "weakest_soh": float(min(soh)),
+        "weakest_observed_or_censor_rul": float(min(durations)),
+        "post_750_event_count": events,
+        "cycle_750_continuity_error": max(row["cycle_750_continuity_error"] for row in cells),
+        "trigger": None,
+    }
+    summary["trigger"] = _trigger_status(summary, triggers, endpoint_soh)
+    summary["safety_margin"] = _group_safety_margin(summary, triggers, endpoint_soh)
+    return summary
+
+
+def _selected_group_metrics(selected: list[dict], outcomes: dict[tuple[str, str], dict], scenario: str) -> dict:
+    rows = [outcomes[(scenario, str(group["group_id"]))] for group in selected]
+    counts = defaultdict(int)
+    for row in rows:
+        counts[row["trigger"]] += 1
+    return {
+        "n_groups": len(rows),
+        "stable_count": counts["STABLE_UNDER_SCENARIO"],
+        "reinspect_count": counts["REINSPECT"],
+        "reject_count": counts["REJECT_FORCED_ASSIGNMENT"],
+        "stable_rate_target": counts["STABLE_UNDER_SCENARIO"] / 8.0,
+        "selected_group_reject_rate": counts["REJECT_FORCED_ASSIGNMENT"] / len(rows) if rows else None,
+        "weakest_soh": min((row["weakest_soh"] for row in rows), default=None),
+        "largest_resistance_range": max((row["resistance_range"] for row in rows), default=None),
+        "worst_safety_margin": min((row["safety_margin"] for row in rows), default=None),
+    }
+
+
+def optimize_robust_groups(groups: list[dict], outcomes: dict[tuple[str, str], dict],
+                           training_scenarios: list[str], study_cfg, *, target_groups=None) -> dict:
+    """Select disjoint groups using only the registered training scenarios."""
+    target = study_cfg.q3.target_groups if target_groups is None else int(target_groups)
+    rejected = [group for group in groups if any(
+        outcomes[(scenario, str(group["group_id"]))]["trigger"] == "REJECT_FORCED_ASSIGNMENT"
+        for scenario in training_scenarios
+    )]
+    candidates = [group for group in groups if group not in rejected]
+    margins = {
+        str(group["group_id"]): min(
+            float(outcomes[(scenario, str(group["group_id"]))]["safety_margin"])
+            for scenario in training_scenarios
+        )
+        for group in candidates
+    }
+    tie_scores = {
+        str(group["group_id"]): q3.group_score(group, tuple(study_cfg.q3.weights["balanced"]))
+        for group in candidates
+    }
+    maximum = q3.maximum_disjoint_group_count(candidates)
+    actual_target = min(target, maximum)
+    if actual_target < 1:
+        return {
+            "selected": [], "max_feasible_groups": maximum,
+            "requested_groups": target, "training_reject_groups": len(rejected),
+            "group_shortfall": target, "thresholds_relaxed": False,
+            "decision_status": "ABSTAIN_INSUFFICIENT_FEASIBILITY",
+            "worst_margin": None,
+        }
+    solution = q3.solve_robust_milp(candidates, margins, tie_scores, actual_target)
+    return {
+        **solution, "max_feasible_groups": maximum, "requested_groups": target,
+        "group_shortfall": target - actual_target, "training_reject_groups": len(rejected),
+        "robust_candidate_groups": len(candidates), "thresholds_relaxed": False,
+        "decision_status": "ACCEPT_FIXED_GROUPS" if actual_target == target else "ABSTAIN_INSUFFICIENT_FEASIBILITY",
+    }
+
+
+def _percentile_interval(values: list[float], confidence: float) -> tuple[float, float]:
+    alpha = (1.0 - confidence) / 2.0
+    return (float(np.quantile(values, alpha)), float(np.quantile(values, 1.0 - alpha)))
+
+
+def summarize_robust_loso(fold_rows: list[dict], *, repetitions: int, confidence: float,
+                          seed: int = 20260813) -> dict:
+    if not fold_rows:
+        raise ValueError("鲁棒 LOSO 没有折级结果")
+    seeds = sorted({int(row["seed"]) for row in fold_rows})
+    strategies = ["REFERENCE_INTERVAL_RISK", "ROBUST_LOSO"]
+    by_seed = {strategy: {seed: [] for seed in seeds} for strategy in strategies}
+    for row in fold_rows:
+        by_seed[row["strategy"]][int(row["seed"])].append(row)
+    seed_rows = []
+    for seed_value in seeds:
+        for strategy in strategies:
+            rows = by_seed[strategy][seed_value]
+            if len(rows) != 5:
+                raise ValueError("每个 seed 每种策略必须恰好 5 个留出场景折")
+            def mean_optional(key):
+                values = [r[key] for r in rows if r[key] is not None and math.isfinite(float(r[key]))]
+                return float(np.mean(values)) if values else None
+            seed_rows.append({
+                "seed": seed_value, "strategy": strategy,
+                "mean_selected_groups": mean_optional("selected_groups"),
+                "mean_stable_count": mean_optional("stable_count"),
+                "mean_reinspect_count": mean_optional("reinspect_count"),
+                "mean_reject_count": mean_optional("reject_count"),
+                "mean_stable_rate_target": mean_optional("stable_rate_target"),
+                "mean_selected_group_reject_rate": mean_optional("selected_group_reject_rate"),
+                "mean_worst_safety_margin": mean_optional("worst_safety_margin"),
+            })
+    rng = np.random.default_rng(seed)
+
+    def bootstrap_summary(values):
+        finite = np.asarray([value for value in values if value is not None and math.isfinite(float(value))], dtype=float)
+        if finite.size == 0:
+            return {"mean": None, "ci_low": None, "ci_high": None}
+        draws = [float(np.mean(finite[rng.integers(0, len(finite), len(finite))])) for _ in range(repetitions)]
+        low, high = _percentile_interval(draws, confidence)
+        return {"mean": float(np.mean(finite)), "ci_low": low, "ci_high": high}
+
+    summary_rows = []
+    for strategy in strategies:
+        rows = [row for row in seed_rows if row["strategy"] == strategy]
+        summary = {"strategy": strategy, "n_seeds": len(rows)}
+        for metric in ("mean_selected_groups", "mean_stable_count", "mean_reinspect_count",
+                       "mean_reject_count", "mean_stable_rate_target",
+                       "mean_selected_group_reject_rate", "mean_worst_safety_margin"):
+            values = bootstrap_summary([row[metric] for row in rows])
+            summary[f"{metric}_mean"] = values["mean"]
+            summary[f"{metric}_ci_low"] = values["ci_low"]
+            summary[f"{metric}_ci_high"] = values["ci_high"]
+        summary_rows.append(summary)
+    reference = {row["seed"]: row for row in seed_rows if row["strategy"] == strategies[0]}
+    robust = {row["seed"]: row for row in seed_rows if row["strategy"] == strategies[1]}
+    differences = {}
+    for metric in ("mean_selected_groups", "mean_stable_rate_target", "mean_reject_count",
+                   "mean_selected_group_reject_rate", "mean_worst_safety_margin"):
+        values = [robust[seed_value][metric] - reference[seed_value][metric]
+                  for seed_value in seeds
+                  if robust[seed_value][metric] is not None and reference[seed_value][metric] is not None]
+        differences[metric] = bootstrap_summary(values)
+    return {"seed_rows": seed_rows, "strategy_summary": summary_rows, "paired_differences_robust_minus_reference": differences,
+            "bootstrap": {"unit": "seed", "repetitions": repetitions, "confidence": confidence, "seed": seed}}
+
+
+def robust_loso_experiment(study_cfg, settings) -> tuple[list[dict], dict]:
+    """Run paired leave-one-pressure-scenario-out grouping for registered seeds."""
+    scenarios = settings["pressure_scenarios"]
+    scenario_names = [row["name"] for row in scenarios]
+    fold_rows, selected_rows = [], []
+    for seed in settings["robust_loso"]["seeds"]:
+        local_cfg, dataset = data.generate_factorial_dataset(study_cfg, seed=seed)
+        risk_set = retirement_risk_set(dataset["rows"], study_cfg, study_cfg.q3.retirement_cycle, study_cfg.q1.critical_soh)
+        predictions, _ = cross_validated_retirement_predictions(risk_set, study_cfg)
+        decisions = build_decision_pools(risk_set, predictions, study_cfg)
+        reference_solution = optimize_decision(decisions["INTERVAL_RISK"], study_cfg, tuple(study_cfg.q3.weights["balanced"]))
+        candidates = q3.enumerate_candidate_groups(decisions["INTERVAL_RISK"], study_cfg.q3.group_size, study_cfg.q3.neighbor_pool)
+        grouped = data.group_cells(dataset["rows"])
+        cell_cache = {}
+        for scenario in scenarios:
+            stress = (scenario["temperature_C"], scenario["c_rate_C"], scenario["dod_pct"])
+            for cell_id in {cell for group in candidates for cell in group["members"]}:
+                tracked = track_fixed_cell(cell_id=cell_id, records=grouped[cell_id], g1_cfg=local_cfg,
+                                           stress=stress, retirement_cycle=study_cfg.q3.retirement_cycle)
+                cell_cache[(scenario["name"], cell_id)] = _scenario_cell_summary(tracked, study_cfg)
+        outcomes = {
+            (scenario_name, str(group["group_id"])): _scenario_group_summary(
+                group, {cell: cell_cache[(scenario_name, cell)] for cell in group["members"]}, scenario_name,
+                settings["triggers"], study_cfg.q1.critical_soh
+            )
+            for scenario_name in scenario_names for group in candidates
+        }
+        for held_out in scenario_names:
+            training = [name for name in scenario_names if name != held_out]
+            training_reject = [group for group in candidates if any(
+                outcomes[(name, str(group["group_id"]))]["trigger"] == "REJECT_FORCED_ASSIGNMENT" for name in training
+            )]
+            robust_candidates = [group for group in candidates if group not in training_reject]
+            margins = {str(group["group_id"]): min(outcomes[(name, str(group["group_id"]))]["safety_margin"] for name in training)
+                       for group in robust_candidates}
+            tie_scores = {str(group["group_id"]): q3.group_score(group, tuple(study_cfg.q3.weights["balanced"])) for group in robust_candidates}
+            maximum = q3.maximum_disjoint_group_count(robust_candidates)
+            target = min(study_cfg.q3.target_groups, maximum)
+            robust_solution = q3.solve_robust_milp(robust_candidates, margins, tie_scores, target) if target else {"selected": [], "worst_margin": None, "solver_status": "ABSTAIN"}
+            robust_selected = robust_solution["selected"]
+            for strategy, selected, max_groups in (
+                ("REFERENCE_INTERVAL_RISK", reference_solution["selected"], reference_solution["max_feasible_groups"]),
+                ("ROBUST_LOSO", robust_selected, maximum),
+            ):
+                metrics = _selected_group_metrics(selected, outcomes, held_out)
+                fold_rows.append({
+                    "seed": seed, "held_out_scenario": held_out, "training_scenarios": ";".join(training),
+                    "strategy": strategy, "candidate_group_count": len(candidates),
+                    "training_reject_group_count": len(training_reject) if strategy == "ROBUST_LOSO" else None,
+                    "robust_candidate_group_count": len(robust_candidates) if strategy == "ROBUST_LOSO" else None,
+                    "max_feasible_groups": max_groups, "selected_groups": len(selected),
+                    "group_shortfall": study_cfg.q3.target_groups - len(selected), "thresholds_relaxed": False,
+                    "selection_status": "ACCEPT_FIXED_GROUPS" if len(selected) == study_cfg.q3.target_groups else "ABSTAIN_INSUFFICIENT_FEASIBILITY",
+                    "selection_worst_training_margin": robust_solution.get("worst_margin") if strategy == "ROBUST_LOSO" else None,
+                    **metrics,
+                })
+                selected_rows.extend({"seed": seed, "held_out_scenario": held_out, "strategy": strategy,
+                                      "group_number": number, "group_id": group["group_id"],
+                                      "members": ";".join(group["members"])}
+                                     for number, group in enumerate(selected, start=1))
+    summary = summarize_robust_loso(fold_rows, repetitions=int(settings["robust_loso"]["bootstrap_repetitions"]),
+                                    confidence=float(settings["robust_loso"]["confidence_level"]))
+    summary["scenario_names"] = scenario_names
+    summary["fold_count"] = len(fold_rows)
+    summary["selected_rows"] = selected_rows
+    return fold_rows, summary
+
+
 def _git_head(project_root: str) -> str:
     try:
         return subprocess.check_output(
@@ -1443,7 +1715,8 @@ def fixed_group_membership_is_constant(tracking: dict, scenario_names: list[str]
 
 def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
                  comparison, stability_rows, capacity_rows, capacity_summary,
-                 ablation_rows, tracking, paired_tracking, observation) -> list[dict]:
+                 ablation_rows, tracking, paired_tracking, observation,
+                 robust_loso_rows, robust_loso_summary) -> list[dict]:
     gates = []
     def gate(name, condition, evidence):
         if not condition:
@@ -1601,6 +1874,37 @@ def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
         ),
         "shortfall returns explicit abstention; screening thresholds never relax",
     )
+    robust_seeds = settings["robust_loso"]["seeds"]
+    robust_scenarios = [row["name"] for row in settings["pressure_scenarios"]]
+    expected_robust_keys = {
+        (seed, scenario, strategy)
+        for seed in robust_seeds
+        for scenario in robust_scenarios
+        for strategy in ("REFERENCE_INTERVAL_RISK", "ROBUST_LOSO")
+    }
+    actual_robust_keys = {
+        (int(row["seed"]), row["held_out_scenario"], row["strategy"])
+        for row in robust_loso_rows
+    }
+    gate(
+        "robust_loso_complete",
+        actual_robust_keys == expected_robust_keys
+        and len(robust_loso_rows) == len(expected_robust_keys)
+        and all(not row["thresholds_relaxed"] for row in robust_loso_rows)
+        and all(
+            row["held_out_scenario"] not in row["training_scenarios"].split(";")
+            for row in robust_loso_rows
+        ),
+        f"{len(robust_seeds)} seeds x {len(robust_scenarios)} held-out scenarios x 2 strategies",
+    )
+    gate(
+        "robust_loso_pairing",
+        robust_loso_summary["bootstrap"]["unit"] == "seed"
+        and {row["strategy"] for row in robust_loso_summary["strategy_summary"]}
+        == {"REFERENCE_INTERVAL_RISK", "ROBUST_LOSO"}
+        and len(robust_loso_summary["seed_rows"]) == len(robust_seeds) * 2,
+        "paired bootstrap aggregates five folds within each seed",
+    )
     return gates
 
 
@@ -1624,10 +1928,12 @@ def _write_validation_report(project_root, out_dir, summary, gates):
         }
         for mode in ("POINT", "INTERVAL_RISK")
     }
+    robust = summary["robust_loso"]
+    robust_diff = robust["paired_differences_robust_minus_reference"]
     lines = [
-        "# V3 验证报告",
+        "# V3/V4 验证报告",
         "",
-        "> 状态：`V3_RESULT_READY_WITH_SIMULATION_LIMITS`。本文档只描述本次 V3 合成仿真和固定编组压力追踪；不构成真实外部验证。",
+        "> 状态：`V3_V4_RESULT_READY_WITH_SIMULATION_LIMITS`。本文档只描述本次 V3 合成仿真、固定编组压力追踪和 V4 留一压力场景盲测；不构成真实外部验证。",
         "",
         "## 结果摘要",
         "",
@@ -1713,6 +2019,17 @@ def _write_validation_report(project_root, out_dir, summary, gates):
             )
             + "。观测档是仿真压力，不是真实 RPT 标定。"
         ),
+        (
+            f"- `[RESULT][UPDATEABLE]` V4 留一压力场景盲测共 {robust['fold_count']} 条策略折；"
+            f"鲁棒策略相对参考策略的平均选中组数差为 "
+            f"{robust_diff['mean_selected_groups']['mean']:.3f} "
+            f"（90% 配对 bootstrap 区间 "
+            f"[{robust_diff['mean_selected_groups']['ci_low']:.3f}, "
+            f"{robust_diff['mean_selected_groups']['ci_high']:.3f}]）；"
+            f"稳定组目标比例差为 {robust_diff['mean_stable_rate_target']['mean']:.3f}，"
+            f"已选组拒绝率差为 {robust_diff['mean_selected_group_reject_rate']['mean']:.3f}。"
+            "这是合成压力场景下的风险—产能权衡，不是真实鲁棒性保证。"
+        ),
         "",
         "## 验收闸门",
         "",
@@ -1790,11 +2107,13 @@ def run(study_cfg, settings, out_dir: str) -> dict:
     paired_tracking = paired_fixed_group_tracking(
         dataset["rows"], g1_cfg, study_cfg, settings, decisions
     )
+    robust_loso_rows, robust_loso_summary = robust_loso_experiment(study_cfg, settings)
     tracking = paired_tracking["by_mode"]["INTERVAL_RISK"]
     gates = _validate_v3(
         study_cfg, settings, dataset, risk_set, audit, decisions,
         comparison, stability_rows, capacity_rows, capacity_summary,
         ablation_rows, tracking, paired_tracking, observation,
+        robust_loso_rows, robust_loso_summary,
     )
 
     common.write_csv(os.path.join(out_dir, "q3_retirement_landmark_predictions.csv"), predictions)
@@ -1897,6 +2216,13 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         "rows": paired_tracking["summary_rows"],
         "interpretation": "same synthetic data and same stress scenarios; each mode fixes its own Q3 groups without re-selection",
     })
+    common.write_csv(os.path.join(out_dir, "q4_robust_loso_folds.csv"), robust_loso_rows)
+    common.write_csv(os.path.join(out_dir, "q4_robust_loso_selected_groups.csv"), robust_loso_summary["selected_rows"])
+    common.write_json(os.path.join(out_dir, "q4_robust_loso_summary.json"), {
+        "scope": "SYNTHETIC_LEAVE_ONE_PRESSURE_SCENARIO_OUT_OF_SAMPLE_GROUPING",
+        "interpretation": "held-out pressure scenario is never used for robust selection; not real external validation",
+        **{key: value for key, value in robust_loso_summary.items() if key != "selected_rows"},
+    })
     gates_path = common.write_json(os.path.join(out_dir, "validation_gates.json"), gates)
     summary = {
         "risk_set": {
@@ -1913,6 +2239,7 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         "tracking_rows": tracking["group_summary"],
         "paired_tracking": paired_tracking,
         "observation": observation,
+        "robust_loso": robust_loso_summary,
     }
     report_path = _write_validation_report(project_root, out_dir, summary, gates)
     artifact_paths = []
