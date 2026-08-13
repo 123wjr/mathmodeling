@@ -33,25 +33,25 @@ git status --short --branch
 | 顺序 | 文件 | 你要得到的内容 |
 |---:|---|---|
 | 1 | [试题 A.pdf](试题%20%20A.pdf) | 原题、四个问题和题面约束；题面是问题定义的事实源 |
-| 2 | [论文初稿.md](论文初稿.md) | 最新 G12/V2 对齐骨架；Q3/Q4 仍需按 V3 整体替换，数字必须回指证据 |
+| 2 | [论文初稿.md](论文初稿.md) | 当前论文编辑骨架；技术数字已冻结，Q3/Q4 由论文主笔核对最终技术层 |
 | 3 | 外部 DOCX 格式参考（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`） | 可选的格式/栏目比较记录；不是仓库接口，不要因本机路径不可用而中断 |
 | 4 | [handoffs/PROJECT_COMMAND_CENTER.md](handoffs/PROJECT_COMMAND_CENTER.md) | 当前闸门、责任人、截止时间、停止规则和唯一事实源顺序 |
 | 5 | [technical/FINAL_CHANGELOG_FOR_PAPER.md](technical/FINAL_CHANGELOG_FOR_PAPER.md) | 对 `论文初稿.md` 的必改位置、可复制事实与禁用旧数字 |
 | 6 | [technical/TECHNICAL_SOLUTION_FINAL.md](technical/TECHNICAL_SOLUTION_FINAL.md) | 最终假设、模型、实验、结论；观测层、参数依据和决策弃权 |
 | 7 | [technical/PAPER_WRITING_FACT_SHEET.md](technical/PAPER_WRITING_FACT_SHEET.md) | 论文可直接使用的数字及证据标签 |
-| 8 | [technical/FINAL_VALIDATION_REPORT.md](technical/FINAL_VALIDATION_REPORT.md) | 15 个自动闸门、要求—证据矩阵和不能声称的内容 |
+| 8 | [technical/FINAL_VALIDATION_REPORT.md](technical/FINAL_VALIDATION_REPORT.md) | 19 个自动闸门、要求—证据矩阵和不能声称的内容 |
 | 9 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
 | 10 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
 | 11 | [V2 真实数据候选报告](technical/V2_REAL_DATA_CANDIDATE_REPORT.md) | 独立 Zenodo NMC532/NMC811 候选层；当前 `NEEDS_CHANGES/HOLD_FOR_PAPER`，禁止引用或覆盖 V1 |
 | 12 | [V2 技术方案](technical/TECHNICAL_SOLUTION_V2.md) | V2 历史技术层；`论文初稿.md` 已对齐其可写边界，候选数字仍 HOLD |
-| 13 | [V3 技术方案](technical/TECHNICAL_SOLUTION_V3.md) | 历史 interim 实现说明；冲突时由最终技术方案覆盖 |
+| 13 | [最终技术方案](technical/TECHNICAL_SOLUTION_FINAL.md) | 冻结技术口径；V3 interim 仅作历史记录 |
 | 14 | [V3 验证报告](technical/V3_VALIDATION_REPORT.md) | 自动生成的运行报告；最终审计以 `FINAL_VALIDATION_REPORT.md` 为准 |
 
 technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SUPPORTING_MATERIALS_README.md 说明支撑材料如何复跑。
 
 模板处理硬规则：先读 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 2.2 节的 DOCX 冲突登记，再以第 2.0 节的草稿逐节映射为执行清单。DOCX 只作格式比较；不因本机绝对路径、仓库同名旧版本或在线文档访问问题而中断。
 
-先做 Markdown 与技术桥接文档的逐节对齐审计，再直接编辑 `论文初稿.md`；不编辑代码、CSV、JSON、SVG。
+先做 Markdown 与技术桥接文档的逐节对齐审计；论文正文由论文主笔编辑。本技术入口不修改代码、CSV、JSON、SVG 或论文正文。
 
 ## 2. 事实源优先级
 
@@ -59,7 +59,7 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 
 1. 总负责人签署的闸门结论和 .codex/DECISIONS.md。
 2. 已验收的 A0-A5 证据包与总控台。
-3. technical/PAPER_WRITING_FACT_SHEET.md、study_output/*.json/csv、验证闸门和 manifest。
+3. technical/PAPER_WRITING_FACT_SHEET.md、study_output_v3/*.json/csv、study_output/*.json/csv、验证闸门和 manifest。
 4. 可复跑代码、配置和图表。
 5. `论文初稿.md` 中尚未回指的文字、在线文档副本、Agent 汇报和聊天内容。
 
@@ -93,7 +93,7 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 
 ## 4. 当前最终技术交付口径
 
-最终 V3 已补齐观测层、参数依据和决策弃权，并通过 15 个代码与产物闸门。论文 Agent 按 `FINAL_CHANGELOG_FOR_PAPER.md` 更新正文；技术数字已冻结到本次 manifest，但引用全文、页码、摘要—正文一致性和最终图号仍须人工核验。
+最终 V3/V4 已补齐观测层、参数依据、决策弃权和留一压力场景盲测，并通过 19 个代码与产物闸门；完整测试 `102 passed, 1 skipped`，manifest PASS。技术数字已冻结。论文 Agent 只读取事实表和最终技术方案，不修改技术产物。
 
 以下数字必须保留标签和限定语；更详细的定义以事实表和对应 CSV/JSON 为准。
 
@@ -110,6 +110,7 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 | F9 | Q2 消融 48 个配置；Q4 固定同一 8 组跨 5 场景追踪，cycle 750 连续；16/40 稳定、5/40 复检、19/40 强制拒绝 | RESULT + CONFIRMED | study_output_v3/q2_ablation_metrics.csv、q4_fixed_group_summary.csv |
 | F14 | 30 seed 区间风险基线：G_max=1--17，中位数 5.5；达到至少 8 组=30.0%（9/30） | RESULT + UPDATEABLE；合成经验分布，不是真实概率 | study_output_v3/q3_capacity_seed_runs.csv、q3_capacity_seed_summary.json |
 | F15 | 同一 5 场景配对固定追踪：POINT=20 稳定/10 复检/10 拒绝；INTERVAL_RISK=16/5/19 | RESULT + UPDATEABLE；区间风险更保守，不称无条件更优 | study_output_v3/q4_paired_decision_mode_summary.csv |
+| F16 | V4 留一压力场景盲测：参考/严格鲁棒平均 5.667/1.160 组；组数差 -4.507；最坏安全裕量差 +0.332；拒绝率差 +0.028，区间跨 0 | RESULT + UPDATEABLE；风险—产能权衡负结果 | study_output_v3/q4_robust_loso_summary.json |
 
 写数字时同时写三件事：数据是仿真、验证如何分组、结论适用范围。例如：
 
@@ -205,7 +206,7 @@ Owner：论文主笔 Agent / 论文主笔
 10. study_output/run_manifest.json
 11. technical/V2_REAL_DATA_CANDIDATE_REPORT.md
 12. technical/TECHNICAL_SOLUTION_V2.md
-13. technical/TECHNICAL_SOLUTION_V3.md（interim 历史说明）
+13. technical/TECHNICAL_SOLUTION_V3.md（interim 历史说明，不作为当前口径）
 14. technical/V3_VALIDATION_REPORT.md（自动运行报告）
 15. study_output_v3/run_manifest.json
 
@@ -225,7 +226,7 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 - 未核验引用写 UNVERIFIED 或 EVIDENCE REQUIRED，禁止猜 DOI/作者/年份。
 - 模板要求优先于通用论文模板；格式缺口只向人提问，不自行推断。
 
-完成四块后，按 `FINAL_CHANGELOG_FOR_PAPER.md` 直接更新 `论文初稿.md` 的摘要、Q3、Q4、局限与结论。技术数字已经冻结，无需等待建模负责人下一 commit；参数与观测档仍保留 `ASSUMED/UPDATEABLE` 语义。引用页码、最终图号和摘要—正文一致性须经人工终审后冻结。在线文档只是同步副本。
+完成四块后，向论文主笔交付技术核对结果；本技术收口任务不编辑 `论文初稿.md`。技术数字已经冻结；参数与观测档仍保留 `ASSUMED/UPDATEABLE` 语义。引用页码、最终图号和摘要—正文一致性由论文主笔人工终审。在线文档只是同步副本。
 ~~~
 
 ### V2 增量更新提示（配置和大纲已确认后使用）
@@ -245,7 +246,7 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 
 ## 8. 最终交稿前验收
 
-- [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F15 或对应结果文件；Q3/Q4 不采用 V1 历史数字。
+- [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F16 或对应结果文件；Q3/Q4 不采用 V1 历史数字。
 - [ ] 每个问题都有假设、模型、实验、指标、结果和限制，且没有把仿真写成实测。
 - [ ] GroupKFold(cell_id)、右删失、OOD/ABSTAIN 和协议不可辨识均被准确描述。
 - [ ] 图注包含工况/数据类型/seed 或折分；`论文初稿.md` 与在线文档副本的图号一致。

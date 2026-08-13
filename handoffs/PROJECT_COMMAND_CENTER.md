@@ -59,7 +59,7 @@
 | 远端 `main @ G0-R clean line` | NMC + CALCE；TXT 台账；G1 材料索引；无伪造 A1 | **G0-R PASS** |
 | 历史 `53ab429` | LFP + Severson；`PENDING_APPROVAL`；空 A1 | 已从 `main` 移除，仅作审计历史 |
 | `handoffs/G0_OWNER_REVIEW.md` | `PASS_WITH_CHANGES`；冻结 NMC + CALCE；允许进入 G1 | 已签署决定 |
-| 当前本地工作区 | `technical-v3`；最终观测层、参数台账、弃权机制、15 个闸门与技术文档已生成；外部 DOCX 未跟踪且不修改 | 技术闭环，待发布 |
+| 当前本地工作区 | `technical-v3`；最终观测层、参数台账、弃权机制、V4 留一场景、19 个闸门与技术文档已生成；外部 DOCX 未跟踪且不修改 | 技术闭环，论文服务收尾 |
 | `code/g1_generator/`、`code/tests/`、`configs/`、`g1_output/` | 均存在；41 G1 tests passed；12 电芯、12000 行、4 个有效 SVG | G1 技术通过 |
 
 远端已用受保护的 `force-with-lease` 更新；`data/` 内 NASA `.mat` 文件仍只作 `SECONDARY_ONLY`，不属于 G1 结果。队友开始论文整合前必须拉取远端 `main` 的当前 commit。

@@ -4,9 +4,9 @@
 >
 > 用途：把题面、代码、配置、实验输出转换为与 `论文初稿.md` 逐节对齐的技术填充材料。旧 `论文草稿.md` 仅保留历史，不再编辑。
 >
-> 状态：`READY_FOR_DRAFT_WITH_LIMITATIONS`。
+> 状态：`FINAL_TECHNICAL_HANDOFF / READY_FOR_PAPER_FINALIZATION`。
 >
-> V3 增量：`technical/TECHNICAL_SOLUTION_V3.md` 与 `study_output_v3/` 已修复本文件所登记的“cycle 750 未重估 RUL”和“Q4 重筛重组”缺口。自本行起，本文第 6--7 节旧 Q3/Q4 数字和 `C24/L6/L13/U09` 仅作 V1 历史对照，状态统一为 `SUPERSEDED_BY_V3`，禁止继续填入论文。论文主笔必须按 V3 技术方案第 0 节整体替换；不得把 V1 数字与 V3 方法拼接。V2 仍为 HOLD。
+> 最终口径：`technical/TECHNICAL_SOLUTION_FINAL.md`、`technical/PAPER_WRITING_FACT_SHEET.md` 与 `study_output_v3/` 为当前权威技术层。本文第 6--7 节旧 Q3/Q4 数字和 `C24/L6/L13/U09` 仅作 V1 历史对照，状态统一为 `SUPERSEDED_BY_FINAL`，禁止继续填入论文。V2 仍为 HOLD。
 
 ## 0. 版本与事实源
 
@@ -21,8 +21,8 @@
 | 实验编号 | `A_NMC_G2_G4_v1`（Q1/Q2）+ `A_NMC_G2_G4_v3`（当前 Q3/Q4） |
 | 主运行命令 | V1：`python -m battery_study.cli ...`；V3：`python -m battery_study.v3_cli ...`，均需 `PYTHONPATH=code` |
 | 数据性质 | 全部为 NMC 合成仿真；不是 CALCE、NASA 或企业实测数据 |
-| 当前论文阶段 | Stage 2 WRITE；未通过 Stage 2.5 INTEGRITY |
-| 最近流水线验证 | V3 最终复跑：12 个闸门 PASS、manifest PASS、全量测试 `93 passed, 1 skipped`；精确数字以 `study_output_v3/` 为准 |
+| 当前论文阶段 | 技术侧已收口；论文 Stage 2.5 完整性仍由论文主笔人工完成 |
+| 最近流水线验证 | V3/V4 最终复跑：19 个闸门 PASS、manifest PASS、全量测试 `102 passed, 1 skipped`；精确数字以 `study_output_v3/` 为准 |
 
 事实源优先级：
 
@@ -163,7 +163,7 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 
 | 项目 | 当前状态 | 可否在论文中写成已完成 |
 |---|---|---|
-| G1-G4 合成仿真、预测、编组、鲁棒性流水线 | `DONE`；V3 12/12 gates、全量测试 `93 passed, 1 skipped`、manifest PASS | 可以，但必须带合成/支持域限定 |
+| G1-G4 合成仿真、预测、编组、鲁棒性流水线 | `DONE`；V3/V4 19/19 gates、全量测试 `102 passed, 1 skipped`、manifest PASS | 可以，但必须带合成/支持域限定 |
 | Q1-Q4 技术过渡材料（假设、公式、协议、数字、证据回指） | `DONE_WITH_LIMITATIONS`；本文件第 4--9 节 | 可以按标签使用 |
 | `论文初稿.md` 到在线文档副本的同步及图号固定 | `PENDING_PAPER_AGENT` | 不可；初稿仍含待核验引用和待确认项 |
 | 外部文献逐条全文、页码/表号核验 | `PENDING_HUMAN_VERIFICATION` | 不可把候选引用写成已核验 |
@@ -530,7 +530,7 @@ RUL：
 
 ## 6. Q3 技术块：筛选、分级与编组（V1 历史对照，`SUPERSEDED_BY_V3`）
 
-本节所有 cycle=300 换算、108/85/3167 和旧 MILP 数字禁止继续填入论文。当前接口见 `TECHNICAL_SOLUTION_V3.md` 第 3.1--3.2、6 节及 `study_output_v3/q3_*.csv/json`。
+本节所有 cycle=300 换算、108/85/3167 和旧 MILP 数字禁止继续填入论文。当前接口见 `TECHNICAL_SOLUTION_FINAL.md` 第 2.3--2.4、3.3 节及 `study_output_v3/q3_*.csv/json`。
 
 ### 6.1 候选池与预测接口
 
@@ -640,9 +640,9 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 
 ## 7. Q4 技术块：多工况、鲁棒性与弃权（V1 历史对照，`SUPERSEDED_BY_V3`）
 
-本节场景重生成/重筛/重组数字禁止继续填入论文。当前接口见 `TECHNICAL_SOLUTION_V3.md` 第 3.3、6 节及 `study_output_v3/q4_fixed_group_*.csv/json`；V1 的 5-seed/OAT/OOD 仍可作为补充实验，但不得与 V3 固定编组结果混称同一实验。
+本节场景重生成/重筛/重组数字禁止继续填入论文。当前接口见 `TECHNICAL_SOLUTION_FINAL.md` 第 2.5、3.4 节及 `study_output_v3/q4_fixed_group_*.csv/json`；V1 的 5-seed/OAT/OOD 仅作历史对照，不得与最终固定编组结果混称同一实验。
 
-**V3 当前口径（论文只使用本段及 `TECHNICAL_SOLUTION_V3.md`）：** 固定 Q3 `INTERVAL_RISK + balanced` 的同一 8 组，在 `cycle=750` 保持历史状态连续，从 `cycle=751` 到 `1000` 仅改变支持域内温度、倍率和 DOD。40 个组级记录中，16 个为 `STABLE_UNDER_SCENARIO`、5 个为 `REINSPECT`、19 个为 `REJECT_FORCED_ASSIGNMENT`。右删失组的 RUL 变化按不可辨识状态报告。该结果是合成仿真压力追踪，不是真实安全验证。
+**最终口径（论文只使用本段及 `TECHNICAL_SOLUTION_FINAL.md`）：** 固定 Q3 `INTERVAL_RISK + balanced` 的同一 8 组，在 `cycle=750` 保持历史状态连续，从 `cycle=751` 到 `1000` 仅改变支持域内温度、倍率和 DOD。40 个组级记录中，16 个为 `STABLE_UNDER_SCENARIO`、5 个为 `REINSPECT`、19 个为 `REJECT_FORCED_ASSIGNMENT`。右删失组的 RUL 变化按不可辨识状态报告。该结果是合成仿真压力追踪，不是真实安全验证。
 
 ### 7.1 支持域内场景
 
@@ -788,9 +788,9 @@ V3 场景流程：固定 Q3 `INTERVAL_RISK + balanced` 选择的同一 8 组和 
 
 | 模式 | 判定 | 当前证据 | 论文/下一步处置 |
 |---|---|---|---|
-| 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | V3 12 个自动闸门 PASS；全量测试 `93 passed, 1 skipped`；manifest PASS | 代码或配置改变后必须重新复跑 |
+| 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | V3/V4 19 个自动闸门 PASS；全量测试 `102 passed, 1 skipped`；manifest PASS | 代码或配置改变后必须重新复跑 |
 | 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | `论文初稿.md` 中候选文献尚未逐条核验 DOI/官方页面、全文页码和主张范围 | `BLOCKING_FOR_STAGE_2_5`；人工核验或删除对应主张 |
-| 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | V3 数字由最新 `study_output_v3/`、12 个闸门和 manifest 回指；不从聊天或摘要反推 | 新增或改写数字时重新核对 |
+| 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | V3/V4 数字由最新 `study_output_v3/`、19 个闸门和 manifest 回指；不从聊天或摘要反推 | 新增或改写数字时重新核对 |
 | 4 依赖捷径而非预期泛化 | `INSUFFICIENT_EVIDENCE` | 生成、训练和验证均来自同一仿真家族；structure-matched 模型已隔离为 ceiling，但没有真实外部集或去捷径消融 | 只支持“仿真内比较”；Stage 4.5 前需外部证据或继续保持限制性结论 |
 | 5 将缺陷包装为新发现 | `CLEAR_WITHIN_CURRENT_SCOPE` | 没有使用“意外/反常/新机理”叙事；内阻倍率 1/9 分层反转明确归因于个体随机效应，并按限制报告 | 不得把局部反转升级为电化学新发现 |
 | 6 方法描述与实际运行不一致 | `CLEAR_WITHIN_CURRENT_SCOPE` | seed、折分、模型、门槛、求解器、场景和 OOD 规则均可在配置/代码/结果中对照；DOCX 冲突句已列为 `P0_REPLACE` | 论文方法段逐项从本包填充；不得沿用模板中的 CALCE/NASA/范围外旧表述 |

@@ -160,7 +160,7 @@ Q4 固定基线 `INTERVAL_RISK + balanced` 选出的同一 8 组、32 芯，不�
 - `[CONFIRMED]` 所有预测按电芯留组；V3 退役风险集 92 芯，训练/测试电芯零重叠。
 - `[CONFIRMED]` 观测档必须全部报告；不得只选择对模型有利的档位。
 - `[CONFIRMED]` Q3 比较 POINT/INTERVAL_RISK；Q4 固定同一编组追踪。
-- `[CONFIRMED]` 15 个自动闸门全部通过，manifest 校验通过。
+- `[CONFIRMED]` 19 个自动闸门全部通过，manifest 校验通过；完整测试为 `102 passed, 1 skipped`。
 
 ## 3.2 观测压力结果
 

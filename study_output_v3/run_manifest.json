@@ -1,9 +1,9 @@
 {
   "artifacts": [
     {
-      "bytes": 20065,
+      "bytes": 20354,
       "path": "PAPER_AGENT_START_HERE.md",
-      "sha256": "c98793341bfc30659714161484756f592c1da7c90b382be86aced64543765820"
+      "sha256": "77de6cbb849494d223f073acdfd8decdbdc54dd15dd8cdc6d646da81de0bd53a"
     },
     {
       "bytes": 999,
@@ -11,14 +11,14 @@
       "sha256": "72628b0392baba79e83d995d15d7f10f6be0366595907b00c02647a06e6808c6"
     },
     {
-      "bytes": 4836,
+      "bytes": 4819,
       "path": "handoffs/A5_paper_technical_bridge.md",
-      "sha256": "d6e7e3e450af5dff52d273f34ea6fb0e478d9cf2998c16f0dbba0701e88dc836"
+      "sha256": "10204c51da8bbebd9d85cec437ef087e43394d8f7a1024f7edd8dae98717d2cb"
     },
     {
-      "bytes": 12598,
+      "bytes": 12625,
       "path": "handoffs/PROJECT_COMMAND_CENTER.md",
-      "sha256": "9eaaa99d1d1576cb2ae7f4d3d747f145c736a84859d4055d88e7e667259f9349"
+      "sha256": "7ed53779268b756907de5d28abc78e46d4b4e6d222ebd0a8b1c2f565d4be7287"
     },
     {
       "bytes": 27649,
@@ -368,7 +368,7 @@
     {
       "bytes": 4622,
       "path": "technical/FINAL_CHANGELOG_FOR_PAPER.md",
-      "sha256": "6a03b5a3c4a59205d064373ea7e2298392bcf3651b7c3b9df8b269663a0ea41f"
+      "sha256": "5ab9f278e503d8da952be689c22e7ad00b046c05dbf57af9ee31eb3d200f2eda"
     },
     {
       "bytes": 4427,
@@ -376,19 +376,19 @@
       "sha256": "3f73fad920154fc961040f1c050e9cbecae56018ba2eb20f71384a2ab4bbab68"
     },
     {
-      "bytes": 60659,
+      "bytes": 60600,
       "path": "technical/PAPER_TECHNICAL_BRIDGE.md",
-      "sha256": "b1e9d5916142eed48ac63c93bfd7d96ff3168049f7434d1867b6377a6d51687a"
+      "sha256": "45a9769f5ecc01ea3aae11747a7f3abe6afce8c7c6ef13decaf0c52c0e08c857"
     },
     {
       "bytes": 4642,
       "path": "technical/PAPER_WRITING_FACT_SHEET.md",
-      "sha256": "7f2c25e641ba4558a052eaea34f1ca2fc81b7423b0c1aaf45717a6ee525afb3b"
+      "sha256": "445601f5618bc9649083f558edfed6380228ed3670a33128e4b928c854b262ac"
     },
     {
-      "bytes": 15095,
+      "bytes": 15137,
       "path": "technical/TECHNICAL_SOLUTION_FINAL.md",
-      "sha256": "13423516e2508226af46e5685ec172b71563fab6e131d28cf9614c7e44b8794a"
+      "sha256": "b02afc679adbda7c95af6386f47151a68ce3aee9dffba2df939382efd8d0fac0"
     },
     {
       "bytes": 9883,
@@ -416,7 +416,7 @@
     "cells": 108,
     "rows_regenerated": 108000
   },
-  "git_head_before_commit": "90bd265693b77e0f44d186903e69f6cb57104ee0",
+  "git_head_before_commit": "6cb4feb817ef5ea4bb4a3ea7b15d8da010f9016d",
   "labels": {
     "confirmed": "landmark, split, fixed group signature, continuity gates",
     "ood_abstain": "outside 25-50 degC, 0.5-2C, 50-100% DOD, CC-CV",

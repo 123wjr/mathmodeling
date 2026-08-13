@@ -1,6 +1,6 @@
 # A题支撑材料说明
 
-论文主笔 Agent 的编辑源是 [论文草稿.md](../论文草稿.md)；技术过渡入口是 [PAPER_TECHNICAL_BRIDGE.md](PAPER_TECHNICAL_BRIDGE.md)。本页只负责复跑和支撑材料打包。
+论文主笔 Agent 的编辑源是 [论文初稿.md](../论文初稿.md)；最终技术入口是 [TECHNICAL_SOLUTION_FINAL.md](TECHNICAL_SOLUTION_FINAL.md)，论文取数只用 [PAPER_WRITING_FACT_SHEET.md](PAPER_WRITING_FACT_SHEET.md)。本页只负责复跑和支撑材料打包。
 
 ## 1. 最小复跑
 
@@ -9,7 +9,8 @@
 ```bash
 python -m pip install -r requirements-study.txt
 PYTHONPATH=code python -m battery_study.cli --config configs/study_pipeline.json --out study_output
-python -m pytest code/tests -q
+PYTHONPATH=code python -m battery_study.v3_cli --config configs/study_pipeline_v3.json --out study_output_v3
+PYTHONPATH=.:code python -m pytest code/tests -q
 ```
 
 ## 2. 目录
@@ -18,14 +19,15 @@ python -m pytest code/tests -q
 - `code/battery_study/`：Q1 阶段/主效应、Q2 SOH/RUL、Q3 MILP、Q4 鲁棒性和报告生成。
 - `configs/`：全部固定参数、工况、seed、阈值和权重。
 - `g1_output/`：G1 冒烟数据、图和清单。
-- `study_output/`：G2-G4 CSV/JSON/SVG、验证闸门和 SHA-256 清单。
+- `study_output/`：Q1/Q2 基线 CSV/JSON/SVG、验证闸门和 SHA-256 清单。
+- `study_output_v3/`：最终 Q3/Q4、观测压力、跨种子、V4 留一场景与六张论文图；含 19 个验证闸门和 manifest。
 - `technical/`：四段最小技术报告、实验计划、验证报告、论文取数表和 A5 技术过渡层。
 - `handoffs/A1-A5*.md`：论文与代码之间的交接证据包。
 
 ## 3. 事实源顺序
 
-1. `study_output/run_manifest.json` 中的配置/源码/产物哈希。
-2. `study_output/validation_gates.json` 和 CSV/JSON 结果。
+1. `study_output_v3/run_manifest.json` 与 `study_output/run_manifest.json` 中的配置/源码/产物哈希。
+2. `study_output_v3/validation_gates.json` 和对应 CSV/JSON 结果。
 3. `technical/PAPER_WRITING_FACT_SHEET.md` 的论文可写数字。
 4. 图表和叙述文档；聊天数字不作为事实源。
 

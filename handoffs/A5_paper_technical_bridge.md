@@ -1,6 +1,6 @@
 # A5 论文技术过渡包
 
-**状态**：`INTERIM_V3_HANDOFF / READY_FOR_OUTLINE_WITH_LIMITATIONS`；论文初稿仍为 `CANDIDATE_DRAFT / NOT_READY_FOR_STAGE_2_5_PASS`
+**状态**：`FINAL_TECHNICAL_HANDOFF / READY_FOR_PAPER_FINALIZATION`；论文初稿仍为 `PAPER_OWNER_PENDING_FINAL_EDITORIAL_CHECK`
 
 **Owner**：总负责人；论文主笔负责按本包填充 `../论文初稿.md`，再同步在线文档。
 
@@ -15,7 +15,7 @@
 | 技术过渡文档 SHA-256 | `ea2a0b691f297c03a9a9011ca3ff9d426e58b1fc6eb99598f269c196fee8783d` |
 | 生成结果事实源 | Q1/Q2：`study_output/`；当前 Q3/Q4：`study_output_v3/`；各目录 `run_manifest.json` |
 | 当前范围 | NMC 合成仿真；Q1-Q4；支持域 25--50 degC、0.5--2C、DOD 50--100%、CC-CV |
-| V3 当前状态 | 临时论文交付；技术复跑通过后可写大纲/方法/带标签候选结果；参数依据与观测偏差补强后再冻结数字 |
+| 最终技术状态 | V3/V4 技术数字已冻结；19/19 闸门 PASS，完整测试 `102 passed, 1 skipped`，manifest PASS；论文只做文字、图表和格式收尾 |
 
 ## 交付内容
 
@@ -39,7 +39,7 @@
 
 ## 未完成项（不可用文字伪造）
 
-1. `论文初稿.md` 的 V3 大纲、方法和表图占位：`PENDING_PAPER_AGENT`；最终图号与摘要结论暂不冻结。
+1. `论文初稿.md` 的摘要、正文、图表和结论一致性：`PENDING_PAPER_AGENT`；本技术包不直接修改论文。
 2. 外部文献全文、页码/表号人工核验：`PENDING_HUMAN_VERIFICATION`。
 3. CALCE 实测拟合、NASA 外部验证、OOD 数值、完整储能拓扑/货币收益：`NOT_DONE` 或 `PAPER_GAP`。
 4. V2 真实数据候选结果：`HOLD_RPT_SENSITIVITY / paper_eligible=false`，不得进入论文数字表。
@@ -59,10 +59,10 @@
 
 论文主笔只需：
 
-1. 以 `../论文初稿.md` 为编辑骨架，按 `../technical/TECHNICAL_SOLUTION_V3.md` 第 0 节替换 Q3/Q4，并建立 V3 大纲、方法和表图占位。
+1. 以 `../论文初稿.md` 为编辑骨架，按 `../technical/TECHNICAL_SOLUTION_FINAL.md` 和 `../technical/PAPER_WRITING_FACT_SHEET.md` 收尾；本包不修改论文。
 2. 每个结果句回填主张-证据表；未核验文献保留 `EVIDENCE_REQUIRED`。
 3. 删除模板示例、无关参考文献和示例代码；不编辑代码、CSV、JSON、SVG。
-4. 所有 V3 结果保留 `RESULT_CANDIDATE_UPDATEABLE`；本轮不冻结摘要、结论和最终图号。回报正文章节、已回指数字/图数、人工核验引用数和剩余阻塞。
+4. 结果标签按事实表保留；技术数字不再更新。回报正文章节、已回指数字/图数、人工核验引用数和剩余阻塞。
 
 复跑命令：
 
@@ -76,6 +76,6 @@ PYTHONPATH=.:code python -m pytest code/tests -q
 
 ```text
 status: VERIFIED_WITH_SIMULATION_LIMITS
-evidence: V3 gates=12 PASS; full pytest=93 passed, 1 skipped; manifest=PASS
+evidence: V3/V4 gates=19 PASS; full pytest=102 passed, 1 skipped; manifest=PASS
 paper rule: V3 数字只可按最新 study_output_v3 和本包限定语写入；不称真实外部验证
 ```
