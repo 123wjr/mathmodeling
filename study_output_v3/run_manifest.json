@@ -186,6 +186,51 @@
       "sha256": "d33e6592e0197da73e79b432891ea8db7cad3c315d4c4aef5a2d9e09bd516437"
     },
     {
+      "bytes": 887,
+      "path": "study_output_v3/final_figures/CAPTIONS.md",
+      "sha256": "7b73441aa89abbc03b7c2e59012c1883e98859c40a47b411afeafa4203356c2b"
+    },
+    {
+      "bytes": 289988,
+      "path": "study_output_v3/final_figures/fig1_capacity_landscape.png",
+      "sha256": "0ba1da89b21bcab4d6d6c2afa572d6a6cfb16ec3fb91a03be679804d976bfb9e"
+    },
+    {
+      "bytes": 21670,
+      "path": "study_output_v3/final_figures/fig1_capacity_landscape.svg",
+      "sha256": "336456c3f39dbd2275de3b4c368f5978e58a1843c6073280fad31d5eb6c19697"
+    },
+    {
+      "bytes": 429358,
+      "path": "study_output_v3/final_figures/fig2_cell_selection_stability.png",
+      "sha256": "f1165cc0fb8bebd8cbadf08fb2016fd3baa298a8f67432bdd1c7c9f493e77f72"
+    },
+    {
+      "bytes": 27310,
+      "path": "study_output_v3/final_figures/fig2_cell_selection_stability.svg",
+      "sha256": "ca21133dd596557be549b5b5057a0a2b7ae77a6f61c91fee25b17881637f83f2"
+    },
+    {
+      "bytes": 353550,
+      "path": "study_output_v3/final_figures/fig3_observation_decision_sensitivity.png",
+      "sha256": "0d75649e301446114588c5766c4138bcf0da79aa43516febd4cc81b6b40021e1"
+    },
+    {
+      "bytes": 21433,
+      "path": "study_output_v3/final_figures/fig3_observation_decision_sensitivity.svg",
+      "sha256": "14629019dcac08c0190b8b0c0aa3aec9447aee116c65e697a8944e68e495c54c"
+    },
+    {
+      "bytes": 240309,
+      "path": "study_output_v3/final_figures/fig4_fixed_group_trigger_matrix.png",
+      "sha256": "3cb7519e7f8ec02d69e5f730ec3e6a602cd02775cd403c3ec5c19c1b61070fe1"
+    },
+    {
+      "bytes": 15541,
+      "path": "study_output_v3/final_figures/fig4_fixed_group_trigger_matrix.svg",
+      "sha256": "67415c86ad2f17ee15f8dab6fddab8d18bc644920b3bdf81754153b28db6c8ab"
+    },
+    {
       "bytes": 1758,
       "path": "study_output_v3/observation_decision_sensitivity.csv",
       "sha256": "a9c6dc2c08056789adbd41cb9c24851b1b3afb03663a41fba66011ffbe12178d"
@@ -231,14 +276,14 @@
       "sha256": "b0c5cb9855527a25c8518168acc6cf4cbf8cb2536aa09237ecfbda1fa7cb9e11"
     },
     {
-      "bytes": 48776,
+      "bytes": 74091,
       "path": "study_output_v3/q3_stability_summary.json",
-      "sha256": "643a53ebb6fab06c2dfc90098bacdf01357405f711962b7be366558d7845b0b6"
+      "sha256": "bb75dbfdd5eefc8a09971d42a37b7b693e4f35562c82deba239b19ad24693a2f"
     },
     {
-      "bytes": 14970,
+      "bytes": 28254,
       "path": "study_output_v3/q3_stability_sweep.csv",
-      "sha256": "5d33e04ce043d5f7b2701d4b40a53e75bc43b26cf79df4b02403740015675f1c"
+      "sha256": "7a52a4ba17f3d6c60249a63c85d5cb5fbb669b7a92d54ecd299436a72ce04110"
     },
     {
       "bytes": 103875,
@@ -311,7 +356,7 @@
     "cells": 108,
     "rows_regenerated": 108000
   },
-  "git_head_before_commit": "1af327ba92067de9343358e1478d3877eb66dacc",
+  "git_head_before_commit": "cff9188bc879f4c3561a3b60f2211e1eca2445fc",
   "labels": {
     "confirmed": "landmark, split, fixed group signature, continuity gates",
     "ood_abstain": "outside 25-50 degC, 0.5-2C, 50-100% DOD, CC-CV",
@@ -377,9 +422,9 @@
       "sha256": "fc86a8fdfe5a9ae4e81f22ab5e5af2483ec97ede617003c7377119ea88e28986"
     },
     {
-      "bytes": 85270,
+      "bytes": 85584,
       "path": "code/battery_study/v3.py",
-      "sha256": "5110b7fc04db7d52c1d14b3f1db3e16dd1b566cf313f9e68d66d1c29a5b9dcf4"
+      "sha256": "aa8e02f98fb985aea38f479c91c2cbc441170f8eb2b08123f204553ee8107cb7"
     },
     {
       "bytes": 1078,
@@ -452,9 +497,9 @@
       "sha256": "02b1ba4c2018c162f37dfa0cdb841c80e8cac9fcd3c2d4a4eb1ac54367e25ea7"
     },
     {
-      "bytes": 25202,
+      "bytes": 25478,
       "path": "code/tests/test_study_v3.py",
-      "sha256": "cf05a1dc1007868182b1a5b5289dbc598ec94e38f05b5aaba1b11eb58632b488"
+      "sha256": "294fd32426b6086bb9b565d412250bad0e46205efc4d9a5b34166d969a3a7a5b"
     },
     {
       "bytes": 730,
@@ -480,6 +525,11 @@
       "bytes": 81,
       "path": "requirements-study.txt",
       "sha256": "6500f0d7e8a1c37fc41ad987429c686d0b5e53d23b2a15a882624ca60344af6c"
+    },
+    {
+      "bytes": 12849,
+      "path": "technical/plot_final_figures.py",
+      "sha256": "d77a780a633ecf65f6d10ed26f543520f7571e2add7bb79c48df14304f5ef8ab"
     },
     {
       "bytes": 264,

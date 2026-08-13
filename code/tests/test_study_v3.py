@@ -291,6 +291,8 @@ def test_stability_sweep_is_oat_and_reports_jaccard(inputs):
         "ABSTAIN_INSUFFICIENT_FEASIBILITY" if row["group_shortfall"] else
         "ACCEPT_FIXED_GROUPS"
     ) for row in result)
+    assert all(row["selected_cell_count"] == len(row["selected_cell_ids"]) for row in result)
+    assert all(row["selected_cell_ids"] == sorted(set(row["selected_cell_ids"])) for row in result)
 
 
 def test_stability_summary_reports_registered_aggregates():
@@ -536,6 +538,7 @@ def test_manifest_source_paths_include_v3_and_g1_configs():
     assert g1_config in paths
     assert os.path.join(REPO_ROOT, "requirements-study.txt") in paths
     assert os.path.join(REPO_ROOT, "technical", "v2_evidence_status.json") in paths
+    assert os.path.join(REPO_ROOT, "technical", "plot_final_figures.py") in paths
     assert os.path.join(REPO_ROOT, "evidence", "parameter_ledger.txt") in paths
     assert os.path.join(REPO_ROOT, "evidence", "source_ledger.txt") in paths
 

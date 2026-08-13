@@ -658,6 +658,7 @@ def stability_sweep(study_cfg, settings, *, seeds=None) -> list[dict]:
                 "objective_delta": objective_delta,
                 "selected_cell_jaccard": jaccard(base_ids, selected),
                 "selected_cell_count": len(selected),
+                "selected_cell_ids": sorted(selected),
                 **{
                     name: (min(values) if values else None)
                     for name, values in actual_margins.items()
@@ -1145,6 +1146,7 @@ def _source_paths(
     paths.append(os.path.join(project_root, "technical", "v2_evidence_status.json"))
     paths.append(os.path.join(project_root, "evidence", "parameter_ledger.txt"))
     paths.append(os.path.join(project_root, "evidence", "source_ledger.txt"))
+    paths.append(os.path.join(project_root, "technical", "plot_final_figures.py"))
     if source_config_path:
         paths.append(os.path.abspath(source_config_path))
     if source_g1_config_path:
@@ -1672,7 +1674,11 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         | {"selected_cell_ids": ";".join(row["selected_cell_ids"])}
         for row in comparison.values()
     ])
-    common.write_csv(os.path.join(out_dir, "q3_stability_sweep.csv"), stability_rows)
+    common.write_csv(os.path.join(out_dir, "q3_stability_sweep.csv"), [
+        {key: value for key, value in row.items() if key != "selected_cell_ids"}
+        | {"selected_cell_ids": ";".join(row["selected_cell_ids"])}
+        for row in stability_rows
+    ])
     common.write_json(os.path.join(out_dir, "q3_stability_summary.json"), {
         "scope": "OAT_DECISION_STABILITY",
         "n_rows": len(stability_rows),
