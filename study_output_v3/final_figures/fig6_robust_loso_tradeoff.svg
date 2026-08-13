@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-08-13T15:02:22.648426</dc:date>
+    <dc:date>2026-08-13T16:31:18.497936</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -636,7 +636,7 @@ z
     </g>
    </g>
    <g id="text_27">
-    <text style="font-size: 7.5px; font-family: 'Noto Sans CJK JP'; text-anchor: end; fill: #5b616b" x="495.899752" y="289.643767" transform="rotate(-0 495.899752 289.643767)">比例与裕量按百分点显示；组数保持原单位</text>
+    <text style="font-size: 7.5px; font-family: 'Noto Sans CJK JP'; text-anchor: end; fill: #5b616b" x="495.899752" y="51.400139" transform="rotate(-0 495.899752 51.400139)">比例与裕量按百分点显示；组数保持原单位</text>
    </g>
    <g id="text_28">
     <text style="font-size: 11px; font-family: 'Noto Sans CJK JP'; text-anchor: middle" x="393.011125" y="33.68048" transform="rotate(-0 393.011125 33.68048)">b 鲁棒策略减参考策略</text>

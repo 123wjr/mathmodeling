@@ -330,8 +330,8 @@ def plot_robust_loso_tradeoff() -> None:
            yticks=y, yticklabels=[label for _, label, _ in metrics])
     ax.invert_yaxis()
     ax.grid(axis="x")
-    ax.text(0.99, 0.02, "比例与裕量按百分点显示；组数保持原单位",
-            transform=ax.transAxes, ha="right", va="bottom", color="#5B616B", fontsize=7.5)
+    ax.text(0.99, 0.98, "比例与裕量按百分点显示；组数保持原单位",
+            transform=ax.transAxes, ha="right", va="top", color="#5B616B", fontsize=7.5)
     fig.suptitle("留一压力场景盲测揭示风险—产能权衡", fontweight="bold")
     save(fig, "fig6_robust_loso_tradeoff")
 
