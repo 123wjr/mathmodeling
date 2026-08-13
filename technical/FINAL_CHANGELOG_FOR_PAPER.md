@@ -22,6 +22,8 @@
 3. `[RESULT]` 观测压力 none/light/heavy 下 Ridge RMSE 分别为 0.004206/0.004224/0.004344，模型排序未翻转；入选分别为 41/39/40，最大可行组数 10/9/10。
 4. `[RESULT]` 轻度/重度观测压力相对 none 的选中成员 Jaccard 为 0.829/0.778；说明排名稳定不等于决策成员稳定。
 5. `[RESULT]` 固定 8 组跨 5 场景的 40 条组级记录中，16 稳定、5 复检、19 拒绝强制编组。
+6. `[RESULT][UPDATEABLE]` 30 个独立 seed 的区间风险基线中，`G_max`=1--17，中位数 5.5；达到至少 8 组的经验比例为 30.0%（9/30），不能把主 seed 的 8 组写成普遍保证。
+7. `[RESULT][UPDATEABLE]` 同一 5 场景下 POINT=20 稳定/10 复检/10 拒绝，INTERVAL_RISK=16/5/19；区间风险体现更保守的弃权，而非无条件更优。
 
 ## 3. 必须原样保留的限定
 
@@ -46,4 +48,6 @@
 - 观测结果：`study_output_v3/observation_model_metrics.csv`、`observation_decision_sensitivity.csv`
 - Q3：`study_output_v3/q3_decision_comparison.csv`、`q3_stability_summary.json`
 - Q4：`study_output_v3/q4_fixed_group_summary.csv`
+- P0：`study_output_v3/q3_capacity_seed_runs.csv`、`q3_capacity_seed_summary.json`
+- P1：`study_output_v3/q4_paired_decision_mode_summary.csv`、`q4_paired_decision_mode_cell_tracking.csv`、`q4_paired_decision_mode_summary.json`
 - 验证：`technical/FINAL_VALIDATION_REPORT.md`、`study_output_v3/validation_gates.json`

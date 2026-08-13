@@ -37,16 +37,18 @@
 - INTERVAL_RISK：41 芯，最大可行 10 组，选择 8 组，`ACCEPT_FIXED_GROUPS`。
 - 45 行 OAT 中 44 行显式弃权，最大组数缺口为 5，门槛放宽次数为 0；必须写成参数/产能敏感，不能写普遍稳定。
 - 定向不可行情形：最大 3 组、缺口 5，返回 `ABSTAIN_INSUFFICIENT_FEASIBILITY`。
+- `[RESULT][UPDATEABLE]` 30 个独立 seed 的基线 `INTERVAL_RISK`：`G_max=1--17`，中位数 5.5；至少达到 4/5/6/7/8 组的经验比例为 86.7%/70.0%/50.0%/40.0%/30.0%，9/30 接受 8 组，21/30 显式弃权。该经验分布只属于合成生成器，不是真实电芯批次概率。
 
 ### 2.3 压力追踪
 
 - 固定 8 组、32 芯、5 场景；成员不变。
 - 40 条组级记录：16 稳定、5 复检、19 拒绝强制编组。
 - 右删失时不输出不可识别的精确 RUL CV。
+- `[RESULT][UPDATEABLE]` P1 在相同 5 场景下让 POINT 与 INTERVAL_RISK 各自固定 Q3 选出的 8 组：POINT=20 稳定、10 复检、10 拒绝；INTERVAL_RISK=16 稳定、5 复检、19 拒绝。区间风险更保守，不能写成无条件更优。
 
 ## 3. 自动验证
 
-- V3 gates：15/15 PASS。
+- V3 gates：17/17 PASS。
 - manifest：PASS。
 - V2 canonical 状态：`PASS / HOLD_RPT_SENSITIVITY / false`。
 - 完整测试数与最终 Git 状态以本次提交前命令输出和 `run_manifest.json` 为准。

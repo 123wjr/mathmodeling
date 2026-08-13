@@ -186,11 +186,23 @@ Q4 固定基线 `INTERVAL_RISK + balanced` 选出的同一 8 组、32 芯，不�
 - `[RESULT]` INTERVAL_RISK 选中组最弱 RUL 下界 76.9064 cycles，最大区间宽度 2969.2436 cycles。
 - `[RESULT]` 45 行 OAT 中 44 行显式返回 `ABSTAIN_INSUFFICIENT_FEASIBILITY`，最大组数缺口为 5，门槛放宽次数为 0。该结果说明固定产能目标对参数敏感，不能写成“方案普遍可行”。
 
+### 3.3.1 跨种子可信产能（P0）
+
+- `[RESULT][UPDATEABLE]` 在预注册 30 个独立随机种子下，固定 `INTERVAL_RISK + balanced` 决策的 `G_max` 范围为 1--17 组，中位数 5.5 组。
+- `[RESULT][UPDATEABLE]` 达到至少 4/5/6/7/8 组的经验比例分别为 86.7%/70.0%/50.0%/40.0%/30.0%；30 个种子中 9 个达到 8 组、21 个显式弃权，阈值放宽次数为 0。
+- 该分布是当前合成生成器下的经验稳定性，不是真实电芯可靠性概率；因此主种子可形成 8 组不应写成跨批次普遍保证。
+
 ## 3.4 消融与固定组压力追踪
 
 - `[RESULT]` Q2 消融 48 个配置：3 窗口 x 4 特征组 x 4 模型；100-cycle Ridge 全特征 RMSE 比容量-only 下降 12.52%。
 - `[RESULT]` Q4 固定 8 组跨 5 场景，共 40 条组级记录：16 `STABLE_UNDER_SCENARIO`、5 `REINSPECT`、19 `REJECT_FORCED_ASSIGNMENT`。
 - `[CONFIRMED]` 所有场景成员和组号一致；cycle=750 连续；右删失组不虚构精确 RUL CV。
+
+### 3.4.1 点预测与区间风险配对追踪（P1）
+
+- `[RESULT][UPDATEABLE]` 在完全相同的 5 个压力场景下，POINT 固定编组得到 20 个稳定、10 个复检、10 个拒绝强制编组；INTERVAL_RISK 得到 16 个稳定、5 个复检、19 个拒绝强制编组。
+- 区间风险策略减少复检但增加拒绝，表现为更保守的弃权策略，不能宣称其无条件优于点预测。
+- 两种策略均各自固定 cycle=750 选出的 8 组，不重新筛选、不重新优化；配对明细见 `q4_paired_decision_mode_summary.csv` 和 `q4_paired_decision_mode_cell_tracking.csv`。
 
 ## 3.5 外部证据状态
 

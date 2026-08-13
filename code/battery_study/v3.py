@@ -38,6 +38,9 @@ def load_settings(path: str) -> dict:
         stability = settings["stability"]
         if len(set(stability["seeds"])) != 5:
             raise ValueError("稳定性必须使用 5 个不同 seed")
+        capacity_seeds = settings["capacity_seed_study"]["seeds"]
+        if len(capacity_seeds) != 30 or len(set(capacity_seeds)) != 30:
+            raise ValueError("容量种子研究必须使用 30 个不同 seed")
         scenarios = settings["pressure_scenarios"]
         if not scenarios or scenarios[0]["name"] != "baseline_use":
             raise ValueError("首个压力场景必须是 baseline_use")
@@ -668,6 +671,56 @@ def stability_sweep(study_cfg, settings, *, seeds=None) -> list[dict]:
     return rows
 
 
+def capacity_seed_study(study_cfg, settings, *, seeds=None) -> tuple[list[dict], dict]:
+    """Estimate credible capacity from independent baseline decision seeds."""
+    study_seeds = tuple(
+        settings["capacity_seed_study"]["seeds"] if seeds is None else seeds
+    )
+    if not study_seeds or len(set(study_seeds)) != len(study_seeds):
+        raise ValueError("容量种子研究 seed 必须非空且唯一")
+    rows = []
+    for seed in study_seeds:
+        result = _run_decision_for_seed(study_cfg, seed, mode="INTERVAL_RISK")
+        solution = result["solution"]
+        rows.append({
+            "seed": int(seed),
+            "decision_mode": "INTERVAL_RISK",
+            "risk_set_cells": len(result["risk_set"]),
+            "eligible_cells": solution["eligible_cells"],
+            "eligible_rate": solution["eligible_cells"] / len(result["risk_set"]),
+            "n_groups": solution["n_groups"],
+            "max_feasible_groups": solution["max_feasible_groups"],
+            "requested_groups": solution["requested_groups"],
+            "group_shortfall": solution["group_shortfall"],
+            "decision_status": solution["decision_status"],
+            "thresholds_relaxed": solution["thresholds_relaxed"],
+            "abstention_reasons": solution["abstention_reasons"],
+            "selected_cell_count": len(solution.get("selected_cell_ids", [])),
+            "selected_cell_ids": sorted(solution.get("selected_cell_ids", [])),
+            "solver_status": solution["solver_status"],
+        })
+    max_groups = [row["max_feasible_groups"] for row in rows]
+    requested = rows[0]["requested_groups"]
+    summary = {
+        "scope": "CROSS_SEED_BASELINE_INTERVAL_RISK_CAPACITY",
+        "decision_mode": "INTERVAL_RISK",
+        "n_seeds": len(rows),
+        "seeds": [row["seed"] for row in rows],
+        "max_feasible_groups_min": min(max_groups),
+        "max_feasible_groups_median": float(np.median(max_groups)),
+        "max_feasible_groups_max": max(max_groups),
+        "at_least_group_rates": {
+            str(group): sum(value >= group for value in max_groups) / len(max_groups)
+            for group in range(4, requested + 1)
+        },
+        "accept_count": sum(row["decision_status"] == "ACCEPT_FIXED_GROUPS" for row in rows),
+        "abstention_count": sum(row["decision_status"] != "ACCEPT_FIXED_GROUPS" for row in rows),
+        "thresholds_relaxed_count": sum(row["thresholds_relaxed"] for row in rows),
+        "evidence_label": "[RESULT][UPDATEABLE] synthetic cross-seed empirical distribution",
+    }
+    return rows, summary
+
+
 def summarize_stability(rows: list[dict]) -> dict:
     objective_deltas = [row["objective_delta"] for row in rows if row["objective_delta"] is not None]
     jaccards = [row["selected_cell_jaccard"] for row in rows]
@@ -1011,8 +1064,12 @@ def _add_group_change_summary(group_summary: list[dict], cell_rows: list[dict]) 
         })
 
 
-def track_fixed_groups(rows, g1_cfg, study_cfg, settings, candidates) -> dict:
+def track_fixed_groups(
+    rows, g1_cfg, study_cfg, settings, candidates, *, decision_mode="INTERVAL_RISK"
+) -> dict:
     """Track one selected group signature through all registered stress scenes."""
+    if decision_mode not in {"POINT", "INTERVAL_RISK"}:
+        raise ValueError(f"未知固定编组决策模式: {decision_mode}")
     solution = optimize_decision(candidates, study_cfg, tuple(study_cfg.q3.weights["balanced"]))
     if solution["n_groups"] < 1:
         raise RuntimeError("固定编组压力追踪没有可用编组")
@@ -1047,6 +1104,7 @@ def track_fixed_groups(rows, g1_cfg, study_cfg, settings, candidates) -> dict:
                     if crossing is not None else len(tracked) - 1
                 )
                 cell_rows.append({
+                    "decision_mode": decision_mode,
                     "scenario": scenario_name,
                     "group_number": group_number,
                     "group_signature": signature,
@@ -1081,6 +1139,7 @@ def track_fixed_groups(rows, g1_cfg, study_cfg, settings, candidates) -> dict:
             censored_count = sum(not row["post_750_event_observed"] for row in group_cell_rows)
             resistance_growth_values = [row["resistance_growth_increment"] for row in group_cell_rows]
             summary = {
+                "decision_mode": decision_mode,
                 "scenario": scenario_name,
                 "group_number": group_number,
                 "group_signature": signature,
@@ -1107,6 +1166,44 @@ def track_fixed_groups(rows, g1_cfg, study_cfg, settings, candidates) -> dict:
     _add_rul_change_bounds(cell_rows)
     _add_group_change_summary(group_summary, cell_rows)
     return {"cell_rows": cell_rows, "group_summary": group_summary, "selected_groups": selected_groups}
+
+
+def paired_fixed_group_tracking(rows, g1_cfg, study_cfg, settings, decisions) -> dict:
+    """Track both decision modes under the same registered stress scenarios."""
+    tracking = {}
+    for mode in ("POINT", "INTERVAL_RISK"):
+        tracking[mode] = track_fixed_groups(
+            rows, g1_cfg, study_cfg, settings, decisions[mode], decision_mode=mode
+        )
+    scenario_names = [row["name"] for row in settings["pressure_scenarios"]]
+    for mode, result in tracking.items():
+        if not fixed_group_membership_is_constant(result, scenario_names):
+            raise RuntimeError(f"{mode} 固定编组成员在压力场景间发生变化")
+    summary_rows = []
+    for mode, result in tracking.items():
+        for scenario in scenario_names:
+            rows_for_scenario = [
+                row for row in result["group_summary"] if row["scenario"] == scenario
+            ]
+            counts = defaultdict(int)
+            for row in rows_for_scenario:
+                counts[row["trigger"]] += 1
+            summary_rows.append({
+                "decision_mode": mode,
+                "scenario": scenario,
+                "group_count": len(rows_for_scenario),
+                "stable_count": counts["STABLE_UNDER_SCENARIO"],
+                "reinspect_count": counts["REINSPECT"],
+                "reject_count": counts["REJECT_FORCED_ASSIGNMENT"],
+                "weakest_soh": min(row["weakest_soh"] for row in rows_for_scenario),
+                "largest_resistance_range": max(row["resistance_range"] for row in rows_for_scenario),
+                "group_signature": rows_for_scenario[0]["group_signature"],
+            })
+    return {
+        "by_mode": tracking,
+        "summary_rows": summary_rows,
+        "scenario_names": scenario_names,
+    }
 
 
 def _git_head(project_root: str) -> str:
@@ -1345,8 +1442,8 @@ def fixed_group_membership_is_constant(tracking: dict, scenario_names: list[str]
 
 
 def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
-                 comparison, stability_rows, ablation_rows, tracking,
-                 observation) -> list[dict]:
+                 comparison, stability_rows, capacity_rows, capacity_summary,
+                 ablation_rows, tracking, paired_tracking, observation) -> list[dict]:
     gates = []
     def gate(name, condition, evidence):
         if not condition:
@@ -1409,6 +1506,16 @@ def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
          all(0.0 <= row["selected_cell_jaccard"] <= 1.0 for row in stability_rows) and
          all(row["changed_parameter_count"] <= 1 for row in stability_rows),
          "exact 5-seed x 9-point OAT set, bounded Jaccard, one changed parameter")
+    gate(
+        "capacity_seed_distribution_complete",
+        len(capacity_rows) == len(settings["capacity_seed_study"]["seeds"])
+        and capacity_summary["n_seeds"] == len(capacity_rows)
+        and set(capacity_summary["at_least_group_rates"]) == {
+            str(group) for group in range(4, study_cfg.q3.target_groups + 1)
+        }
+        and all(not row["thresholds_relaxed"] for row in capacity_rows),
+        f"{len(capacity_rows)} baseline INTERVAL_RISK seeds; empirical G_max rates reported",
+    )
     expected_ablation = {
         (window, feature_group, model)
         for window in settings["ablation"]["history_windows"]
@@ -1432,6 +1539,18 @@ def _validate_v3(study_cfg, settings, dataset, risk_set, audit, decisions,
          len(tracking["cell_rows"]) == expected_tracking * study_cfg.q3.group_size,
          f"{len(settings['pressure_scenarios'])} scenarios x {study_cfg.q3.target_groups} groups x "
          f"{study_cfg.q3.group_size} cells")
+    paired_rows = paired_tracking["summary_rows"]
+    gate(
+        "paired_fixed_group_modes",
+        set(paired_tracking["by_mode"]) == {"POINT", "INTERVAL_RISK"}
+        and len(paired_rows) == len(settings["pressure_scenarios"]) * 2
+        and all(row["group_count"] == study_cfg.q3.target_groups for row in paired_rows)
+        and all(
+            fixed_group_membership_is_constant(result, scenario_names)
+            for result in paired_tracking["by_mode"].values()
+        ),
+        "POINT and INTERVAL_RISK each track fixed groups through identical scenarios",
+    )
     gate(
         "fixed_group_summary_complete",
         all(
@@ -1496,6 +1615,15 @@ def _write_validation_report(project_root, out_dir, summary, gates):
     point = summary["decisions"]["POINT"]
     interval = summary["decisions"]["INTERVAL_RISK"]
     best = ablation["best_configuration"]
+    capacity = summary["capacity_seed_summary"]
+    paired_rows = summary["paired_tracking"]["summary_rows"]
+    paired_counts = {
+        mode: {
+            name: sum(row[name] for row in paired_rows if row["decision_mode"] == mode)
+            for name in ("stable_count", "reinspect_count", "reject_count")
+        }
+        for mode in ("POINT", "INTERVAL_RISK")
+    }
     lines = [
         "# V3 验证报告",
         "",
@@ -1538,6 +1666,14 @@ def _write_validation_report(project_root, out_dir, summary, gates):
             f"消融配置：{len(summary['ablation_rows'])}。"
         ),
         (
+            f"- `[RESULT][UPDATEABLE]` 30 个独立 seed 的基线区间风险产能："
+            f"G_max={capacity['max_feasible_groups_min']}--{capacity['max_feasible_groups_max']}，"
+            f"中位数={capacity['max_feasible_groups_median']:.1f}；"
+            f"达到至少 8 组={capacity['at_least_group_rates']['8']:.1%} "
+            f"({capacity['accept_count']}/{capacity['n_seeds']})。这是合成跨种子经验分布，"
+            "不是实际批次概率，也不把单次 8 组结果扩展为普遍保证。"
+        ),
+        (
             f"- `[RESULT]` Q2 消融最低 RMSE 配置为 {best['model']} + "
             f"{best['feature_group']} + {best['history_window']}-cycle，RMSE="
             f"{best['rmse']:.6f}；同为 100-cycle Ridge 时，全部特征较容量-only "
@@ -1551,6 +1687,16 @@ def _write_validation_report(project_root, out_dir, summary, gates):
             f"{sum(row['trigger'] == 'REINSPECT' for row in summary['tracking_rows'])} 行 `REINSPECT`，"
             f"{sum(row['trigger'] == 'REJECT_FORCED_ASSIGNMENT' for row in summary['tracking_rows'])} 行 "
             "`REJECT_FORCED_ASSIGNMENT`；终点突破/事件触发强制拒绝。"
+        ),
+        (
+            "- `[RESULT][UPDATEABLE]` 同一五场景的模式配对固定追踪："
+            f"POINT={paired_counts['POINT']['stable_count']} 稳定/"
+            f"{paired_counts['POINT']['reinspect_count']} 复检/"
+            f"{paired_counts['POINT']['reject_count']} 拒绝；"
+            f"INTERVAL_RISK={paired_counts['INTERVAL_RISK']['stable_count']} 稳定/"
+            f"{paired_counts['INTERVAL_RISK']['reinspect_count']} 复检/"
+            f"{paired_counts['INTERVAL_RISK']['reject_count']} 拒绝。"
+            "区间风险减少复检但增加拒绝，只支持更保守的弃权描述。"
         ),
         (
             "- `[RESULT][ASSUMED]` 观测压力 none/light/heavy 的 Ridge RMSE 为 "
@@ -1637,15 +1783,18 @@ def run(study_cfg, settings, out_dir: str) -> dict:
             "objective_comparability": "WITHIN_MODE_ONLY_MODE_SPECIFIC_NORMALIZATION",
             "mode": mode,
         }
+    capacity_rows, capacity_summary = capacity_seed_study(study_cfg, settings)
     stability_rows = stability_sweep(study_cfg, settings)
     ablation_rows = run_ablation(study_cfg, settings, dataset["rows"])
     observation = run_observation_sensitivity(study_cfg, settings, dataset["rows"])
-    tracking = track_fixed_groups(
-        dataset["rows"], g1_cfg, study_cfg, settings, decisions["INTERVAL_RISK"]
+    paired_tracking = paired_fixed_group_tracking(
+        dataset["rows"], g1_cfg, study_cfg, settings, decisions
     )
+    tracking = paired_tracking["by_mode"]["INTERVAL_RISK"]
     gates = _validate_v3(
         study_cfg, settings, dataset, risk_set, audit, decisions,
-        comparison, stability_rows, ablation_rows, tracking, observation,
+        comparison, stability_rows, capacity_rows, capacity_summary,
+        ablation_rows, tracking, paired_tracking, observation,
     )
 
     common.write_csv(os.path.join(out_dir, "q3_retirement_landmark_predictions.csv"), predictions)
@@ -1687,6 +1836,15 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         **summarize_stability(stability_rows),
         "rows": stability_rows,
     })
+    common.write_csv(os.path.join(out_dir, "q3_capacity_seed_runs.csv"), [
+        {key: value for key, value in row.items() if key != "selected_cell_ids"}
+        | {"selected_cell_ids": ";".join(row["selected_cell_ids"])}
+        for row in capacity_rows
+    ])
+    common.write_json(os.path.join(out_dir, "q3_capacity_seed_summary.json"), {
+        **capacity_summary,
+        "rows": capacity_rows,
+    })
     common.write_csv(os.path.join(out_dir, "q2_ablation_metrics.csv"), ablation_rows)
     common.write_json(os.path.join(out_dir, "q2_ablation_summary.json"), {
         "scope": "SYNTHETIC_GROUPED_SOH_ABLATION",
@@ -1725,6 +1883,20 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         "rows": tracking["group_summary"],
         "interpretation": "simulation-conditioned fixed-group pressure tracking; not real safety validation",
     })
+    common.write_csv(
+        os.path.join(out_dir, "q4_paired_decision_mode_summary.csv"),
+        paired_tracking["summary_rows"],
+    )
+    common.write_csv(
+        os.path.join(out_dir, "q4_paired_decision_mode_cell_tracking.csv"),
+        [row for result in paired_tracking["by_mode"].values() for row in result["cell_rows"]],
+    )
+    common.write_json(os.path.join(out_dir, "q4_paired_decision_mode_summary.json"), {
+        "scope": "PAIRED_FIXED_GROUP_TRACKING_POINT_VS_INTERVAL_RISK",
+        "scenario_names": paired_tracking["scenario_names"],
+        "rows": paired_tracking["summary_rows"],
+        "interpretation": "same synthetic data and same stress scenarios; each mode fixes its own Q3 groups without re-selection",
+    })
     gates_path = common.write_json(os.path.join(out_dir, "validation_gates.json"), gates)
     summary = {
         "risk_set": {
@@ -1735,8 +1907,11 @@ def run(study_cfg, settings, out_dir: str) -> dict:
         "risk_metrics": _prediction_metrics(predictions, study_cfg),
         "decisions": comparison,
         "stability_rows": stability_rows,
+        "capacity_seed_rows": capacity_rows,
+        "capacity_seed_summary": capacity_summary,
         "ablation_rows": ablation_rows,
         "tracking_rows": tracking["group_summary"],
+        "paired_tracking": paired_tracking,
         "observation": observation,
     }
     report_path = _write_validation_report(project_root, out_dir, summary, gates)

@@ -107,6 +107,8 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 | F7 | POINT 入选 89 芯、INTERVAL_RISK 入选 41 芯；均选 8 个四芯组（区间宽度门槛=3000 cycles，可更新） | RESULT + UPDATEABLE | study_output_v3/q3_decision_comparison.csv、configs/study_pipeline_v3.json |
 | F8 | 45 行 OAT 稳定性扫描；入选率=0.1489--0.3511，Jaccard=0.5714--1.0000；44/45 参数点不可行 | RESULT + UPDATEABLE | study_output_v3/q3_stability_sweep.csv、q3_stability_summary.json |
 | F9 | Q2 消融 48 个配置；Q4 固定同一 8 组跨 5 场景追踪，cycle 750 连续；16/40 稳定、5/40 复检、19/40 强制拒绝 | RESULT + CONFIRMED | study_output_v3/q2_ablation_metrics.csv、q4_fixed_group_summary.csv |
+| F14 | 30 seed 区间风险基线：G_max=1--17，中位数 5.5；达到至少 8 组=30.0%（9/30） | RESULT + UPDATEABLE；合成经验分布，不是真实概率 | study_output_v3/q3_capacity_seed_runs.csv、q3_capacity_seed_summary.json |
+| F15 | 同一 5 场景配对固定追踪：POINT=20 稳定/10 复检/10 拒绝；INTERVAL_RISK=16/5/19 | RESULT + UPDATEABLE；区间风险更保守，不称无条件更优 | study_output_v3/q4_paired_decision_mode_summary.csv |
 
 写数字时同时写三件事：数据是仿真、验证如何分组、结论适用范围。例如：
 
@@ -242,7 +244,7 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 
 ## 8. 最终交稿前验收
 
-- [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F9 或对应结果文件；Q3/Q4 不采用 V1 历史数字。
+- [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F15 或对应结果文件；Q3/Q4 不采用 V1 历史数字。
 - [ ] 每个问题都有假设、模型、实验、指标、结果和限制，且没有把仿真写成实测。
 - [ ] GroupKFold(cell_id)、右删失、OOD/ABSTAIN 和协议不可辨识均被准确描述。
 - [ ] 图注包含工况/数据类型/seed 或折分；`论文初稿.md` 与在线文档副本的图号一致。

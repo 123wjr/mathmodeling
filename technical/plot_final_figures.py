@@ -58,9 +58,21 @@ def read_csv(name: str) -> pd.DataFrame:
 
 def plot_capacity_landscape() -> None:
     frame = read_csv("q3_stability_sweep.csv")
+    seed_frame = read_csv("q3_capacity_seed_runs.csv")
     if len(frame) != 45 or frame["infeasible"].astype(str).str.lower().eq("true").sum() != 44:
         raise ValueError("OAT 证据口径变化：预期 45 行、44 次显式弃权")
-    fig, ax = plt.subplots(figsize=(6.9, 4.8), constrained_layout=True)
+    if len(seed_frame) != 30:
+        raise ValueError("跨种子可信产能图要求 30 个 seed")
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 4.8), constrained_layout=True,
+                             gridspec_kw={"width_ratios": (0.85, 1.4)})
+    seed_ax, ax = axes
+    gmax = seed_frame["max_feasible_groups"]
+    bins = np.arange(0.5, max(gmax.max(), 8) + 1.6, 1)
+    seed_ax.hist(gmax, bins=bins, color=COLORS["blue"], alpha=0.88, edgecolor="white")
+    seed_ax.axvline(8, color=COLORS["red"], linestyle="--", linewidth=1.1)
+    seed_ax.set(title="a 跨种子产能分布", xlabel="最大可信组数（组）", ylabel="seed 数（个）")
+    seed_ax.set_xticks(range(1, int(max(gmax.max(), 8)) + 1, 2))
+    seed_ax.grid(axis="y")
     styles = {
         "ACCEPT_FIXED_GROUPS": (COLORS["teal"], "o", "接受固定编组"),
         "ABSTAIN_INSUFFICIENT_FEASIBILITY": (COLORS["orange"], "X", "显式弃权"),
@@ -73,7 +85,7 @@ def plot_capacity_landscape() -> None:
     ax.axhline(8, color=COLORS["red"], linestyle="--", linewidth=1.2,
                label="目标产能：8 组", zorder=2)
     ax.set(xlabel="风险筛选后可用电芯数（个）", ylabel="最大可信编组数（组）",
-           title="参数扰动下的可信产能景观")
+           title="b 参数扰动下的可信产能景观")
     ax.set_ylim(2.6, 8.5)
     ax.grid(axis="both", zorder=0)
     ax.legend(frameon=False, loc="lower right")
@@ -222,12 +234,52 @@ def plot_fixed_group_matrix() -> None:
     save(fig, "fig4_fixed_group_trigger_matrix")
 
 
+def plot_paired_decision_modes() -> None:
+    frame = read_csv("q4_paired_decision_mode_summary.csv")
+    modes = ["POINT", "INTERVAL_RISK"]
+    mode_cn = {"POINT": "点预测", "INTERVAL_RISK": "区间风险"}
+    scenario_order = list(dict.fromkeys(frame["scenario"]))
+    if set(frame["decision_mode"]) != set(modes) or len(frame) != 10:
+        raise ValueError("配对压力追踪要求两种决策模式 × 5 个场景")
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 4.4), constrained_layout=True,
+                             gridspec_kw={"width_ratios": (1.15, 1)})
+    x = np.arange(len(scenario_order))
+    width = 0.36
+    scenario_cn = {"baseline_use": "基准", "high_temperature": "高温",
+                   "high_c_rate": "高倍率", "high_dod": "深放电",
+                   "combined_stress": "复合压力"}
+    for idx, mode in enumerate(modes):
+        part = frame[frame["decision_mode"] == mode].set_index("scenario").loc[scenario_order]
+        offset = (idx - 0.5) * width
+        axes[0].bar(x + offset, part["reinspect_count"], width, color=COLORS["orange"],
+                    alpha=0.88, label=f"{mode_cn[mode]}·复检")
+        axes[0].bar(x + offset, part["reject_count"], width,
+                    bottom=part["reinspect_count"], color=COLORS["red"], alpha=0.88,
+                    label=f"{mode_cn[mode]}·拒绝")
+        axes[1].plot(x, part["weakest_soh"], marker="o" if idx == 0 else "s",
+                     linewidth=1.6, color=COLORS["blue"] if idx == 0 else COLORS["teal"],
+                     label=mode_cn[mode])
+    axes[0].set(title="a 触发结果", xlabel="压力场景", ylabel="组数（复检 + 拒绝）",
+                xticks=x, xticklabels=[scenario_cn.get(s, s) for s in scenario_order])
+    axes[0].legend(frameon=False, fontsize=7.5, ncol=2)
+    axes[0].grid(axis="y")
+    axes[1].axhline(0.8, color=COLORS["red"], linestyle="--", linewidth=1.0,
+                    label="SOH 终点 0.80")
+    axes[1].set(title="b 最弱 SOH", xlabel="压力场景", ylabel="场景末端最弱 SOH",
+                xticks=x, xticklabels=[scenario_cn.get(s, s) for s in scenario_order])
+    axes[1].legend(frameon=False, fontsize=7.5)
+    axes[1].grid(axis="y")
+    fig.suptitle("点预测与区间风险的固定编组压力对照", fontweight="bold")
+    save(fig, "fig5_paired_decision_modes")
+
+
 def write_captions() -> None:
     text = "# 最终图组图注\n\n"
-    text += "1. **参数扰动下的可信产能景观。** 45 个离散单因素扰动（OAT）参数点中，颜色表示接受固定编组或因可行性不足而显式弃权；虚线为 8 组目标。点重合不代表连续 Pareto 前沿。\n"
+    text += "1. **跨种子可信产能与参数扰动景观。** 左图为 30 个独立 seed 下区间风险基线的最大可信组数分布，右图为 45 个离散单因素扰动（OAT）参数点；虚线为 8 组目标。OAT 点不连接为连续 Pareto 前沿。\n"
     text += "2. **电芯入选稳定性。** 展示跨 45 个 OAT 参数点入选频率最高和最低的代表性电芯；频率分母固定为 45，是仿真参数扫描频率，不是真实可靠性概率。\n"
     text += "3. **观测层压力下的预测与决策敏感性。** 左图比较四种模型在无、轻度和重度观测压力下的 SOH 预测 RMSE；右图分别按行着色并标注可用电芯数、最大可信组数和成员 Jaccard 原值，行间颜色不可比较。\n"
     text += "4. **固定编组压力追踪状态矩阵。** 对 Q3 选出的同一 8 组电芯在 5 个压力场景中追踪触发状态，全程不重新筛选、不重新优化。\n"
+    text += "5. **点预测与区间风险的固定编组压力对照。** 两种模式使用同一仿真数据和同一场景集，各自固定 Q3 编组；区间风险模式减少复检但增加强制拒绝，不解释为无条件优于点预测。\n"
     (OUT / "CAPTIONS.md").write_text(text, encoding="utf-8")
 
 
@@ -237,8 +289,9 @@ def main() -> None:
     plot_selection_stability()
     plot_observation_sensitivity()
     plot_fixed_group_matrix()
+    plot_paired_decision_modes()
     write_captions()
-    print(f"已生成 4 张 SVG + 4 张 600 DPI PNG：{OUT}")
+    print(f"已生成 5 张 SVG + 5 张 600 DPI PNG：{OUT}")
 
 
 if __name__ == "__main__":

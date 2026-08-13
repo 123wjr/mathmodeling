@@ -843,6 +843,8 @@ V3 场景流程：固定 Q3 `INTERVAL_RISK + balanced` 选择的同一 8 组和 
 | C16 | 条件 RUL 事件 RMSE=39.7665、经验覆盖=0.8889 | `[RESULT]` | `study_output_v3/q3_retirement_summary.json` | 不写 90% 有限样本保证或真实精度 |
 | C17 | POINT/INTERVAL_RISK 入选 89/41 芯，均形成 8 个四芯组 | `[RESULT][UPDATEABLE]` | `study_output_v3/q3_decision_comparison.csv` | 不直接比较跨候选集归一化目标值 |
 | C18 | 5 seed、45 行决策 OAT；Jaccard=0.5714--1.0000；44/45 不可行 | `[RESULT][UPDATEABLE]` | `study_output_v3/q3_stability_sweep.csv` | 不写所有参数均稳定或全局敏感度 |
+| C25 | 30 seed 区间风险基线 G_max=1--17，中位数 5.5；至少达到 8 组=9/30 | `[RESULT][UPDATEABLE]` 合成经验分布 | `study_output_v3/q3_capacity_seed_runs.csv`、`q3_capacity_seed_summary.json` | 不写成真实批次概率或普遍产能保证 |
+| C26 | 相同 5 场景下 POINT=20/10/10，INTERVAL_RISK=16/5/19（稳定/复检/拒绝） | `[RESULT][UPDATEABLE]` 配对压力追踪 | `study_output_v3/q4_paired_decision_mode_summary.csv` | 区间风险仅称更保守，不称无条件更优 |
 | C19 | 固定同一 8 组跨 5 场景；40 组级记录中 16 稳定、5 复检、19 强制拒绝 | `[RESULT][CONFIRMED]` | `study_output_v3/q4_fixed_group_summary.csv` | 不写真实安全验证；删失 RUL 变化需按状态解释 |
 | C20 | 低温/过充/过放/3C 数值为空 | `[OOD/ABSTAIN]` | `study_output/q4_ood_abstention.csv` | 不补造趋势数字 |
 | C21 | 门槛、权重、成本收益为假设 | `[ASSUMED][UPDATEABLE]` | `configs/study_pipeline.json`、`study_output/q3_summary.json` | 不写规范/货币值 |

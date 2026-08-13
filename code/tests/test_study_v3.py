@@ -295,6 +295,18 @@ def test_stability_sweep_is_oat_and_reports_jaccard(inputs):
     assert all(row["selected_cell_ids"] == sorted(set(row["selected_cell_ids"])) for row in result)
 
 
+def test_capacity_seed_study_reports_registered_empirical_rates(inputs):
+    study_cfg, _, _ = inputs
+    settings = v3.load_settings(os.path.join(REPO_ROOT, "configs", "study_pipeline_v3.json"))
+    rows, summary = v3.capacity_seed_study(study_cfg, settings, seeds=(42, 123))
+    assert len(rows) == 2
+    assert all(row["decision_mode"] == "INTERVAL_RISK" for row in rows)
+    assert summary["n_seeds"] == 2
+    assert set(summary["at_least_group_rates"]) == {"4", "5", "6", "7", "8"}
+    assert all(0.0 <= value <= 1.0 for value in summary["at_least_group_rates"].values())
+    assert summary["thresholds_relaxed_count"] == 0
+
+
 def test_stability_summary_reports_registered_aggregates():
     rows = [
         {
@@ -436,6 +448,24 @@ def test_fixed_group_tracking_reuses_exact_group_signature(inputs):
     corrupted = copy.deepcopy(tracked)
     corrupted["cell_rows"][0]["cell_id"] = "different_cell"
     assert not v3.fixed_group_membership_is_constant(corrupted, scenario_names)
+
+
+def test_paired_tracking_keeps_mode_label_and_signature(inputs):
+    study_cfg, g1_cfg, dataset = inputs
+    settings = v3.load_settings(os.path.join(REPO_ROOT, "configs", "study_pipeline_v3.json"))
+    risk_set = v3.retirement_risk_set(
+        dataset["rows"], study_cfg, retirement_cycle=750, threshold=study_cfg.q1.critical_soh
+    )
+    predictions, _ = v3.cross_validated_retirement_predictions(risk_set, study_cfg)
+    decisions = v3.build_decision_pools(risk_set, predictions, study_cfg)
+    tracked = v3.track_fixed_groups(
+        dataset["rows"], g1_cfg, study_cfg, settings, decisions["POINT"], decision_mode="POINT"
+    )
+    assert all(row["decision_mode"] == "POINT" for row in tracked["cell_rows"])
+    assert all(row["decision_mode"] == "POINT" for row in tracked["group_summary"])
+    assert v3.fixed_group_membership_is_constant(
+        tracked, [row["name"] for row in settings["pressure_scenarios"]]
+    )
 
 
 def test_trigger_rejects_endpoint_breach_before_dispersion_rules():

@@ -30,6 +30,11 @@
     "status": "PASS"
   },
   {
+    "evidence": "30 baseline INTERVAL_RISK seeds; empirical G_max rates reported",
+    "gate": "capacity_seed_distribution_complete",
+    "status": "PASS"
+  },
+  {
     "evidence": "3 windows x 4 feature groups x 4 models",
     "gate": "ablation_complete",
     "status": "PASS"
@@ -47,6 +52,11 @@
   {
     "evidence": "5 scenarios x 8 groups x 4 cells",
     "gate": "fixed_group_shape",
+    "status": "PASS"
+  },
+  {
+    "evidence": "POINT and INTERVAL_RISK each track fixed groups through identical scenarios",
+    "gate": "paired_fixed_group_modes",
     "status": "PASS"
   },
   {

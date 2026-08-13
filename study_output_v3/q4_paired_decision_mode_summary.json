@@ -1,0 +1,123 @@
+{
+  "interpretation": "same synthetic data and same stress scenarios; each mode fixes its own Q3 groups without re-selection",
+  "rows": [
+    {
+      "decision_mode": "POINT",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T25_C0p5_D100_2,T35_C0p5_D80_1,T35_C0p5_D80_3|T25_C0p5_D50_0,T25_C0p5_D50_3,T25_C1_D50_0,T25_C1_D50_3|T25_C0p5_D50_1,T25_C0p5_D50_2,T25_C1_D50_1,T25_C2_D50_1|T25_C0p5_D80_0,T25_C0p5_D80_2,T35_C2_D50_0,T45_C0p5_D50_1|T25_C1_D100_0,T35_C2_D80_2,T35_C2_D80_3,T45_C0p5_D80_1|T25_C1_D50_2,T25_C2_D50_0,T25_C2_D50_3,T35_C0p5_D50_3|T25_C2_D100_2,T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2|T25_C2_D50_2,T35_C0p5_D50_0,T35_C0p5_D50_1,T35_C1_D50_1",
+      "largest_resistance_range": 0.015379347102847385,
+      "reinspect_count": 2,
+      "reject_count": 1,
+      "scenario": "baseline_use",
+      "stable_count": 5,
+      "weakest_soh": 0.797415168031386
+    },
+    {
+      "decision_mode": "POINT",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T25_C0p5_D100_2,T35_C0p5_D80_1,T35_C0p5_D80_3|T25_C0p5_D50_0,T25_C0p5_D50_3,T25_C1_D50_0,T25_C1_D50_3|T25_C0p5_D50_1,T25_C0p5_D50_2,T25_C1_D50_1,T25_C2_D50_1|T25_C0p5_D80_0,T25_C0p5_D80_2,T35_C2_D50_0,T45_C0p5_D50_1|T25_C1_D100_0,T35_C2_D80_2,T35_C2_D80_3,T45_C0p5_D80_1|T25_C1_D50_2,T25_C2_D50_0,T25_C2_D50_3,T35_C0p5_D50_3|T25_C2_D100_2,T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2|T25_C2_D50_2,T35_C0p5_D50_0,T35_C0p5_D50_1,T35_C1_D50_1",
+      "largest_resistance_range": 0.022944813389935925,
+      "reinspect_count": 2,
+      "reject_count": 3,
+      "scenario": "high_temperature",
+      "stable_count": 3,
+      "weakest_soh": 0.7813700933127348
+    },
+    {
+      "decision_mode": "POINT",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T25_C0p5_D100_2,T35_C0p5_D80_1,T35_C0p5_D80_3|T25_C0p5_D50_0,T25_C0p5_D50_3,T25_C1_D50_0,T25_C1_D50_3|T25_C0p5_D50_1,T25_C0p5_D50_2,T25_C1_D50_1,T25_C2_D50_1|T25_C0p5_D80_0,T25_C0p5_D80_2,T35_C2_D50_0,T45_C0p5_D50_1|T25_C1_D100_0,T35_C2_D80_2,T35_C2_D80_3,T45_C0p5_D80_1|T25_C1_D50_2,T25_C2_D50_0,T25_C2_D50_3,T35_C0p5_D50_3|T25_C2_D100_2,T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2|T25_C2_D50_2,T35_C0p5_D50_0,T35_C0p5_D50_1,T35_C1_D50_1",
+      "largest_resistance_range": 0.016844341850418942,
+      "reinspect_count": 2,
+      "reject_count": 1,
+      "scenario": "high_c_rate",
+      "stable_count": 5,
+      "weakest_soh": 0.7943081618938621
+    },
+    {
+      "decision_mode": "POINT",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T25_C0p5_D100_2,T35_C0p5_D80_1,T35_C0p5_D80_3|T25_C0p5_D50_0,T25_C0p5_D50_3,T25_C1_D50_0,T25_C1_D50_3|T25_C0p5_D50_1,T25_C0p5_D50_2,T25_C1_D50_1,T25_C2_D50_1|T25_C0p5_D80_0,T25_C0p5_D80_2,T35_C2_D50_0,T45_C0p5_D50_1|T25_C1_D100_0,T35_C2_D80_2,T35_C2_D80_3,T45_C0p5_D80_1|T25_C1_D50_2,T25_C2_D50_0,T25_C2_D50_3,T35_C0p5_D50_3|T25_C2_D100_2,T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2|T25_C2_D50_2,T35_C0p5_D50_0,T35_C0p5_D50_1,T35_C1_D50_1",
+      "largest_resistance_range": 0.01808613116735125,
+      "reinspect_count": 2,
+      "reject_count": 2,
+      "scenario": "high_dod",
+      "stable_count": 4,
+      "weakest_soh": 0.7863147010395576
+    },
+    {
+      "decision_mode": "POINT",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T25_C0p5_D100_2,T35_C0p5_D80_1,T35_C0p5_D80_3|T25_C0p5_D50_0,T25_C0p5_D50_3,T25_C1_D50_0,T25_C1_D50_3|T25_C0p5_D50_1,T25_C0p5_D50_2,T25_C1_D50_1,T25_C2_D50_1|T25_C0p5_D80_0,T25_C0p5_D80_2,T35_C2_D50_0,T45_C0p5_D50_1|T25_C1_D100_0,T35_C2_D80_2,T35_C2_D80_3,T45_C0p5_D80_1|T25_C1_D50_2,T25_C2_D50_0,T25_C2_D50_3,T35_C0p5_D50_3|T25_C2_D100_2,T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2|T25_C2_D50_2,T35_C0p5_D50_0,T35_C0p5_D50_1,T35_C1_D50_1",
+      "largest_resistance_range": 0.029549269516456755,
+      "reinspect_count": 2,
+      "reject_count": 3,
+      "scenario": "combined_stress",
+      "stable_count": 3,
+      "weakest_soh": 0.758597895834553
+    },
+    {
+      "decision_mode": "INTERVAL_RISK",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T35_C0p5_D80_1,T35_C0p5_D80_3,T35_C1_D80_0|T25_C0p5_D100_1,T25_C2_D80_0,T35_C1_D80_2,T45_C2_D50_2|T25_C0p5_D100_3,T25_C1_D100_2,T25_C1_D100_3,T45_C0p5_D80_3|T25_C1_D100_0,T25_C2_D100_1,T35_C2_D80_3,T45_C0p5_D80_0|T25_C2_D100_3,T35_C2_D80_1,T35_C2_D80_2,T45_C0p5_D80_1|T25_C2_D80_2,T45_C1_D50_0,T45_C1_D50_3,baseline_0|T25_C2_D80_3,T35_C0p5_D80_0,T35_C1_D80_3,T45_C2_D50_0|T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2,T45_C1_D80_2",
+      "largest_resistance_range": 0.018986611092401073,
+      "reinspect_count": 1,
+      "reject_count": 2,
+      "scenario": "baseline_use",
+      "stable_count": 5,
+      "weakest_soh": 0.7957857449651572
+    },
+    {
+      "decision_mode": "INTERVAL_RISK",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T35_C0p5_D80_1,T35_C0p5_D80_3,T35_C1_D80_0|T25_C0p5_D100_1,T25_C2_D80_0,T35_C1_D80_2,T45_C2_D50_2|T25_C0p5_D100_3,T25_C1_D100_2,T25_C1_D100_3,T45_C0p5_D80_3|T25_C1_D100_0,T25_C2_D100_1,T35_C2_D80_3,T45_C0p5_D80_0|T25_C2_D100_3,T35_C2_D80_1,T35_C2_D80_2,T45_C0p5_D80_1|T25_C2_D80_2,T45_C1_D50_0,T45_C1_D50_3,baseline_0|T25_C2_D80_3,T35_C0p5_D80_0,T35_C1_D80_3,T45_C2_D50_0|T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2,T45_C1_D80_2",
+      "largest_resistance_range": 0.02832649609754867,
+      "reinspect_count": 1,
+      "reject_count": 5,
+      "scenario": "high_temperature",
+      "stable_count": 2,
+      "weakest_soh": 0.7807424025430185
+    },
+    {
+      "decision_mode": "INTERVAL_RISK",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T35_C0p5_D80_1,T35_C0p5_D80_3,T35_C1_D80_0|T25_C0p5_D100_1,T25_C2_D80_0,T35_C1_D80_2,T45_C2_D50_2|T25_C0p5_D100_3,T25_C1_D100_2,T25_C1_D100_3,T45_C0p5_D80_3|T25_C1_D100_0,T25_C2_D100_1,T35_C2_D80_3,T45_C0p5_D80_0|T25_C2_D100_3,T35_C2_D80_1,T35_C2_D80_2,T45_C0p5_D80_1|T25_C2_D80_2,T45_C1_D50_0,T45_C1_D50_3,baseline_0|T25_C2_D80_3,T35_C0p5_D80_0,T35_C1_D80_3,T45_C2_D50_0|T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2,T45_C1_D80_2",
+      "largest_resistance_range": 0.020795208468456172,
+      "reinspect_count": 1,
+      "reject_count": 2,
+      "scenario": "high_c_rate",
+      "stable_count": 5,
+      "weakest_soh": 0.793194838454236
+    },
+    {
+      "decision_mode": "INTERVAL_RISK",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T35_C0p5_D80_1,T35_C0p5_D80_3,T35_C1_D80_0|T25_C0p5_D100_1,T25_C2_D80_0,T35_C1_D80_2,T45_C2_D50_2|T25_C0p5_D100_3,T25_C1_D100_2,T25_C1_D100_3,T45_C0p5_D80_3|T25_C1_D100_0,T25_C2_D100_1,T35_C2_D80_3,T45_C0p5_D80_0|T25_C2_D100_3,T35_C2_D80_1,T35_C2_D80_2,T45_C0p5_D80_1|T25_C2_D80_2,T45_C1_D50_0,T45_C1_D50_3,baseline_0|T25_C2_D80_3,T35_C0p5_D80_0,T35_C1_D80_3,T45_C2_D50_0|T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2,T45_C1_D80_2",
+      "largest_resistance_range": 0.026018525446311447,
+      "reinspect_count": 1,
+      "reject_count": 4,
+      "scenario": "high_dod",
+      "stable_count": 3,
+      "weakest_soh": 0.784253523538909
+    },
+    {
+      "decision_mode": "INTERVAL_RISK",
+      "group_count": 8,
+      "group_signature": "T25_C0p5_D100_0,T35_C0p5_D80_1,T35_C0p5_D80_3,T35_C1_D80_0|T25_C0p5_D100_1,T25_C2_D80_0,T35_C1_D80_2,T45_C2_D50_2|T25_C0p5_D100_3,T25_C1_D100_2,T25_C1_D100_3,T45_C0p5_D80_3|T25_C1_D100_0,T25_C2_D100_1,T35_C2_D80_3,T45_C0p5_D80_0|T25_C2_D100_3,T35_C2_D80_1,T35_C2_D80_2,T45_C0p5_D80_1|T25_C2_D80_2,T45_C1_D50_0,T45_C1_D50_3,baseline_0|T25_C2_D80_3,T35_C0p5_D80_0,T35_C1_D80_3,T45_C2_D50_0|T35_C0p5_D100_1,T35_C0p5_D100_3,T45_C0p5_D80_2,T45_C1_D80_2",
+      "largest_resistance_range": 0.0425140739794192,
+      "reinspect_count": 1,
+      "reject_count": 6,
+      "scenario": "combined_stress",
+      "stable_count": 1,
+      "weakest_soh": 0.7568175340102951
+    }
+  ],
+  "scenario_names": [
+    "baseline_use",
+    "high_temperature",
+    "high_c_rate",
+    "high_dod",
+    "combined_stress"
+  ],
+  "scope": "PAIRED_FIXED_GROUP_TRACKING_POINT_VS_INTERVAL_RISK"
+}

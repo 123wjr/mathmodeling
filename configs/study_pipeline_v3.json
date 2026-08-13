@@ -72,6 +72,9 @@
       "min_rul_lower_cycles": [20, 40, 60],
       "max_resistance_growth": [0.4, 0.45, 0.5]
     },
+    "capacity_seed_study": {
+      "seeds": [42, 123, 2026, 4096, 8110, 17001, 17002, 17003, 17004, 17005, 17006, 17007, 17008, 17009, 17010, 17011, 17012, 17013, 17014, 17015, 17016, 17017, 17018, 17019, 17020, 17021, 17022, 17023, 17024, 17025]
+    },
     "pressure_scenarios": [
       {"name": "baseline_use", "temperature_C": 25, "c_rate_C": 1, "dod_pct": 80},
       {"name": "high_temperature", "temperature_C": 45, "c_rate_C": 1, "dod_pct": 80},

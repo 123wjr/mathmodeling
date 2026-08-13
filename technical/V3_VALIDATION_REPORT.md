@@ -10,8 +10,10 @@
 - `[RESULT]` POINT 最大可行 22 组、INTERVAL_RISK 最大可行 10 组；目标均为 8 组，状态分别为 `ACCEPT_FIXED_GROUPS` / `ACCEPT_FIXED_GROUPS`；筛选门槛均未放宽。
 - `[RESULT]` POINT 选中电芯的最小 RUL 下界为 73.8340 cycles、最大实际区间宽度为 228366.8650；INTERVAL_RISK 对应为 76.9064 和 2969.2436。两模式候选组归一化范围不同，目标值不得直接横向比较。
 - `[RESULT]` 稳定性扫描行数：45；Jaccard=0.5714--1.0000；入选率=0.1489--0.3511；相对同 seed 基准目标差范围=-0.6628--0.4326；最小 SOH 裕度=0.0464、最小 RUL 下界裕度=0.0534 cycles、最小内阻增长裕度=0.0019、最小区间宽度裕度=39.0109 cycles；显式弃权 OAT 点 44/45，最大组数缺口=5，门槛放宽次数=0；消融配置：48。
+- `[RESULT][UPDATEABLE]` 30 个独立 seed 的基线区间风险产能：G_max=1--17，中位数=5.5；达到至少 8 组=30.0% (9/30)。这是合成跨种子经验分布，不是实际批次概率，也不把单次 8 组结果扩展为普遍保证。
 - `[RESULT]` Q2 消融最低 RMSE 配置为 ridge + all + 100-cycle，RMSE=0.004206；同为 100-cycle Ridge 时，全部特征较容量-only RMSE 下降 12.52%。这是仿真内消融，不构成真实因果贡献。
 - `[RESULT]` Q4 固定组级记录 40 行；16 行 `STABLE_UNDER_SCENARIO`，5 行 `REINSPECT`，19 行 `REJECT_FORCED_ASSIGNMENT`；终点突破/事件触发强制拒绝。
+- `[RESULT][UPDATEABLE]` 同一五场景的模式配对固定追踪：POINT=20 稳定/10 复检/10 拒绝；INTERVAL_RISK=16 稳定/5 复检/19 拒绝。区间风险减少复检但增加拒绝，只支持更保守的弃权描述。
 - `[RESULT][ASSUMED]` 观测压力 none/light/heavy 的 Ridge RMSE 为 0.004206/0.004224/0.004344；模型排序翻转档位=none；选中成员 Jaccard=1.000/0.829/0.778。观测档是仿真压力，不是真实 RPT 标定。
 
 ## 验收闸门
@@ -22,10 +24,12 @@
 - [x] retirement_group_split: OOF cell IDs unique; train/test overlap empty
 - [x] decision_comparison_complete: common risk set; point uses median RUL, interval-risk uses RUL lower bound
 - [x] stability_oat_complete: exact 5-seed x 9-point OAT set, bounded Jaccard, one changed parameter
+- [x] capacity_seed_distribution_complete: 30 baseline INTERVAL_RISK seeds; empirical G_max rates reported
 - [x] ablation_complete: 3 windows x 4 feature groups x 4 models
 - [x] fixed_group_signature: same (group_number, cell_id) membership across pressure scenarios
 - [x] cycle_750_continuity: pressure trajectories match baseline at cycle 750
 - [x] fixed_group_shape: 5 scenarios x 8 groups x 4 cells
+- [x] paired_fixed_group_modes: POINT and INTERVAL_RISK each track fixed groups through identical scenarios
 - [x] fixed_group_summary_complete: group summaries contain SOH, resistance, and censor-aware RUL change fields
 - [x] stress_trigger_endpoint_guard: endpoint breach or post-750 event always rejects forced assignment
 - [x] observation_pressure_complete: none/light/heavy all report four Q2 models and Q3 decision outcomes
