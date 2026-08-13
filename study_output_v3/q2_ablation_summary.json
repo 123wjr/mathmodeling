@@ -1,0 +1,88 @@
+{
+  "all_vs_capacity_only": [
+    {
+      "all_features_rmse": 0.004533474094781122,
+      "capacity_only_rmse": 0.005104396955683311,
+      "history_window": 25,
+      "model": "random_forest",
+      "relative_rmse_reduction": 0.11184922839249693
+    },
+    {
+      "all_features_rmse": 0.0046195995751482,
+      "capacity_only_rmse": 0.005262529240246,
+      "history_window": 50,
+      "model": "random_forest",
+      "relative_rmse_reduction": 0.12217122903202074
+    },
+    {
+      "all_features_rmse": 0.004546215811218327,
+      "capacity_only_rmse": 0.0050083855312375225,
+      "history_window": 100,
+      "model": "random_forest",
+      "relative_rmse_reduction": 0.09227918201117354
+    },
+    {
+      "all_features_rmse": 0.004328126213974401,
+      "capacity_only_rmse": 0.00521161200674625,
+      "history_window": 25,
+      "model": "ridge",
+      "relative_rmse_reduction": 0.16952255686497905
+    },
+    {
+      "all_features_rmse": 0.004402243201730538,
+      "capacity_only_rmse": 0.005241882896331871,
+      "history_window": 50,
+      "model": "ridge",
+      "relative_rmse_reduction": 0.16017902559190914
+    },
+    {
+      "all_features_rmse": 0.004205981748378949,
+      "capacity_only_rmse": 0.004807697102319021,
+      "history_window": 100,
+      "model": "ridge",
+      "relative_rmse_reduction": 0.12515666880299733
+    }
+  ],
+  "best_configuration": {
+    "feature_group": "all",
+    "feature_names": "soh_observed;capacity_obs;resistance_growth;capacity_slope;resistance_slope;cycle;efc;temperature;c_rate;dod",
+    "history_window": 100,
+    "mae": 0.003345385328460225,
+    "mae_ci_high": 0.0035197083955797338,
+    "mae_ci_low": 0.003195479980462511,
+    "model": "ridge",
+    "n_cells": 108,
+    "n_rows": 1944,
+    "r2": 0.9935769005739102,
+    "r2_ci_high": 0.9943825234393175,
+    "r2_ci_low": 0.9924365245165404,
+    "rmse": 0.004205981748378949,
+    "rmse_ci_high": 0.004417641804096078,
+    "rmse_ci_low": 0.004027991687736861
+  },
+  "feature_groups": [
+    "all",
+    "capacity",
+    "capacity_operating",
+    "capacity_resistance"
+  ],
+  "leakage_exclusions": [
+    "soh_true",
+    "lifetime_cycle",
+    "event_observed",
+    "capacity_true"
+  ],
+  "models": [
+    "local_linear",
+    "persistence",
+    "random_forest",
+    "ridge"
+  ],
+  "rows": 48,
+  "scope": "SYNTHETIC_GROUPED_SOH_ABLATION",
+  "windows": [
+    25,
+    50,
+    100
+  ]
+}

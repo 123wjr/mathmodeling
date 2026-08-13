@@ -1,0 +1,68 @@
+{
+  "evidence_labels": {
+    "external_validity": "[UNCERTAIN]",
+    "risk_set": "[RESULT][UPDATEABLE]"
+  },
+  "prediction_metrics": {
+    "cell_bootstrap_repetitions": 300,
+    "conditional_target": "T - 750; right-censored at 250 cycles",
+    "event_interval_90pct_coverage": 0.8888888888888888,
+    "landmark_cycle": 750,
+    "mae": 31.28453488116435,
+    "n_events": 27,
+    "n_right_censored": 65,
+    "n_risk_cells": 92,
+    "r2": 0.7311866001229845,
+    "rmse": 39.766543428447505
+  },
+  "risk_set": {
+    "n_events": 27,
+    "n_pre_750_excluded": 16,
+    "n_right_censored": 65,
+    "n_risk_cells": 92,
+    "retirement_cycle": 750
+  },
+  "scope": "SYNTHETIC_CONDITIONAL_RUL_AT_RETIREMENT_LANDMARK",
+  "split_audit": [
+    {
+      "fold": 1,
+      "n_test_cells": 19,
+      "n_test_events": 6,
+      "n_train_cells": 73,
+      "n_train_events": 21,
+      "train_test_overlap": []
+    },
+    {
+      "fold": 2,
+      "n_test_cells": 19,
+      "n_test_events": 6,
+      "n_train_cells": 73,
+      "n_train_events": 21,
+      "train_test_overlap": []
+    },
+    {
+      "fold": 3,
+      "n_test_cells": 18,
+      "n_test_events": 6,
+      "n_train_cells": 74,
+      "n_train_events": 21,
+      "train_test_overlap": []
+    },
+    {
+      "fold": 4,
+      "n_test_cells": 18,
+      "n_test_events": 3,
+      "n_train_cells": 74,
+      "n_train_events": 24,
+      "train_test_overlap": []
+    },
+    {
+      "fold": 5,
+      "n_test_cells": 18,
+      "n_test_events": 6,
+      "n_train_cells": 74,
+      "n_train_events": 21,
+      "train_test_overlap": []
+    }
+  ]
+}

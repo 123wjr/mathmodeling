@@ -2,35 +2,37 @@
 
 > 文档类型：技术过渡层；不是论文成稿，不提供修辞包装。
 >
-> 用途：把题面、代码、配置、实验输出转换为与 `论文草稿.md` 逐节对齐的技术填充材料。
+> 用途：把题面、代码、配置、实验输出转换为与 `论文初稿.md` 逐节对齐的技术填充材料。旧 `论文草稿.md` 仅保留历史，不再编辑。
 >
 > 状态：`READY_FOR_DRAFT_WITH_LIMITATIONS`。
+>
+> V3 增量：`technical/TECHNICAL_SOLUTION_V3.md` 与 `study_output_v3/` 已修复本文件所登记的“cycle 750 未重估 RUL”和“Q4 重筛重组”缺口。自本行起，本文第 6--7 节旧 Q3/Q4 数字和 `C24/L6/L13/U09` 仅作 V1 历史对照，状态统一为 `SUPERSEDED_BY_V3`，禁止继续填入论文。论文主笔必须按 V3 技术方案第 0 节整体替换；不得把 V1 数字与 V3 方法拼接。V2 仍为 HOLD。
 
 ## 0. 版本与事实源
 
 | 项 | 当前值 |
 |---|---|
 | 赛题 | 锂电池剩余寿命预测与梯次利用筛选优化（A题） |
-| 论文唯一可编辑源 | `论文草稿.md` |
+| 当前论文编辑骨架 | `论文初稿.md`（G12、已对齐 V2） |
 | 技术填充层 | `technical/PAPER_TECHNICAL_BRIDGE.md`（本文件） |
-| 数字证据源 | `study_output/run_manifest.json` + `study_output/*.csv/*.json` |
+| 数字证据源 | Q1/Q2：`study_output/`；当前 Q3/Q4：`study_output_v3/`；各目录 `run_manifest.json` |
 | 外部格式参考 | 人工确认的 DOCX，SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`；仅作比较，不是 Agent 输入接口 |
 | Git 基线 | 不固定；论文 Agent 每次先拉取 `origin/main` 并记录当次 `git rev-parse HEAD` |
-| 实验编号 | `A_NMC_G2_G4_v1` |
-| 主运行命令 | `PYTHONPATH=code python -m battery_study.cli --config configs/study_pipeline.json --out study_output` |
+| 实验编号 | `A_NMC_G2_G4_v1`（Q1/Q2）+ `A_NMC_G2_G4_v3`（当前 Q3/Q4） |
+| 主运行命令 | V1：`python -m battery_study.cli ...`；V3：`python -m battery_study.v3_cli ...`，均需 `PYTHONPATH=code` |
 | 数据性质 | 全部为 NMC 合成仿真；不是 CALCE、NASA 或企业实测数据 |
 | 当前论文阶段 | Stage 2 WRITE；未通过 Stage 2.5 INTEGRITY |
-| 最近流水线验证 | 9/9 validation gates PASS；`python -m pytest code/tests -q` = 56 passed |
+| 最近流水线验证 | V3 最终复跑：12 个闸门 PASS、manifest PASS、全量测试 `93 passed, 1 skipped`；精确数字以 `study_output_v3/` 为准 |
 
 事实源优先级：
 
 1. 题面、`.codex/DECISIONS.md`、已签署闸门。
 2. `handoffs/A0_Task_Contract.md`、`handoffs/A1-A4*.md`。
-3. `study_output/*.json`、`study_output/*.csv`、`study_output/run_manifest.json`。
+3. `study_output_v3/*.json/csv`（当前 Q3/Q4）、`study_output/*.json/csv`（Q1/Q2）、各自 `run_manifest.json`。
 4. `technical/*.md`、图表和可复跑代码/配置。
-5. `论文草稿.md`中尚未回指的文字、聊天、Agent 记忆、模板示例。
+5. `论文初稿.md` 中尚未回指的文字、聊天、Agent 记忆、模板示例。
 
-`论文草稿.md` 是内容编辑源，不是数字证据源；任何结果性修改仍必须回指结果文件。
+`论文初稿.md` 是当前内容编辑骨架，不是数字证据源；任何结果性修改仍必须回指结果文件。
 
 ## 1. 标签与写作动作
 
@@ -57,7 +59,7 @@ paper_eligible=false
 
 `run_status=PASS` 只表示程序成功运行，不表示结果可以写进论文。论文手按以下三态处理：
 
-| 状态 | 当前内容 | `论文草稿.md` 动作 |
+| 状态 | 当前内容 | `论文初稿.md` 动作 |
 |---|---|---|
 | `[已确定/CONFIRMED]` | 数据源为 Zenodo `10.5281/zenodo.7250553`；44 芯、24,525 行；NMC532=26、NMC811=18；两体系分层且按 `cell_id` 留组；容量单位未确认，温度、DOD、EFC、内阻缺失；当前 V2 未通过论文闸门 | 可写入 1.2、6.2、6.3；段末保留 `[已确定/CONFIRMED]` 内部标记、来源、缺失字段和“未进入主结果”的限制 |
 | `[可能更新/UPDATEABLE]` | V2 的膝点、RMSE、相对改善、区间覆盖及由此形成的摘要/结论 | 只插入下方 Markdown 注释占位，不写成当前事实 |
@@ -91,11 +93,11 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 - 不给低温、过充、过放、3C 数值预测。
 - 不用结构匹配模型的结果证明生成器真实有效。
 
-## 2. 与 `论文草稿.md` 对齐填充
+## 2. 与 `论文初稿.md` 对齐填充
 
 ### 2.0 逐节填充接口
 
-| `论文草稿.md` 定位标题 | 本文填充块 | 论文手动作 | 必须保留的限制 |
+| `论文初稿.md` 定位标题 | 本文填充块 | 论文手动作 | 必须保留的限制 |
 |---|---|---|---|
 | 论文标题 | 13.1 | 从对象、方法链和任务三个槽位定题 | 不写 CALCE 校准、实测验证或真实最优 |
 | 摘要 | 13.2 + C01--C24 | 最后填；只取事实表和主张矩阵中的数字 | 全部为合成仿真；AFT 不是点误差全面最优 |
@@ -109,8 +111,8 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 | 2.1 问题总分析 | 2.4 + 3.4 + 4--7 | 写四问的数据流与依赖关系 | 不提前宣称真实有效或工程可用 |
 | 2.2.1 问题一的分析 | 4 | 写阶段、膝点和全因子主效应路线 | CC-CV 单水平，协议效应不可辨识 |
 | 2.2.2 问题二的分析 | 5 | 写 SOH、右删失 RUL、留组验证路线 | 事件与右删失分开报告 |
-| 2.2.3 问题三的分析 | 6 | 写先筛选、再枚举兼容组、最后 MILP | 仅 module-level；门槛和权重是假设 |
-| 2.2.4 问题四的分析 | 7 | 写支持域场景、Monte Carlo、OAT、OOD | 每场景重新生成/筛选/编组，不是 Q3 同组纵向验证 |
+| 2.2.3 问题三的分析 | `TECHNICAL_SOLUTION_V3.md` 3.1--3.4 | 写 cycle=750 条件 RUL、双风险门和 MILP 稳定性 | 仅 module-level；门槛和权重是假设 |
+| 2.2.4 问题四的分析 | `TECHNICAL_SOLUTION_V3.md` 3.3--3.4 | 写固定同一编组、增量压力、删失感知变化和触发规则 | 仅为支持域内仿真压力追踪，不是真实安全验证 |
 | 三、模型假设 | 3.1--3.2 | 按 H1--H8 填充，保留标签和更新条件 | 80% SOH、退化参数、筛选门槛均可更新 |
 | 四、符号说明 | 3.3 | 复制核心符号并统一全文记号 | 保留删失指示、RUL 和优化变量 |
 | 5.1.1 数据预处理 | 3.1 + 4.1--4.2 | 写 EFC、SOH、内阻增长、膝点右删失口径 | `capacity_obs`/`resistance_obs` 是加噪合成观测 |
@@ -119,13 +121,13 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 | 5.2.1 指标说明 | 5.1 + 5.3 | 定义当前/未来 SOH、寿命事件、右删失和 RUL | 1000 cycles 未过阈值者不是已知寿命 |
 | 5.2.2 模型思路与分析 | 5.2--5.3 | 写特征、GroupKFold、基线、AFT 似然和区间 | structure-matched 只作仿真上界 |
 | 5.2.3 模型检验 | 5.4--5.5 + C09--C14 | 填 SOH/RUL 指标、区间和删失矛盾率 | AFT 优势是删失处理和区间，不是点误差最低 |
-| 5.3.1 指标设计 | 6.1--6.3 | 写快照、硬门槛、分级和组内离散度 | 门槛/成本/收益均为无量纲仿真设定 |
-| 5.3.2 模型思路与分析 | 6.3--6.4 | 写候选组指标、二元变量、约束和目标 | 无完整串并联拓扑、功率或能量约束 |
-| 5.3.3 模型检验 | 6.5--6.6 + C15--C17 | 填 85/108、3167、8 组、约束审计和对照 | 0.1220 是目标差值，不是经济增益 |
-| 5.4.1 多工况仿真 | 7.1--7.2 | 填 5 场景、5 seeds 和汇总指标 | 只描述支持域内场景 |
-| 5.4.2 灵敏度与鲁棒性分析 | 7.2--7.3 + C18--C19 | 填 Monte Carlo 区间、7 参数 +/-10% OAT | OAT 是局部机械敏感度，不是全局因果贡献 |
+| 5.3.1 指标设计 | `TECHNICAL_SOLUTION_V3.md` 3.1--3.2 | 写 750 风险集、条件 RUL、点/区间风险门 | 门槛和 80% 终点均为可更新设定 |
+| 5.3.2 模型思路与分析 | `TECHNICAL_SOLUTION_V3.md` 3.2--3.4 | 写共同原始风险集、候选组、MILP 和 OAT | 无完整串并联拓扑、功率或能量约束 |
+| 5.3.3 模型检验 | `TECHNICAL_SOLUTION_V3.md` 6 + C15--C18 | 填 92 风险芯、双决策、8 组和 45 行稳定性 | 不同候选组集合的归一化目标不可直接比较优劣 |
+| 5.4.1 多工况仿真 | `TECHNICAL_SOLUTION_V3.md` 3.3、6 | 填同一 8 组的 5 场景固定追踪 | 只描述支持域内合成仿真 |
+| 5.4.2 灵敏度与鲁棒性分析 | `TECHNICAL_SOLUTION_V3.md` 3.4、6 + C18--C19 | 填 5 seed 决策 OAT 和固定编组响应 | OAT 是局部决策稳定性，不是全局因果贡献 |
 | 5.4.3 支持域外弃权 | 7.4 + C20 | 填四类 OOD 的空数值和拒答规则 | 不补画趋势或生成数值 |
-| 5.4.4 仿真条件下的触发规则 | 7.5--7.6 + C24 | 写复检、拒绝强制编组和扩域条件 | 不写已有 Q3 编组经压力验证 |
+| 5.4.4 仿真条件下的触发规则 | `TECHNICAL_SOLUTION_V3.md` 3.3--4 + C19、C24 | 写复检、拒绝强制编组和删失边界 | 不写真实安全验证或精确删失 RUL 变化 |
 | 6.1 模型的优点 | 8.1 | 按可解释、删失、约束和可复跑四类写 | 优点限定在当前技术链 |
 | 6.2 模型的缺点与局限 | 8.2--8.4 | 完整保留证据不足、统计边界和诚信预审 | 不得删除 Stage 2.5 阻塞项 |
 | 6.3 模型的改进与推广 | 8.5 + 15 | 按新输入、修改位置、重跑范围写 | 推广是更新接口，不是已验证迁移 |
@@ -138,7 +140,7 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 
 ### 2.1 外部 DOCX 比较记录（非 Agent 接口）
 
-已核对的 DOCX 共 375 段、10 表、1 个内嵌图形对象。当前 `论文草稿.md` 保留其章节骨架，并已填入 Q1--Q4、模型评价、结论、候选参考文献和附录建议。Markdown 不是 DOCX 的逐字副本；以后内容编辑只针对 Markdown，DOCX 仅供格式对照。
+已核对的 DOCX 共 375 段、10 表、1 个内嵌图形对象。当前 `论文初稿.md` 保留其章节骨架，并已填入 Q1--Q4、模型评价、结论、候选参考文献和附录建议。Markdown 不是 DOCX 的逐字副本；以后内容编辑只针对 `论文初稿.md`，DOCX 仅供格式对照。
 
 ### 2.2 最新 DOCX 原文冲突登记（不可直接复制）
 
@@ -149,7 +151,6 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 | 101、137、141 | “CALCE ... 核心参数校准依据” | 未下载、解析或拟合 CALCE 原始循环；CALCE 仅用于选择 NMC 对象和尺度参考；全部退化系数为仿真设定 | 改为“参考对象/尺度边界”，删除“校准依据/实测校准” | `P0_REPLACE` |
 | 141 | “NASA ... 容量退化趋势辅助对照” | NASA 未进入 G1-G4 的生成、训练、验证或参数估计 | 删除“辅助对照”；写入“未使用，未来可做独立外部对照” | `P0_REPLACE` |
 | 115--116 | “安全失效边界、检测成本、串并联编组” | Q3 只有自设门槛、无量纲成本/收益和 4 芯 module-level set-packing；无安全概率、货币成本或串并联拓扑 | 改为“条件化筛选与兼容编组”；明确 `[ASSUMED][UPDATEABLE]` 和 `[PAPER_GAP]` | `P0_REPLACE` |
-| 120 | “四类工程场景，对已有编组方案开展长周期验证” | 数值实验是 5 个支持域运行场景；另有 3 个批次代理、7 参数 OAT；每个场景重新筛选/编组，未纵向延续 Q3 同组电芯 | 改为“5 场景下重新筛选/编组比较 + 批次代理 + OAT + OOD/ABSTAIN”；删除“已有编组已验证” | `P0_REPLACE` |
 | 149 | “范围外仅作为未校准压力测试” | 当前代码不对范围外输入给数值；低温、过充、过放、3C 均 `numeric_prediction=null` | 改为支持域控制和显式弃权；不得从生成器外推 | `P0_REPLACE` |
 | 172 | “截断后重新缩放初始容量和内阻，确保仍在台账范围” | Q0 只做正值检查；R0、alpha、beta 受冻结边界约束；不存在统一“重新缩放”步骤 | 按 `code/g1_generator/degradation.py` 的实际采样规则改写 | `P1_REPLACE` |
 | 182 | “如 seed=42” | 正式全因子 seed=`20260811`；Q4 seeds=`42,123,2026,4096,8110`；42 是 G1 冒烟/其中一个鲁棒性 seed | 按实验阶段列出 seed，不把示例 seed 当正式唯一 seed | `P1_REPLACE` |
@@ -162,9 +163,9 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 
 | 项目 | 当前状态 | 可否在论文中写成已完成 |
 |---|---|---|
-| G1-G4 合成仿真、预测、编组、鲁棒性流水线 | `DONE`；9/9 gates、56 tests、manifest 可回算 | 可以，但必须带合成/支持域限定 |
+| G1-G4 合成仿真、预测、编组、鲁棒性流水线 | `DONE`；V3 12/12 gates、全量测试 `93 passed, 1 skipped`、manifest PASS | 可以，但必须带合成/支持域限定 |
 | Q1-Q4 技术过渡材料（假设、公式、协议、数字、证据回指） | `DONE_WITH_LIMITATIONS`；本文件第 4--9 节 | 可以按标签使用 |
-| `论文草稿.md` 到在线文档副本的同步及图号固定 | `PENDING_PAPER_AGENT` | 不可；草稿仍含待核验引用和待确认项 |
+| `论文初稿.md` 到在线文档副本的同步及图号固定 | `PENDING_PAPER_AGENT` | 不可；初稿仍含待核验引用和待确认项 |
 | 外部文献逐条全文、页码/表号核验 | `PENDING_HUMAN_VERIFICATION` | 不可把候选引用写成已核验 |
 | CALCE 原始数据拟合、NASA 外部验证 | `NOT_DONE / OUT_OF_SCOPE` | 不可 |
 | 低温/过充/过放/3C 数值实验 | `NOT_DONE / OOD_ABSTAIN` | 不可；只能写弃权 |
@@ -178,12 +179,12 @@ action: 仅插入重新放行后的指标、口径、适用范围和证据路径
 |---|---|---|---|
 | Q1 退化特征与因素辨识 | cycle、EFC、容量、内阻、T、C-rate、DOD、协议 | 阶段、膝点、因素权重、协议不可辨识 | `PARTIAL_SYNTHETIC_PROTOCOL_UNIDENTIFIED` |
 | Q2 SOH 与 RUL | 历史观测、工况、右删失信息 | 当前 SOH、50-cycle SOH、RUL 点预测与区间 | `PARTIAL_IN_DOMAIN_EXTREMES_ABSTAINED` |
-| Q3 筛选与编组 | SOH、RUL、区间、容量、内阻 | 硬门槛、分级、4 芯兼容组、8 组 MILP | `PARTIAL_MODULE_GROUPING_ONLY` |
-| Q4 多工况与鲁棒性 | 5 个支持域场景、5 seeds、7 参数 | Monte Carlo、OAT、批次代理、弃权规则 | `PARTIAL_SCENARIO_REOPTIMIZATION_ONLY` |
+| Q3 筛选与编组 | cycle=750 风险集、条件 RUL、SOH、内阻 | POINT/INTERVAL_RISK、4 芯兼容组、8 组 MILP、45 行 OAT | `V3_ACTIVE_MODULE_GROUPING_ONLY` |
+| Q4 多工况与鲁棒性 | V3 固定同一 8 组、5 个支持域场景 | cycle 750 连续；删失感知 RUL 变化；复检/拒绝触发 | `V3_ACTIVE_FIXED_GROUP_SIMULATION_ONLY` |
 
 `[PAPER_GAP]`：Q3 当前是电芯到 4 芯兼容组的 module-level set-packing，不包含给定电压、功率、容量需求下的串并联阵列拓扑；论文不得称为完整储能系统电气设计。
 
-`[PAPER_GAP]`：Q4 对每个新场景重新生成电芯、筛选并优化，没有把 Q3 已选定的同一组 `cell_id` 沿压力工况继续演化。因此只能写“场景下重新筛选/编组的稳健性比较”，不能写“原 Q3 编组经长期压力验证仍稳定”。
+`[SUPERSEDED_BY_V3]`：上一版 Q4 对每个场景重新生成、筛选并优化；V3 已固定 Q3 同一批 `cell_id` 和组号，沿 750--1000 追踪。只能称“仿真条件下固定编组纵向压力追踪”，仍不能称真实安全验证。
 
 ## 3. 全局假设、数据与符号
 
@@ -527,20 +528,22 @@ RUL：
 
 证据：`study_output/q2_soh_metrics.csv`、`study_output/q2_rul_metrics.csv`、`study_output/q2_split_audit.json`、`study_output/q2_leave_condition_out.csv`、`study_output/fig_q2_soh_rmse.svg`、`study_output/fig_q2_rul_rmse.svg`。
 
-## 6. Q3 技术块：筛选、分级与编组
+## 6. Q3 技术块：筛选、分级与编组（V1 历史对照，`SUPERSEDED_BY_V3`）
+
+本节所有 cycle=300 换算、108/85/3167 和旧 MILP 数字禁止继续填入论文。当前接口见 `TECHNICAL_SOLUTION_V3.md` 第 3.1--3.2、6 节及 `study_output_v3/q3_*.csv/json`。
 
 ### 6.1 候选池与预测接口
 
 | 项 | 当前设定 | 标签 |
 |---|---:|---|
 | 退役快照 | cycle 750 | `[ASSUMED][UPDATEABLE]` |
-| 候选电芯 | 108 | `[CONFIRMED]` |
+| 候选电芯 | 92 个风险集电芯（108 中 16 个在 750 前达到终点并排除） | `[RESULT]` |
 | SOH 来源 | cycle 750 最近观测窗口 | `[CONFIRMED]` |
-| RUL 来源 | cycle 300 的 OOF AFT 寿命预测减去 750 | `[CONFIRMED][PAPER_GAP]` |
+| RUL 来源 | cycle 750 条件 RUL 的 OOF AFT 预测；只读 cycle<=750 特征 | `[CONFIRMED]` |
 | 分组大小 | 4 cells/group | `[ASSUMED][UPDATEABLE]` |
 | 目标组数 | 8 | `[ASSUMED][UPDATEABLE]` |
 
-`[PAPER_GAP]`：RUL 未在 cycle 750 重新估计。论文应写“使用 landmark 预测寿命在退役快照处换算剩余寿命”，不能写“cycle 750 在线更新的 RUL”。
+`[SUPERSEDED_BY_V3]`：旧 V1 的 cycle=300 寿命换算已废止。V3 在 cycle=750 直接构造条件剩余寿命目标，并以 `cell_id` 留组输出 OOF AFT 预测；论文不得再写“cycle 300 换算到 750”。
 
 ### 6.2 硬门槛与分级
 
@@ -549,7 +552,7 @@ RUL：
 | 最低 SOH | 0.76 | `[ASSUMED][UPDATEABLE]` |
 | 最低 RUL 90% 下界 | 40 cycles | `[ASSUMED][UPDATEABLE]` |
 | 最大内阻增长 | 0.45 | `[ASSUMED][UPDATEABLE]` |
-| 最大寿命区间宽度 | 650 cycles | `[ASSUMED][UPDATEABLE]` |
+| 最大寿命区间宽度 | 3000 cycles | `[ASSUMED][UPDATEABLE]` |
 
 分级：
 
@@ -559,14 +562,7 @@ B: 全部硬门槛通过，但不满足 A
 REJECT: 任一硬门槛失败
 ```
 
-当前未出现 SOH/区间宽度门槛失败；失败计数为：
-
-| 原因 | 电芯数 |
-|---|---:|
-| `RUL_LOWER_BELOW_MIN` | 23 |
-| `RESISTANCE_GROWTH_ABOVE_MAX` | 11 |
-
-同一电芯可能同时触发多个失败原因，原因计数不用于直接反推拒绝电芯总数。
+当前 V3 以 `POINT` 和 `INTERVAL_RISK` 两种决策分别筛选；完整电芯级结果以 `study_output_v3/q3_retirement_screening.csv` 为准。旧 V1 失败计数不适用于 V3，不能复制。
 
 ### 6.3 候选组指标
 
@@ -616,10 +612,8 @@ greedy 使用 balanced 权重，按组分数降序、跳过重复电芯，作为
 
 | 指标 | 结果 |
 |---|---:|
-| 候选电芯 | 108 |
-| 通过门槛 | 85 |
-| 筛选率 | 0.7870 |
-| 兼容候选组 | 3167 |
+| 风险集电芯 | 92 |
+| POINT / INTERVAL_RISK 入选 | 89 / 41 |
 | 每个 MILP 方案组数 | 8 |
 | 每个方案使用电芯 | 32 |
 | MILP 重复分配 | 0 |
@@ -636,15 +630,19 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 
 ### 6.6 可转入论文的结论原子
 
-- `[RESULT]` 当前假设门槛下，108 颗候选中 85 颗通过，形成 3167 个兼容 4 芯候选组。
-- `[RESULT]` 三组权重下的 MILP 均满足 8 组、每组 4 芯、单芯最多使用一次的约束。
+- `[RESULT]` cycle=750 风险集 92 芯；POINT/INTERVAL_RISK 分别入选 89/41 芯，均形成 8 个四芯组。
+- `[RESULT]` 两种决策共享原始风险集和编组约束；POINT 使用 RUL 中位数，INTERVAL_RISK 使用 RUL 下界并限制区间宽度。
 - `[RESULT]` balanced 权重下 MILP 目标高于 greedy；不能转换为百分比收益或货币价值。
 - `[ASSUMED][UPDATEABLE]` 分级门槛和场景权重必须由实际检测误差、安全规范和应用需求替换。
 - `[PAPER_GAP]` 当前没有储能系统电压、功率、能量、串并联拓扑及损耗约束；结论限定为 module-level 兼容编组。
 
 证据：`study_output/q3_candidate_screening.csv`、`study_output/q3_selected_groups.csv`、`study_output/q3_assignments.csv`、`study_output/q3_solution_summary.csv`、`study_output/fig_q3_tradeoff.svg`。
 
-## 7. Q4 技术块：多工况、鲁棒性与弃权
+## 7. Q4 技术块：多工况、鲁棒性与弃权（V1 历史对照，`SUPERSEDED_BY_V3`）
+
+本节场景重生成/重筛/重组数字禁止继续填入论文。当前接口见 `TECHNICAL_SOLUTION_V3.md` 第 3.3、6 节及 `study_output_v3/q4_fixed_group_*.csv/json`；V1 的 5-seed/OAT/OOD 仍可作为补充实验，但不得与 V3 固定编组结果混称同一实验。
+
+**V3 当前口径（论文只使用本段及 `TECHNICAL_SOLUTION_V3.md`）：** 固定 Q3 `INTERVAL_RISK + balanced` 的同一 8 组，在 `cycle=750` 保持历史状态连续，从 `cycle=751` 到 `1000` 仅改变支持域内温度、倍率和 DOD。40 个组级记录中，16 个为 `STABLE_UNDER_SCENARIO`、5 个为 `REINSPECT`、19 个为 `REJECT_FORCED_ASSIGNMENT`。右删失组的 RUL 变化按不可辨识状态报告。该结果是合成仿真压力追踪，不是真实安全验证。
 
 ### 7.1 支持域内场景
 
@@ -658,7 +656,7 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 
 每场景每 seed 24 电芯；seeds=`42,123,2026,4096,8110`。
 
-场景流程：用 Q1/Q2 全因子数据训练的完整 Ridge/AFT 模型评估每个新场景；随后在该场景内重新筛选并求 balanced MILP。场景之间的 `cell_id` 不是 Q3 原始候选的纵向延续。
+V3 场景流程：固定 Q3 `INTERVAL_RISK + balanced` 选择的同一 8 组和 `cell_id`，保留 cycle<=750 历史，只在 751--1000 改变温度、倍率和 DOD；不重新筛选、不重新优化。
 
 批次代理：
 
@@ -722,13 +720,13 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 | 任一筛选/不确定性门槛失败 | 不强制编组；转附加检测或其他处置 | `[CONFIRMED]` 决策逻辑 |
 | 任一 OOD 标记 | 停止数值预测；要求适用模型或数据 | `[CONFIRMED]` 风险控制 |
 
-### 7.6 可转入论文的结论原子
+### 7.6 V1 历史结论原子（禁止作为当前 Q4 主结果）
 
 - `[RESULT]` 支持域内组合压力的 cycle=1000 平均 SOH 最低，筛选率为 0。
 - `[RESULT]` 高温场景的临界比例和筛选率变化大于单独高倍率场景；结论仅适用于当前公式和参数。
 - `[RESULT]` `alpha/beta/n_k/k_T` 分别主导对应输出的局部敏感度；不能解释成实测机理权重。
 - `[OOD/ABSTAIN]` 题面中的低温、过充、过放和 >2C 只报告弃权，不提供寿命扰动数值。
-- `[PAPER_GAP]` 当前结果不构成对 Q3 同一已选编组的纵向压力验证；它比较的是各场景重新筛选/编组后的结果。
+- `[SUPERSEDED_BY_V3]` 以上 V1 结果不构成对 Q3 同一已选编组的纵向压力验证；V3 已改用固定同组追踪，当前 Q4 结论以本节开头的 V3 口径为准。
 
 证据：`study_output/q4_monte_carlo_raw.csv`、`study_output/q4_monte_carlo_summary.csv`、`study_output/q4_sensitivity_oat.csv`、`study_output/q4_sensitivity_rank.csv`、`study_output/q4_ood_abstention.csv`、`study_output/fig_q4_final_soh.svg`、`study_output/fig_q4_sensitivity.svg`。
 
@@ -755,14 +753,14 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 | L3 | 未读取 CALCE 原始循环数据 | 不存在实测校准和外部验证 |
 | L4 | 仅 CC-CV 一个协议水平 | 无法估计充电策略影响 |
 | L5 | 支持域不含低温、过充、过放、3C | Q2 极端工况只完成弃权，不完成数值扰动分析 |
-| L6 | Q3 RUL 来自 cycle 300 预测并换算到 750 | 不是退役快照处重新拟合的在线预测 |
+| L6 | `SUPERSEDED_BY_V3`：V1 Q3 RUL 来自 cycle 300 预测并换算到 750 | V3 已改为 cycle=750 条件 RUL；旧口径不得进入当前论文 |
 | L7 | Q3 只有无量纲成本/收益和 4 芯兼容组 | 无货币经济性、系统损耗或串并联阵列设计 |
 | L8 | 批次场景是参数代理 | 不能解释为真实制造批次差异 |
 | L9 | OAT 是局部单因素扰动 | 不覆盖参数交互、全局敏感度或联合不确定性 |
 | L10 | 外部参考文献未完成逐条全文页码核验 | 机理和行业背景主张仍需人工闭环 |
 | L11 | AFT 的 log-normal、线性协变量和独立删失假设未在真实数据上检验 | 事件覆盖和误差只说明本合成留组实验 |
 | L12 | Q1 报告总体边际主效应；内阻倍率在 1/9 分层有局部反转 | 不得写成所有工况/电芯都严格单调 |
-| L13 | Q4 每个场景重新生成、筛选和编组，没有延续 Q3 同一组电芯 | 不得称“已有编组通过长期多工况验证” |
+| L13 | `SUPERSEDED_BY_V3`：V1 Q4 每场景重新生成、筛选和编组 | V3 已固定同一 8 组纵向追踪；仍不得称真实安全验证 |
 
 ### 8.3 统计解释与 11 类谬误扫描
 
@@ -774,10 +772,10 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 | 2 Ecological fallacy | `NOT_TRIGGERED` | 不从工况均值推断真实单体或行业规律 |
 | 3 Berkson's paradox | `CAUTION` | Q3 对过门槛电芯筛选；筛选后组内关系不外推到全部退役电芯 |
 | 4 Collider bias | `CAUTION` | Q3 同时按 SOH、RUL、内阻、不确定性筛选；不对筛选后特征相关性作因果解释 |
-| 5 Base-rate neglect | `CONTROLLED` | 85/108 和场景筛选率仅是当前仿真假设分布，不称行业合格率 |
+| 5 Base-rate neglect | `CONTROLLED` | 41/92（INTERVAL_RISK）及压力场景触发率仅是当前仿真假设分布，不称行业合格率 |
 | 6 Regression to mean | `NOT_APPLICABLE` | 无按极端结果选组后的前后改善主张 |
-| 7 Survivorship bias | `CAUTION` | RUL 点误差只对 43 个事件；65 个右删失单列，主模型用删失似然 |
-| 8 Look-elsewhere effect | `CONTROLLED_EXPLORATORY` | 7 参数 x 5 场景 x 2 输出全部报告；不做选择性显著性主张 |
+| 7 Survivorship bias | `CAUTION` | V1 RUL 点误差只对 43 个事件；V3 退役 RUL 点误差只对 27 个事件；右删失单列，主模型用删失似然 |
+| 8 Look-elsewhere effect | `CONTROLLED_EXPLORATORY` | 5 seed x 9 个 OAT 点全部报告；不做选择性显著性主张 |
 | 9 Garden of forking paths | `CAUTION` | 配置和 seed 已冻结，但无外部预注册；门槛、权重和模型选择按探索性分析处理 |
 | 10 Correlation != causation | `CAUTION` | Q1 因素方向写入生成器；只称仿真主效应，不称真实电化学因果贡献 |
 | 11 Reverse causality | `NOT_APPLICABLE` | 当前是前向生成和预测任务；不据此建立真实世界反向因果结论 |
@@ -790,13 +788,13 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 
 | 模式 | 判定 | 当前证据 | 论文/下一步处置 |
 |---|---|---|---|
-| 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | 56 项测试、9 个自动闸门、连续两次确定性重跑、43/43 产物哈希一致；关键公式已与 `q1.py`--`q4.py` 对照 | 仍保留独立代码红队风险；代码或配置改变后判定失效 |
-| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | `论文草稿.md` 中 34 条候选文献尚未逐条核验 DOI/官方页面、全文页码和主张范围 | `BLOCKING_FOR_STAGE_2_5`；人工核验或删除对应主张 |
-| 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | C05--C24 数字均回指保存的 CSV/JSON；manifest 可回算且双跑一致 | 新增或改写数字时重新核对，不允许从聊天或摘要反推 |
+| 1 实现缺陷通过自审 | `CLEAR_WITHIN_CURRENT_SCOPE` | V3 12 个自动闸门 PASS；全量测试 `93 passed, 1 skipped`；manifest PASS | 代码或配置改变后必须重新复跑 |
+| 2 虚构或错配引用 | `INSUFFICIENT_EVIDENCE` | `论文初稿.md` 中候选文献尚未逐条核验 DOI/官方页面、全文页码和主张范围 | `BLOCKING_FOR_STAGE_2_5`；人工核验或删除对应主张 |
+| 3 虚构实验结果 | `CLEAR_WITHIN_CURRENT_SCOPE` | V3 数字由最新 `study_output_v3/`、12 个闸门和 manifest 回指；不从聊天或摘要反推 | 新增或改写数字时重新核对 |
 | 4 依赖捷径而非预期泛化 | `INSUFFICIENT_EVIDENCE` | 生成、训练和验证均来自同一仿真家族；structure-matched 模型已隔离为 ceiling，但没有真实外部集或去捷径消融 | 只支持“仿真内比较”；Stage 4.5 前需外部证据或继续保持限制性结论 |
 | 5 将缺陷包装为新发现 | `CLEAR_WITHIN_CURRENT_SCOPE` | 没有使用“意外/反常/新机理”叙事；内阻倍率 1/9 分层反转明确归因于个体随机效应，并按限制报告 | 不得把局部反转升级为电化学新发现 |
 | 6 方法描述与实际运行不一致 | `CLEAR_WITHIN_CURRENT_SCOPE` | seed、折分、模型、门槛、求解器、场景和 OOD 规则均可在配置/代码/结果中对照；DOCX 冲突句已列为 `P0_REPLACE` | 论文方法段逐项从本包填充；不得沿用模板中的 CALCE/NASA/范围外旧表述 |
-| 7 早期框架锁定 | `SUSPECTED` | 合成单协议主线使 Q1 协议不可辨识、Q2 极端工况无数值、Q3 无系统拓扑、Q4 非同组纵向验证 | `BLOCKING_FOR_STAGE_2_5`；总负责人必须选择补做，或以题面覆盖不足为限制并记录接受理由 |
+| 7 早期框架锁定 | `PARTIALLY_MITIGATED` | V3 已补 cycle=750 条件 RUL、双决策稳定性和固定同组压力追踪；Q1 单协议、Q3 无系统拓扑、Q2 OOD 无数值仍存在 | 保留未解决范围限制；不得把 V3 写成真实外部效度闭环 |
 
 预审总判定：`READY_FOR_DRAFT_WITH_LIMITATIONS`，但 `NOT_READY_FOR_STAGE_2_5_PASS`。Mode 2 和 Mode 7 未闭环；Mode 4 只能以范围限制暂时控制。该结论不阻止论文手按现有证据起草方法和仿真结果，但禁止把草稿状态写成最终完整题解。
 
@@ -818,8 +816,8 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 |---|---|---|
 | Q1 | 当前全因子仿真中 DOD 主效应最高，温度次之，倍率最低；72 膝点可检测、36 右删失 | 生成器内部恢复；协议不可辨识；内阻倍率 1/9 分层局部反转；非普适机理排序 |
 | Q2 | Ridge 的 50-cycle SOH 留组 RMSE=0.004206；AFT 的事件 RUL RMSE=38.39 cycles、覆盖=0.9070 | 合成数据；AFT 点误差不是最低；无真实外部验证 |
-| Q3 | 85/108 过门槛，3167 候选组，三套 MILP 均满足约束，balanced 目标高于 greedy | 门槛/权重/成本收益均为假设；仅 module-level |
-| Q4 | 支持域内组合压力退化最强；5 seeds 和 7 参数 OAT 已执行；4 类 OOD 全弃权 | 场景内重新筛选/编组，不是 Q3 同组纵向验证；批次为代理；OAT 局部 |
+| Q3 | cycle=750 风险集 92 芯；POINT/INTERVAL_RISK 分别入选 89/41 芯并各形成 8 组；45 行 OAT 的 Jaccard=0.5714--1.0000 | 门槛/权重均为假设；44/45 个 OAT 点无法达到 8 组目标；仅 module-level |
+| Q4 | 固定同一 8 组跨 5 场景追踪，40 个组级记录中 16 稳定、5 复检、19 强制拒绝 | 合成支持域内压力追踪；删失时 RUL 变化可能不可辨识；不是真实安全验证 |
 
 全文总限制：当前研究证明的是“合成仿真链可运行、可复现、可比较、可约束”，不是“真实电池模型已校准并验证”。
 
@@ -841,16 +839,16 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 | C12 | RUL 为 43 事件 + 65 右删失 | `[CONFIRMED]` | `study_output/q2_summary.json:rul_endpoint` | 不把删失下界当真值 |
 | C13 | AFT 事件 RMSE=38.39、覆盖=0.9070、删失矛盾率=0 | `[RESULT]` | `study_output/q2_rul_metrics.csv` | 不写 AFT 点误差最低 |
 | C14 | structure-matched RMSE=11.89 | `[RESULT]` simulator ceiling | 同上 | 不用于泛化结论 |
-| C15 | 85/108 通过 Q3 假设门槛 | `[RESULT][UPDATEABLE]` | `study_output/q3_summary.json` | 不写行业合格率 |
-| C16 | 3167 个候选组，MILP 选 8 组，重复=0 | `[RESULT]` | `study_output/q3_solution_summary.csv` | 不写完整储能阵列 |
-| C17 | balanced MILP=1.2048，greedy=1.0828 | `[RESULT]` | 同上 | 不写 12.20% 经济增益 |
-| C18 | Q4 使用 5 seeds、7 参数 OAT | `[CONFIRMED]` | `study_output/q4_summary.json` | 不写全局敏感度 |
-| C19 | combined stress SOH=0.6857、筛选率=0 | `[RESULT]` | `study_output/q4_monte_carlo_summary.csv` | 不外推范围外工况 |
+| C15 | cycle=750 风险集 92 芯：27 事件、65 右删失；750 前排除 16 芯 | `[RESULT]` | `study_output_v3/q3_retirement_summary.json` | 不写真实退役批次比例 |
+| C16 | 条件 RUL 事件 RMSE=39.7665、经验覆盖=0.8889 | `[RESULT]` | `study_output_v3/q3_retirement_summary.json` | 不写 90% 有限样本保证或真实精度 |
+| C17 | POINT/INTERVAL_RISK 入选 89/41 芯，均形成 8 个四芯组 | `[RESULT][UPDATEABLE]` | `study_output_v3/q3_decision_comparison.csv` | 不直接比较跨候选集归一化目标值 |
+| C18 | 5 seed、45 行决策 OAT；Jaccard=0.5714--1.0000；44/45 不可行 | `[RESULT][UPDATEABLE]` | `study_output_v3/q3_stability_sweep.csv` | 不写所有参数均稳定或全局敏感度 |
+| C19 | 固定同一 8 组跨 5 场景；40 组级记录中 16 稳定、5 复检、19 强制拒绝 | `[RESULT][CONFIRMED]` | `study_output_v3/q4_fixed_group_summary.csv` | 不写真实安全验证；删失 RUL 变化需按状态解释 |
 | C20 | 低温/过充/过放/3C 数值为空 | `[OOD/ABSTAIN]` | `study_output/q4_ood_abstention.csv` | 不补造趋势数字 |
 | C21 | 门槛、权重、成本收益为假设 | `[ASSUMED][UPDATEABLE]` | `configs/study_pipeline.json`、`study_output/q3_summary.json` | 不写规范/货币值 |
 | C22 | 真实泛化、安全概率、货币收益未知 | `[UNCERTAIN]` | `run_manifest.json:uncertainty_status` | 不用模型内部结果替代 |
 | C23 | 内阻倍率效应在 1/9 分层局部反转；总体边际排序不等于逐层单调 | `[RESULT]` | `factorial_cell_summary.csv` + 分层方向复核 | 不写所有工况严格单调 |
-| C24 | Q4 在各场景重新生成、筛选和优化，未纵向复用 Q3 同组电芯 | `[CONFIRMED][PAPER_GAP]` | `code/battery_study/q4.py:_scenario_metrics` | 不写已有编组已通过压力验证 |
+| C24 | `SUPERSEDED_BY_V3`：V1 Q4 未纵向复用 Q3 同组电芯；V3 已固定相同 group signature 且 cycle 750 连续 | `[CONFIRMED]` | `study_output_v3/validation_gates.json`、`q4_fixed_group_summary.csv` | 只能写仿真固定编组压力追踪 |
 
 ## 11. 图表与表格接口
 
@@ -876,9 +874,10 @@ balanced MILP 与同权重 greedy 的目标差为 `1.2048-1.0828=0.1220`；该�
 | Q1 因素权重表 | `study_output/q1_factor_effects.csv` | Q1 结果 |
 | Q2 SOH 模型表 | `study_output/q2_soh_metrics.csv` | Q2 结果 |
 | Q2 RUL 模型表 | `study_output/q2_rul_metrics.csv` | Q2 结果 |
-| Q3 门槛/权重表 | `study_pipeline.json` | Q3 方法 |
-| Q3 解汇总表 | `study_output/q3_solution_summary.csv` | Q3 结果 |
-| Q4 场景表 | `study_output/q4_monte_carlo_summary.csv` | Q4 结果 |
+| Q3 门槛/权重表 | `configs/study_pipeline_v3.json` | Q3 方法 |
+| Q3 条件 RUL/双决策表 | `study_output_v3/q3_retirement_summary.json`、`q3_decision_comparison.csv` | Q3 结果 |
+| Q3 稳定性表 | `study_output_v3/q3_stability_sweep.csv` | Q3 鲁棒性 |
+| Q4 固定编组场景表 | `study_output_v3/q4_fixed_group_summary.csv` | Q4 结果 |
 | OOD 弃权表 | `study_output/q4_ood_abstention.csv` | Q4 局限 |
 
 图号由在线文档最终固定；Bridge ID 不等于最终论文图号。
@@ -899,7 +898,7 @@ citation_id | DOI/官方URL | 作者/年份/题名 | 正文主张 | 原文页码
 核验人 | 核验日期 | VERIFIED / NOT_FOUND / MISMATCH
 ```
 
-`论文草稿.md` 中 34 条候选文献的 `[EVIDENCE_REQUIRED]` 闸门不得整体删除；只能逐条核验、降级为假设或删除对应主张。
+`论文初稿.md` 中候选文献的 `[EVIDENCE_REQUIRED]` 闸门不得整体删除；只能逐条核验、降级为假设或删除对应主张。
 
 ## 13. 标题与摘要要素
 
@@ -922,15 +921,15 @@ citation_id | DOI/官方URL | 作者/年份/题名 | 正文主张 | 原文页码
 | 数据 | 27 工况、108 电芯、108000 行合成仿真；支持域和 seed |
 | Q1 方法/结果 | hinge 膝点 + 主效应分解；72/36；T/C/DOD 权重 |
 | Q2 方法/结果 | GroupKFold；Ridge SOH；删失 AFT RUL；关键误差与覆盖 |
-| Q3 方法/结果 | 硬门槛 + 兼容组 + set-packing MILP；85/108、3167、8 组 |
-| Q4 方法/结果 | 5 seeds + 7 参数 OAT + OOD；组合压力和弃权 |
+| Q3 方法/结果 | cycle=750 条件 AFT + 点/区间风险门 + set-packing MILP；92 风险芯、89/41 入选、各 8 组 |
+| Q4 方法/结果 | 固定同一 8 组的 5 场景压力追踪；16/40 稳定、5/40 复检、19/40 强制拒绝；OOD 仍弃权 |
 | 总限制 | 全部为合成仿真；无 CALCE 拟合、外部验证、真实经济/安全结论 |
 
 关键词候选：`退役动力锂电池`、`SOH`、`右删失 RUL`、`混合整数线性规划`、`鲁棒性分析`。
 
 ## 14. 附录与支撑材料接口
 
-从 `论文草稿.md` 及在线文档副本中删除模板残留：
+从 `论文初稿.md` 及在线文档副本中删除模板残留：
 
 - `XXX`、模板教学说明、通用二次方程示例。
 - “这里插入公式”占位表。
@@ -971,17 +970,17 @@ git diff --check
 | U06 | OOD 极端工况 | 获得匹配数据 | 扩域、重训、重新验证 | Q2/Q4 |
 | U07 | 引用待全文核验 | 人工取得原文 | 填页码/表号，保留或删除主张 | 背景/假设/讨论 |
 | U08 | 评分细则缺失 | 官方发布 | 只调整呈现优先级；模型变更需重开闸门 | 全文 |
-| U09 | Q4 未纵向验证 Q3 同组电芯 | 决定扩展技术范围并定义工况迁移规则 | 固定 Q3 分组，跨场景演化同一电芯并回算组内离散/损耗/可行性 | Q3/Q4 |
+| U09 | `SUPERSEDED_BY_V3`：V1 未纵向验证同组电芯 | V3 已固定 Q3 分组并跨场景追踪；若取得真实压力数据则重新校准与验证 | 保留固定组接口，替换合成退化响应和触发阈值 | Q3/Q4 |
 
 ## 16. 论文手验收条件
 
-- [ ] `论文草稿.md`/在线文档副本中的每个结果数字均在 C01--C24 或结果文件中有回指。
+- [ ] `论文初稿.md`/在线文档副本中的每个结果数字均在 C01--C24 或结果文件中有回指；Q3/Q4 不使用 V1 历史数字。
 - [ ] 每个 Q 都包含输入、假设、模型、实验、指标、结果、限制。
 - [ ] CALCE/NASA 表述符合第 3.1 节，不出现实测校准/已对照。
 - [ ] Q2 明确 `GroupKFold(cell_id)`、右删失、AFT 与 ceiling 边界。
 - [ ] Q3 明确门槛/权重/成本收益可更新，并限定 module-level。
-- [ ] Q4 明确 5 seeds、OAT 局部性、批次代理和 OOD 弃权。
-- [ ] Q4 不把场景内重新筛选/编组写成 Q3 同组电芯的纵向压力验证。
+- [ ] Q4 明确固定同一 8 组、cycle 750 连续、删失感知 RUL 变化和 OOD 弃权。
+- [ ] Q4 只称支持域内合成仿真压力追踪，不称真实安全验证。
 - [ ] 图注包含数据类型、工况/seed/折分、指标和限制。
 - [ ] 参考文献逐条完成人工全文核验；无孤立引用或孤立文献。
 - [ ] 删除所有模板示例、`XXX`、无关代码和无关参考文献。

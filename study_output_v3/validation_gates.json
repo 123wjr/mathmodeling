@@ -1,0 +1,62 @@
+[
+  {
+    "evidence": "108 cells regenerated",
+    "gate": "v3_factorial_shape",
+    "status": "PASS"
+  },
+  {
+    "evidence": "92 risk cells = 27 events + 65 right-censored; 16 pre-750 exclusions",
+    "gate": "retirement_risk_accounting",
+    "status": "PASS"
+  },
+  {
+    "evidence": "all features use cycle=750",
+    "gate": "retirement_landmark_only",
+    "status": "PASS"
+  },
+  {
+    "evidence": "OOF cell IDs unique; train/test overlap empty",
+    "gate": "retirement_group_split",
+    "status": "PASS"
+  },
+  {
+    "evidence": "common risk set; point uses median RUL, interval-risk uses RUL lower bound",
+    "gate": "decision_comparison_complete",
+    "status": "PASS"
+  },
+  {
+    "evidence": "exact 5-seed x 9-point OAT set, bounded Jaccard, one changed parameter",
+    "gate": "stability_oat_complete",
+    "status": "PASS"
+  },
+  {
+    "evidence": "3 windows x 4 feature groups x 4 models",
+    "gate": "ablation_complete",
+    "status": "PASS"
+  },
+  {
+    "evidence": "same (group_number, cell_id) membership across pressure scenarios",
+    "gate": "fixed_group_signature",
+    "status": "PASS"
+  },
+  {
+    "evidence": "pressure trajectories match baseline at cycle 750",
+    "gate": "cycle_750_continuity",
+    "status": "PASS"
+  },
+  {
+    "evidence": "5 scenarios x 8 groups x 4 cells",
+    "gate": "fixed_group_shape",
+    "status": "PASS"
+  },
+  {
+    "evidence": "group summaries contain SOH, resistance, and censor-aware RUL change fields",
+    "gate": "fixed_group_summary_complete",
+    "status": "PASS"
+  },
+  {
+    "evidence": "endpoint breach or post-750 event always rejects forced assignment",
+    "gate": "stress_trigger_endpoint_guard",
+    "status": "PASS"
+  }
+]

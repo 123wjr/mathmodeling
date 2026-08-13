@@ -1,6 +1,6 @@
 # A题论文 Agent 入口
 
-> 适用对象：负责论文的主笔及其 Agent。`论文草稿.md` 是 Git 中唯一可编辑的论文源；在线文档是协作/提交副本。代码、配置、实验输出和技术证据保存在 GitHub。
+> 适用对象：负责论文的主笔及其 Agent。`论文初稿.md` 是当前 Git 编辑骨架；`论文草稿.md` 仅保留历史，不再编辑。在线文档是协作/提交副本。代码、配置、实验输出和技术证据保存在 GitHub。
 >
 > 基线不固定 commit。每次启动先执行 git pull --ff-only origin main，再以 git rev-parse --short HEAD 的输出作为本次读取基线。
 
@@ -27,28 +27,30 @@ git rev-parse --short HEAD
 git status --short --branch
 ~~~
 
-然后按以下顺序阅读。不要跳过前四项，也不要先从 study_output/*.csv 猜结论。论文草稿以下载版 DOCX 的栏目骨架为参考，但内容编辑以仓库内 `论文草稿.md` 为准。
+然后按以下顺序阅读。不要跳过前四项，也不要先从 study_output/*.csv 猜结论。论文以下载版 DOCX 的栏目骨架为参考，但内容编辑以仓库内 `论文初稿.md` 为准。
 
 | 顺序 | 文件 | 你要得到的内容 |
 |---:|---|---|
 | 1 | [试题 A.pdf](试题%20%20A.pdf) | 原题、四个问题和题面约束；题面是问题定义的事实源 |
-| 2 | [论文草稿.md](论文草稿.md) | 论文现有章节、候选文字、待核验标记和待确认项；仅作内容骨架，数字必须回指证据 |
+| 2 | [论文初稿.md](论文初稿.md) | 最新 G12/V2 对齐骨架；Q3/Q4 仍需按 V3 整体替换，数字必须回指证据 |
 | 3 | 外部 DOCX 格式参考（SHA-256=`55468c073dc248dacbd91f84f06cc4070a99acbccba913907ad6efc57a6eddff`） | 可选的格式/栏目比较记录；不是仓库接口，不要因本机路径不可用而中断 |
 | 4 | [handoffs/PROJECT_COMMAND_CENTER.md](handoffs/PROJECT_COMMAND_CENTER.md) | 当前闸门、责任人、截止时间、停止规则和唯一事实源顺序 |
 | 5 | [technical/PAPER_WRITING_FACT_SHEET.md](technical/PAPER_WRITING_FACT_SHEET.md) | 论文可直接使用的数字及 CONFIRMED/RESULT/UPDATEABLE 标签 |
-| 6 | [technical/PAPER_TECHNICAL_BRIDGE.md](technical/PAPER_TECHNICAL_BRIDGE.md) | 与 `论文草稿.md` 逐节对齐的技术填充层；逐问列出模型、实验、数字、限制和证据 |
+| 6 | [technical/PAPER_TECHNICAL_BRIDGE.md](technical/PAPER_TECHNICAL_BRIDGE.md) | 与 `论文初稿.md` 章节对齐的技术填充层；逐问列出模型、实验、数字、限制和证据 |
 | 7 | [technical/TECHNICAL_REPORT_MINIMAL.md](technical/TECHNICAL_REPORT_MINIMAL.md) | 假设、公式、实验设计、结果解释和四部分最小技术文档 |
-| 8 | [technical/VALIDATION_REPORT.md](technical/VALIDATION_REPORT.md) | 9 个自动闸门、统计完整性和不能声称的内容 |
+| 8 | [technical/V3_VALIDATION_REPORT.md](technical/V3_VALIDATION_REPORT.md) | 12 个 V3 自动闸门、统计完整性和不能声称的内容 |
 | 9 | [A1](handoffs/A1_simulation_package.md)、[A2](handoffs/A2_prediction_package.md)、[A3](handoffs/A3_optimization_package.md)、[A4](handoffs/A4_robustness_package.md) | 每个阶段的接口、限制和证据路径 |
 | 10 | [study_output/run_manifest.json](study_output/run_manifest.json) | 源码/配置/产物 SHA-256 和生成时的 Git HEAD；用于最终回检 |
 | 11 | [V2 真实数据候选报告](technical/V2_REAL_DATA_CANDIDATE_REPORT.md) | 独立 Zenodo NMC532/NMC811 候选层；当前 `NEEDS_CHANGES/HOLD_FOR_PAPER`，禁止引用或覆盖 V1 |
-| 12 | [V2 技术方案](technical/TECHNICAL_SOLUTION_V2.md) | 按 `论文草稿.md` 小节提供假设、模型、实验、双口径结果、限制和可更新接口；只作填充材料 |
+| 12 | [V2 技术方案](technical/TECHNICAL_SOLUTION_V2.md) | V2 历史技术层；`论文初稿.md` 已对齐其可写边界，候选数字仍 HOLD |
+| 13 | [V3 技术方案](technical/TECHNICAL_SOLUTION_V3.md) | cycle=750 条件 RUL、双决策 MILP、稳定性/消融、固定编组压力追踪；按第 0 节逐节替换 V1 的 Q3/Q4 口径 |
+| 14 | [V3 验证报告](technical/V3_VALIDATION_REPORT.md) | 12 个自动闸门、当前可写 V3 数字、删失与外部效度边界；精确证据在 `study_output_v3/` |
 
 technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SUPPORTING_MATERIALS_README.md 说明支撑材料如何复跑。
 
 模板处理硬规则：先读 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 2.2 节的 DOCX 冲突登记，再以第 2.0 节的草稿逐节映射为执行清单。DOCX 只作格式比较；不因本机绝对路径、仓库同名旧版本或在线文档访问问题而中断。
 
-先做 Markdown 与技术桥接文档的逐节对齐审计，再直接编辑 `论文草稿.md`；不编辑代码、CSV、JSON、SVG。
+先做 Markdown 与技术桥接文档的逐节对齐审计，再直接编辑 `论文初稿.md`；不编辑代码、CSV、JSON、SVG。
 
 ## 2. 事实源优先级
 
@@ -58,13 +60,13 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 2. 已验收的 A0-A5 证据包与总控台。
 3. technical/PAPER_WRITING_FACT_SHEET.md、study_output/*.json/csv、验证闸门和 manifest。
 4. 可复跑代码、配置和图表。
-5. `论文草稿.md` 中尚未回指的文字、在线文档副本、Agent 汇报和聊天内容。
+5. `论文初稿.md` 中尚未回指的文字、在线文档副本、Agent 汇报和聊天内容。
 
 题面只定义研究问题，不提供实验数字。任何“聊天中出现过但文件中找不到”的数字都视为不可用。
 
 ## 3. 证据标签与硬边界
 
-每个结果性句子在写入 `论文草稿.md` 前，先在证据表中登记：claim_id、原句、标签、来源文件、精确字段/行或图号、核验人/日期、核验状态。
+每个结果性句子在写入 `论文初稿.md` 前，先在证据表中登记：claim_id、原句、标签、来源文件、精确字段/行或图号、核验人/日期、核验状态。
 
 | 标签 | 可以怎么写 | 不能怎么写 |
 |---|---|---|
@@ -86,9 +88,11 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 - 不写真实车辆泛化、货币收益、真实安全失效概率或范围外寿命。
 - 结构匹配 RUL 是 simulator ceiling，不能反向证明生成器真实有效。
 
-题面覆盖状态必须如实保留：Q1 的 CC-CV 协议效应不可辨识；Q2 的低温/过充/过放/>2C 只弃权；Q3 仅完成 4 芯 module-level set-packing，没有阵列拓扑/货币损耗；Q4 是各场景重新筛选/编组，不是 Q3 同一编组的纵向压力验证。技术过渡包把这些列为 `PAPER_GAP`，不能用摘要或工程建议掩盖。
+题面覆盖状态必须如实保留：Q1 的 CC-CV 协议效应不可辨识；Q2 的低温/过充/过放/>2C 只弃权；Q3 仅完成 4 芯 module-level set-packing，没有阵列拓扑/货币损耗。V1 的 Q3 使用 cycle=300 寿命换算、Q4 每场景重新筛选/编组；V3 已新增 cycle=750 条件 RUL 和固定同一编组的纵向压力追踪。论文采用 V3 时必须整体替换这两处旧口径，不能混用 V1 数字与 V3 方法。
 
-## 4. 当前可写数字（只从这里复制）
+## 4. 当前 V3 临时交付口径
+
+当前 V3 已通过代码与产物闸门，可用于搭建论文大纲、模型方程、实验设计、表格结构和限制段。团队仍会补强参数依据与真实观测偏差说明，因此本节数字均视为 `RESULT_CANDIDATE_UPDATEABLE`：可以写入带证据标签的工作稿，不得进行最终润色、删除标签或冻结摘要/结论。后续以新 commit 的事实表和 manifest 覆盖。
 
 以下数字必须保留标签和限定语；更详细的定义以事实表和对应 CSV/JSON 为准。
 
@@ -98,8 +102,11 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 | F2 | 72 个膝点可观测、36 个右删失；内部膝点恢复误差中位数 13.40 EFC | RESULT 仿真自检 | study_output/q1_knee_detection.csv |
 | F3 | 50-cycle SOH 的 Ridge RMSE=0.004206，cell-bootstrap 90% CI=0.003962--0.004447 | RESULT 仿真留组 | study_output/q2_soh_metrics.csv |
 | F4 | RUL 为 43 个事件 + 65 个右删失；log-normal AFT 事件 RMSE=38.39 cycles，90% 区间覆盖=0.9070 | RESULT 仿真留组 | study_output/q2_rul_metrics.csv |
-| F5 | 108 个候选中 85 个过门槛；3167 个兼容候选组；MILP 选 8 组、重复分配 0 | RESULT + UPDATEABLE | study_output/q3_solution_summary.csv |
-| F6 | 5 个鲁棒性 seed；7 个参数 OAT；4 类 OOD 全部弃权 | CONFIRMED + OOD/ABSTAIN | study_output/q4_*.csv |
+| F5 | cycle=750 风险集 92 芯：27 事件、65 右删失；750 前排除 16 芯 | RESULT 仿真留组 | study_output_v3/q3_retirement_summary.json |
+| F6 | 条件 RUL 事件 RMSE=39.7665 cycles；嵌套留组校准区间经验覆盖=0.8889 | RESULT 仿真留组；不是 90% 保证 | study_output_v3/q3_retirement_summary.json |
+| F7 | POINT 入选 89 芯、INTERVAL_RISK 入选 41 芯；均选 8 个四芯组（区间宽度门槛=3000 cycles，可更新） | RESULT + UPDATEABLE | study_output_v3/q3_decision_comparison.csv、configs/study_pipeline_v3.json |
+| F8 | 45 行 OAT 稳定性扫描；入选率=0.1489--0.3511，Jaccard=0.5714--1.0000；44/45 参数点不可行 | RESULT + UPDATEABLE | study_output_v3/q3_stability_sweep.csv、q3_stability_summary.json |
+| F9 | Q2 消融 48 个配置；Q4 固定同一 8 组跨 5 场景追踪，cycle 750 连续；16/40 稳定、5/40 复检、19/40 强制拒绝 | RESULT + CONFIRMED | study_output_v3/q2_ablation_metrics.csv、q4_fixed_group_summary.csv |
 
 写数字时同时写三件事：数据是仿真、验证如何分组、结论适用范围。例如：
 
@@ -114,8 +121,8 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 3. 模型假设与数据生成：NMC 主线、分段平方根退化、工况边界、个体差异、噪声和标签。
 4. 问题一：阶段/膝点定义、主效应权重和协议不可辨识说明。
 5. 问题二：SOH 特征、GroupKFold、右删失 AFT、对照模型、区间覆盖和压力测试。
-6. 问题三：硬门槛、兼容组、set-packing MILP、三套权重、约束回算和 greedy 对照。
-7. 问题四：多工况、5 seed、OAT、批次代理、OOD/ABSTAIN 和工程触发规则。
+6. 问题三：cycle=750 条件 RUL、点/区间风险门、set-packing MILP 和 5 seed OAT 稳定性。
+7. 问题四：固定同一 8 组的多工况压力追踪、删失感知变化、OOD/ABSTAIN 和触发规则。
 8. 模型评价、局限与推广：区分仿真内一致性、统计不确定性和真实外部有效性。
 9. 结论与工程建议：只写支持域内、可回指的结论；给出需要真实数据后更新的项。
 10. 参考文献、附录/支撑材料：参数台账、运行命令、图表索引和 AI 使用披露。
@@ -129,14 +136,14 @@ technical/EXPERIMENT_PLAN.md 可用于补写方法和实验小节；technical/SU
 - 论文类型：数学建模竞赛论文/会议型短文（以模板为准）。
 - 正文语言、摘要语言、目标字数/页数、引用格式。
 - 三位作者与贡献；无经费/无利益冲突也要显式记录。
-- 当前 `论文草稿.md` 版本、在线文档链接（如有）、模板限制。
+- 当前 `论文初稿.md` 版本、在线文档链接（如有）、模板限制。
 - 是否已有人工核验的参考文献；没有就不要假装已有文献库。
 
 配置不完整时，Agent 只问缺失项，不直接生成整篇论文。
 
 ### 阶段 B：证据台账（先于正文）
 
-建立与当前 `论文草稿.md` 版本配套的“主张-证据表”，推荐字段：
+建立与当前 `论文初稿.md` 版本配套的“主张-证据表”，推荐字段：
 
 ~~~text
 claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图号 | 核验人/日期 | 状态
@@ -154,13 +161,13 @@ claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图
 - 图注必须写数据类型（合成仿真）、工况、seed/折分和回指路径。
 - 每个模型选择都写“为什么采用 + 用什么对照 + 局限是什么”。
 - 不把代码名直接当结论；先解释统计对象和评价口径。
-- 图表编号先在 `论文草稿.md` 中固定，再同步在线文档；改图后同步更新图注和证据表。
+- 图表编号先在 `论文初稿.md` 中占位，再同步在线文档；本轮不冻结最终图号，改图后同步更新图注和证据表。
 
 ### 阶段 E：引用与诚信审查
 
 引用只接受 DOI、出版社/期刊官网、官方数据页或可人工核验的原文。禁止编造作者、年份、卷期、页码和 DOI。正文引用与参考文献必须双向零孤儿；无法核验的来源标 UNVERIFIED，不用于关键结论。
 
-当前 A5 预审为 `NOT_READY_FOR_STAGE_2_5_PASS`：`论文草稿.md` 中 34 条候选文献尚未逐条完成全文、页码与主张范围核验，早期合成框架锁定也未闭环。可以继续形成草稿，但不得把草稿标记为完整性通过或最终完整题解。
+当前 A5 预审为 `NOT_READY_FOR_STAGE_2_5_PASS`：`论文初稿.md` 中候选文献尚未逐条完成全文、页码与主张范围核验，参数依据与观测偏差补强也未闭环。可以继续搭建 V3 大纲和方法段，但不得标记为完整性通过或最终完整题解。
 
 ### 阶段 F：交接报告
 
@@ -169,7 +176,7 @@ claim_id | 章节/段落 | 主张原句 | 标签 | 来源文件 | 字段/行/图
 ~~~text
 状态：DONE / IN_PROGRESS / BLOCKED
 Owner：论文主笔 Agent / 论文主笔
-产物：`论文草稿.md` 版本/commit + 章节/证据表版本 + 在线文档链接（如有）
+产物：`论文初稿.md` 版本/commit + 章节/证据表版本 + 在线文档链接（如有）
 验证：事实表条目数；已回指数字/图数；人工核验引用数
 阻塞：缺失信息 + 等谁决定；无则 NONE
 下一步：动作 + CST 截止
@@ -178,25 +185,28 @@ Owner：论文主笔 Agent / 论文主笔
 ## 7. 可直接复制给论文 Agent 的启动提示
 
 ~~~text
-你是 A 题数学建模论文主笔 Agent。你的内容编辑目标是仓库根目录的 `论文草稿.md`；编辑完成后再同步在线文档。不修改代码或数字证据。
+你是 A 题数学建模论文主笔 Agent。你的内容编辑目标是仓库根目录的 `论文初稿.md`；`论文草稿.md` 只作历史参考，不得编辑。编辑完成后再同步在线文档。不修改代码或数字证据。
 
 工作目录：仓库根目录。先只读，不写正文、不改 CSV/JSON/SVG、不运行会覆盖结果的命令、不提交 Git。
 
 按顺序阅读：
 1. PAPER_AGENT_START_HERE.md
 2. 试题  A.pdf
-3. `论文草稿.md`（Git canonical 编辑源）
+3. `论文初稿.md`（当前 Git 编辑骨架，已对齐 V2）
 4. handoffs/PROJECT_COMMAND_CENTER.md
 5. technical/PAPER_WRITING_FACT_SHEET.md
 6. technical/PAPER_TECHNICAL_BRIDGE.md
 7. technical/TECHNICAL_REPORT_MINIMAL.md
-8. technical/VALIDATION_REPORT.md
+8. technical/V3_VALIDATION_REPORT.md（V3 当前验收；V1 历史报告仅作对照）
 9. handoffs/A1_simulation_package.md、A2_prediction_package.md、A3_optimization_package.md、A4_robustness_package.md
 10. study_output/run_manifest.json
 11. technical/V2_REAL_DATA_CANDIDATE_REPORT.md
 12. technical/TECHNICAL_SOLUTION_V2.md
+13. technical/TECHNICAL_SOLUTION_V3.md
+14. technical/V3_VALIDATION_REPORT.md
+15. study_output_v3/run_manifest.json
 
-第一轮只输出四块（优先使用技术过渡包和 V2 技术方案的章节与证据索引，不从单个 CSV 猜结论）：
+第一轮只输出四块（优先使用技术过渡包和 V3 技术方案的章节与证据索引，不从单个 CSV 猜结论）：
 A. 已读文件清单与当前 HEAD；
 B. Paper Configuration Record（缺失项留空并列问题）；
 C. 主张-证据表（每个数字/比较/因果句一行）；
@@ -204,19 +214,21 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 
 硬规则：
 - 只从 PAPER_WRITING_FACT_SHEET.md 和对应 study_output 文件取结果数字；聊天数字无效。
+- Q3/Q4 只使用 `study_output_v3/` 当前口径；V1 的 85/108、3167 组和场景重优化数字仅作历史对照，不得与 V3 方法混用。
+- `study_output_v3/run_manifest.json` 必须验证为 PASS；若失效则暂停复制 V3 数字并回报总负责人。
 - 所有结果句必须写“本合成仿真/留组实验”限定语，并保留证据标签。
 - 不得写 CALCE 实测校准、外部验证、真实车辆精度、普适安全阈值、货币收益或 OOD 数值。
 - 不得把 capacity_obs/resistance_obs 误写为外部实测；它们是合成观测。
 - 未核验引用写 UNVERIFIED 或 EVIDENCE REQUIRED，禁止猜 DOI/作者/年份。
 - 模板要求优先于通用论文模板；格式缺口只向人提问，不自行推断。
 
-完成四块后停止，等待总负责人确认配置和大纲，再在 `论文草稿.md` 中逐节填充。在线文档只是同步副本。
+完成四块后，直接在 `论文初稿.md` 中建立 V3 大纲、方法段、表图占位和限制段。当前数字保留 `RESULT_CANDIDATE_UPDATEABLE` 标记；不要做最终摘要、结论、图号和措辞冻结。等待建模负责人下一 commit 后再核对数字并收尾。在线文档只是同步副本。
 ~~~
 
 ### V2 增量更新提示（配置和大纲已确认后使用）
 
 ~~~text
-只编辑 `论文草稿.md`，不得修改 V1 数字、代码、CSV、JSON 或 SVG。
+只编辑 `论文初稿.md`，不得修改代码、CSV、JSON 或 SVG。
 
 先读取 `technical/PAPER_TECHNICAL_BRIDGE.md` 第 1.1 节，再读取
 `technical/V2_REAL_DATA_CANDIDATE_REPORT.md`。按三态更新：
@@ -230,17 +242,17 @@ D. 论文大纲，逐节标出模型、实验、结果、限制和证据路径�
 
 ## 8. 最终交稿前验收
 
-- [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F6 或对应结果文件。
+- [ ] 摘要、正文、图表、结论中的数字全部能回指 F1-F9 或对应结果文件；Q3/Q4 不采用 V1 历史数字。
 - [ ] 每个问题都有假设、模型、实验、指标、结果和限制，且没有把仿真写成实测。
 - [ ] GroupKFold(cell_id)、右删失、OOD/ABSTAIN 和协议不可辨识均被准确描述。
-- [ ] 图注包含工况/数据类型/seed 或折分；`论文草稿.md` 与在线文档副本的图号一致。
+- [ ] 图注包含工况/数据类型/seed 或折分；`论文初稿.md` 与在线文档副本的图号一致。
 - [ ] 引用通过 DOI/官方来源核验；正文与参考文献无孤儿；未知来源显式标记。
 - [ ] 包含限制、数据可得性、作者贡献、利益冲突、经费和 AI 使用披露。
 - [ ] 最终版本由总负责人做 G6 红队复核后才进入 PDF/支撑材料打包。
 
 ## 9. 不要做的事
 
-- `论文草稿.md` 是编辑源，但不是数字证据源；所有结果必须回指技术桥接文档和 `study_output/`。
+- `论文初稿.md` 是当前编辑骨架，但不是数字证据源；所有结果必须回指技术桥接文档和 `study_output/`。
 - 不要直接编辑 study_output、g1_output 或配置来“让数字好看”。
 - 不要删除失败记录、限制、UNCERTAIN 或 OOD/ABSTAIN 标签。
 - 不要在没有人工核验的情况下新增文献或声称“已查证”。

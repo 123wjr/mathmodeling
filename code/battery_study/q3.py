@@ -87,7 +87,32 @@ def _coefficient_of_variation(values) -> float:
     return float(np.std(array) / abs(mean)) if not math.isclose(mean, 0.0) else math.inf
 
 
-def enumerate_candidate_groups(candidates: list[dict], group_size: int, neighbor_pool: int) -> list[dict]:
+_NORMALIZED_GROUP_METRICS = (
+    ("raw_benefit", "benefit_index"),
+    ("raw_inconsistency", "inconsistency_index"),
+    ("raw_risk", "risk_index"),
+    ("raw_cost", "cost_index"),
+)
+
+
+def group_normalization_bounds(groups: list[dict]) -> dict[str, tuple[float, float]]:
+    if not groups:
+        return {}
+    return {
+        source: (
+            float(min(row[source] for row in groups)),
+            float(max(row[source] for row in groups)),
+        )
+        for source, _ in _NORMALIZED_GROUP_METRICS
+    }
+
+
+def enumerate_candidate_groups(
+    candidates: list[dict],
+    group_size: int,
+    neighbor_pool: int,
+    normalization_bounds: dict[str, tuple[float, float]] | None = None,
+) -> list[dict]:
     eligible = sorted((row for row in candidates if row["eligible"]), key=lambda row: row["cell_id"])
     if len(eligible) < group_size:
         return []
@@ -134,15 +159,18 @@ def enumerate_candidate_groups(candidates: list[dict], group_size: int, neighbor
         })
     if not groups:
         return groups
-    for source, target in (
-        ("raw_benefit", "benefit_index"),
-        ("raw_inconsistency", "inconsistency_index"),
-        ("raw_risk", "risk_index"),
-        ("raw_cost", "cost_index"),
-    ):
-        normalized = common.minmax([row[source] for row in groups])
+    bounds = normalization_bounds or group_normalization_bounds(groups)
+    for source, target in _NORMALIZED_GROUP_METRICS:
+        low, high = bounds[source]
+        if math.isclose(low, high):
+            normalized = [0.5] * len(groups)
+        else:
+            normalized = [
+                (float(row[source]) - low) / (high - low)
+                for row in groups
+            ]
         for row, value in zip(groups, normalized):
-            row[target] = value
+            row[target] = float(value)
     for index, row in enumerate(groups):
         row["group_id"] = f"candidate_{index:05d}"
     return groups

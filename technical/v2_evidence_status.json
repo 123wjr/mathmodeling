@@ -1,0 +1,7 @@
+{
+  "run_status": "PASS",
+  "evidence_status": "HOLD_RPT_SENSITIVITY",
+  "paper_eligible": false,
+  "source": "technical/V2_REAL_DATA_CANDIDATE_REPORT.md",
+  "reason": "NMC532 model comparison reverses under RPT preprocessing; no V2 headline is paper-eligible."
+}
